@@ -1,0 +1,21 @@
+---
+title: "WID-qEC manuscript - source code"
+author: "Chiara Herzog"
+date: ""
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE,
+                      warning = FALSE,
+                      message = FALSE)
+```
+
+## Overview
+
+This RMarkdown site contains the source code to reproduce the findings to ``A simple cervico-vaginal epigenetic test for early endometrial cancer detection – validation in several cohort and case/control sets'' (WID-qEC), structured as follows:
+
+1. Plots for top 50 DMPs in the epigenome-wide discovery set
+2. Threshold selection in the FORECEE Pilot Set
+3. Overview Tables with summary statistics (Table 1, 2, and 3)
+4. 

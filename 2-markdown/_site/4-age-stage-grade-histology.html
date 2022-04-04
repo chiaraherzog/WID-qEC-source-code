@@ -1,0 +1,1009 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+<meta charset="utf-8" />
+<meta name="generator" content="pandoc" />
+<meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
+
+
+<meta name="author" content="Chiara Herzog" />
+
+<meta name="date" content="2022-04-04" />
+
+<title>4. Association with epidemiological factors</title>
+
+<script src="site_libs/header-attrs-2.11/header-attrs.js"></script>
+<script src="site_libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link href="site_libs/bootstrap-3.3.5/css/cosmo.min.css" rel="stylesheet" />
+<script src="site_libs/bootstrap-3.3.5/js/bootstrap.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/html5shiv.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/respond.min.js"></script>
+<style>h1 {font-size: 34px;}
+       h1.title {font-size: 38px;}
+       h2 {font-size: 30px;}
+       h3 {font-size: 24px;}
+       h4 {font-size: 18px;}
+       h5 {font-size: 16px;}
+       h6 {font-size: 12px;}
+       code {color: inherit; background-color: rgba(0, 0, 0, 0.04);}
+       pre:not([class]) { background-color: white }</style>
+<script src="site_libs/navigation-1.1/tabsets.js"></script>
+<script src="site_libs/navigation-1.1/codefolding.js"></script>
+<link href="site_libs/highlightjs-9.12.0/default.css" rel="stylesheet" />
+<script src="site_libs/highlightjs-9.12.0/highlight.js"></script>
+
+<style type="text/css">
+  code{white-space: pre-wrap;}
+  span.smallcaps{font-variant: small-caps;}
+  span.underline{text-decoration: underline;}
+  div.column{display: inline-block; vertical-align: top; width: 50%;}
+  div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+  ul.task-list{list-style: none;}
+    </style>
+
+<style type="text/css">code{white-space: pre;}</style>
+<script type="text/javascript">
+if (window.hljs) {
+  hljs.configure({languages: []});
+  hljs.initHighlightingOnLoad();
+  if (document.readyState && document.readyState === "complete") {
+    window.setTimeout(function() { hljs.initHighlighting(); }, 0);
+  }
+}
+</script>
+
+
+
+
+
+
+
+
+<style type = "text/css">
+.main-container {
+  max-width: 940px;
+  margin-left: auto;
+  margin-right: auto;
+}
+img {
+  max-width:100%;
+}
+.tabbed-pane {
+  padding-top: 12px;
+}
+.html-widget {
+  margin-bottom: 20px;
+}
+button.code-folding-btn:focus {
+  outline: none;
+}
+summary {
+  display: list-item;
+}
+pre code {
+  padding: 0;
+}
+</style>
+
+
+<style type="text/css">
+.dropdown-submenu {
+  position: relative;
+}
+.dropdown-submenu>.dropdown-menu {
+  top: 0;
+  left: 100%;
+  margin-top: -6px;
+  margin-left: -1px;
+  border-radius: 0 6px 6px 6px;
+}
+.dropdown-submenu:hover>.dropdown-menu {
+  display: block;
+}
+.dropdown-submenu>a:after {
+  display: block;
+  content: " ";
+  float: right;
+  width: 0;
+  height: 0;
+  border-color: transparent;
+  border-style: solid;
+  border-width: 5px 0 5px 5px;
+  border-left-color: #cccccc;
+  margin-top: 5px;
+  margin-right: -10px;
+}
+.dropdown-submenu:hover>a:after {
+  border-left-color: #adb5bd;
+}
+.dropdown-submenu.pull-left {
+  float: none;
+}
+.dropdown-submenu.pull-left>.dropdown-menu {
+  left: -100%;
+  margin-left: 10px;
+  border-radius: 6px 0 6px 6px;
+}
+</style>
+
+<script type="text/javascript">
+// manage active state of menu based on current page
+$(document).ready(function () {
+  // active menu anchor
+  href = window.location.pathname
+  href = href.substr(href.lastIndexOf('/') + 1)
+  if (href === "")
+    href = "index.html";
+  var menuAnchor = $('a[href="' + href + '"]');
+
+  // mark it active
+  menuAnchor.tab('show');
+
+  // if it's got a parent navbar menu mark it active as well
+  menuAnchor.closest('li.dropdown').addClass('active');
+
+  // Navbar adjustments
+  var navHeight = $(".navbar").first().height() + 15;
+  var style = document.createElement('style');
+  var pt = "padding-top: " + navHeight + "px; ";
+  var mt = "margin-top: -" + navHeight + "px; ";
+  var css = "";
+  // offset scroll position for anchor links (for fixed navbar)
+  for (var i = 1; i <= 6; i++) {
+    css += ".section h" + i + "{ " + pt + mt + "}\n";
+  }
+  style.innerHTML = "body {" + pt + "padding-bottom: 40px; }\n" + css;
+  document.head.appendChild(style);
+});
+</script>
+
+<!-- tabsets -->
+
+<style type="text/css">
+.tabset-dropdown > .nav-tabs {
+  display: inline-table;
+  max-height: 500px;
+  min-height: 44px;
+  overflow-y: auto;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+.tabset-dropdown > .nav-tabs > li.active:before {
+  content: "";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li.active:before {
+  content: "&#xe258;";
+  border: none;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open:before {
+  content: "";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs > li.active {
+  display: block;
+}
+
+.tabset-dropdown > .nav-tabs > li > a,
+.tabset-dropdown > .nav-tabs > li > a:focus,
+.tabset-dropdown > .nav-tabs > li > a:hover {
+  border: none;
+  display: inline-block;
+  border-radius: 4px;
+  background-color: transparent;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li {
+  display: block;
+  float: none;
+}
+
+.tabset-dropdown > .nav-tabs > li {
+  display: none;
+}
+</style>
+
+<!-- code folding -->
+<style type="text/css">
+.code-folding-btn { margin-bottom: 4px; }
+</style>
+
+
+
+
+</head>
+
+<body>
+
+
+<div class="container-fluid main-container">
+
+
+
+
+<div class="navbar navbar-default  navbar-fixed-top" role="navigation">
+  <div class="container">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar">
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand" href="index.html">WID-qEC source code</a>
+    </div>
+    <div id="navbar" class="navbar-collapse collapse">
+      <ul class="nav navbar-nav">
+        <li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+    WID-qEC source code
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="index.html">Overview</a>
+    </li>
+    <li>
+      <a href="1-dmps.html">1. Top 50 DMPs (array data)</a>
+    </li>
+    <li>
+      <a href="2-markers_thresholds.html">2. Marker and threshold selection</a>
+    </li>
+    <li>
+      <a href="3-main.html">3. Main display items</a>
+    </li>
+    <li>
+      <a href="4-age-stage-grade-histology.html">4. Epidemiological factors</a>
+    </li>
+    <li>
+      <a href="5-barcelona-set.html">5. Barcelona Validation set</a>
+    </li>
+    <li>
+      <a href="6-lynch-cohort.html">6. Lynch Cohort</a>
+    </li>
+    <li>
+      <a href="7-karolinska-cohort.html">7. Karolinska Cohort</a>
+    </li>
+    <li>
+      <a href="8-ppv-npv.html">8. PPV/NPV</a>
+    </li>
+  </ul>
+</li>
+      </ul>
+      <ul class="nav navbar-nav navbar-right">
+        
+      </ul>
+    </div><!--/.nav-collapse -->
+  </div><!--/.container -->
+</div><!--/.navbar -->
+
+<div id="header">
+
+<div class="btn-group pull-right float-right">
+<button type="button" class="btn btn-default btn-xs btn-secondary btn-sm dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><span>Code</span> <span class="caret"></span></button>
+<ul class="dropdown-menu dropdown-menu-right" style="min-width: 50px;">
+<li><a id="rmd-show-all-code" href="#">Show All Code</a></li>
+<li><a id="rmd-hide-all-code" href="#">Hide All Code</a></li>
+</ul>
+</div>
+
+
+
+<h1 class="title toc-ignore">4. Association with epidemiological factors</h1>
+<h4 class="author">Chiara Herzog</h4>
+<h4 class="date">April 4, 2022</h4>
+
+</div>
+
+
+<div id="forecee-validation-figure-s11" class="section level2">
+<h2>FORECEE Validation (Figure S11)</h2>
+<pre class="r"><code>tmp &lt;- mldat %&gt;%
+  filter(set == &quot;FORECEE Validation&quot;) %&gt;%
+  mutate(grade = as.character(grade),
+         stage = as.character(stage),
+         hist = as.character(hist)) %&gt;%
+  mutate(grade = ifelse(type == &quot;Control&quot;, &quot;Control&quot;, grade)) %&gt;%
+  mutate(stage = ifelse(type == &quot;Control&quot;, &quot;Control&quot;, stage)) %&gt;%
+  mutate(hist = ifelse(type == &quot;Control&quot;, &quot;Control&quot;,
+                       ifelse(hist == &quot;Other *&quot;, &quot;Other&quot;, hist))) %&gt;%
+  mutate(grade = factor(grade, levels = c(&quot;Control&quot;, &quot;Grade I&quot;, &quot;Grade II&quot;, &quot;Grade III&quot;, &quot;Unknown&quot;))) %&gt;%
+  mutate(hist = factor(hist, levels = c(&quot;Control&quot;, &quot;Endometrioid&quot;, &quot;Serous&quot;, &quot;Clear cell&quot;, &quot;Other&quot;, &quot;Unknown&quot;))) %&gt;%
+  mutate(stage = factor(stage, levels = c(&quot;Control&quot;, &quot;I&quot;, &quot;II&quot;, &quot;III/IV&quot;, &quot;Unknown&quot;)))
+
+p1 &lt;- tmp %&gt;%
+  ggplot(aes(x = age,
+             y = log(sum + 0.00001),
+             colour = type)) +
+  geom_point(size = 0.3) +
+  geom_smooth(method = &quot;lm&quot;,
+              se = FALSE) +
+  ylab(expression(paste(atop(bold(&quot;WID™-qEC&quot;), &quot;log (&quot;~Sigma~&quot; PMR)&quot;)))) + 
+  theme(panel.background = element_blank(),
+        legend.position = c(0.32, 1.1),
+        legend.key = element_blank()) +
+  scale_colour_manual(values = cols[c(1,2)],
+                      name = &quot;&quot;) +
+  xlab(&quot;Age&quot;) +
+  coord_cartesian(ylim = c(-11, 5.5),
+                  clip = &quot;off&quot;)
+
+
+tmp &lt;- tmp %&gt;%
+  pivot_longer(c(stage, grade, hist), names_to = &quot;types&quot;, values_to = &quot;factors&quot;)  %&gt;%
+  mutate(factors = factor(factors, levels = c(&quot;Control&quot;,
+                                              &quot;I&quot;, &quot;II&quot;, &quot;III/IV&quot;,
+                                              &quot;Grade I&quot;, &quot;Grade II&quot;, &quot;Grade III&quot;,
+                                              &quot;Endometrioid&quot;, &quot;Serous&quot;, &quot;Clear cell&quot;, &quot;Other&quot;,
+                                              &quot;Unknown&quot;)))
+
+labs &lt;- c(&quot;Stage&quot;, &quot;Grade&quot;, &quot;Histology&quot;)
+names(labs) &lt;- c(&quot;stage&quot;, &quot;grade&quot;, &quot;hist&quot;)
+
+p2 &lt;- tmp %&gt;%
+  mutate(types = factor(types, levels = c(&quot;stage&quot;, &quot;grade&quot;, &quot;hist&quot;))) %&gt;%
+  ggplot(aes(x = factors,
+             y = log(sum + 0.00001))) +
+  geom_violin(width = 0.4,
+              aes(colour = type)) +
+  geom_jitter(size = 0.3,
+              aes(colour = type)) +
+  ylab(expression(paste(atop(bold(&quot;WID™-qEC&quot;), &quot;log (&quot;~Sigma~&quot; PMR)&quot;)))) + 
+  xlab(&quot;&quot;) +
+  scale_colour_manual(values = cols[c(1,2)],
+                      name = &quot;&quot;) +
+  facet_wrap(~types,
+             scales = &quot;free_x&quot;,
+             labeller = labeller(types = labs)) +
+  theme(panel.grid = element_blank(),
+        legend.position = &quot;none&quot;,
+        axis.text.x = element_text(angle = 60,
+                                   hjust = 1,
+                                   margin = margin(-12, 0, 0, 0)),
+        legend.key = element_blank(),
+        legend.text = element_blank(),
+        legend.background = element_blank(),
+        plot.margin = margin(10, 10, 20, 10))
+
+plot &lt;- (p1 + p2) +
+  plot_layout(widths = c(1.2, 2.5)) + 
+  plot_annotation(tag_levels = &quot;A&quot;) &amp; 
+  theme(axis.title.x = element_text(margin = margin(t=-20)))
+
+plot</code></pre>
+<p><img src="4-age-stage-grade-histology_files/figure-html/unnamed-chunk-1-1.png" width="864" style="display: block; margin: auto;" /></p>
+</div>
+<div id="barcelona-validation-figure-s12" class="section level2">
+<h2>Barcelona Validation (Figure S12)</h2>
+<pre class="r"><code>tmp &lt;- mldat %&gt;%
+  filter(set == &quot;Barcelona Validation&quot;) %&gt;%
+  mutate(grade = as.character(grade),
+         stage = as.character(stage),
+         hist = as.character(hist)) %&gt;%
+  mutate(grade = ifelse(type == &quot;Control&quot;, &quot;Control&quot;, grade)) %&gt;%
+  mutate(stage = ifelse(type == &quot;Control&quot;, &quot;Control&quot;, stage)) %&gt;%
+  mutate(hist = ifelse(type == &quot;Control&quot;, &quot;Control&quot;,
+                       ifelse(hist == &quot;Other *&quot;, &quot;Other&quot;,
+                              hist))) %&gt;%
+  mutate(grade = factor(grade, levels = c(&quot;Control&quot;, &quot;Grade I&quot;, &quot;Grade II&quot;, &quot;Grade III&quot;, &quot;Unknown&quot;))) %&gt;%
+  mutate(hist = factor(hist, levels = c(&quot;Control&quot;, &quot;Endometrioid&quot;, &quot;Serous&quot;, &quot;Clear cell&quot;, &quot;Other&quot;, &quot;Unknown&quot;))) %&gt;%
+  mutate(stage = factor(stage, levels = c(&quot;Control&quot;, &quot;I&quot;, &quot;II&quot;, &quot;III/IV&quot;, &quot;Unknown&quot;)))
+
+
+p1 &lt;- tmp %&gt;%
+  ggplot(aes(x = age,
+             y = log(sum + 0.00001),
+             colour = type)) +
+  geom_point(size = 0.3) +
+  geom_smooth(method = &quot;lm&quot;,
+              se = FALSE) +
+  ylab(expression(paste(atop(bold(&quot;WID™-qEC&quot;), &quot;log (&quot;~Sigma~&quot; PMR)&quot;)))) + 
+  theme(panel.background = element_blank(),
+        legend.position = c(0.32, 1.1),
+        legend.key = element_blank()) +
+  scale_colour_manual(values = cols[c(1,2)],
+                      name = &quot;&quot;) +
+  xlab(&quot;Age&quot;) +
+  coord_cartesian(ylim = c(-11, 5.5),
+                  clip = &quot;off&quot;)
+
+
+tmp &lt;- tmp %&gt;%
+  pivot_longer(c(stage, grade, hist), names_to = &quot;types&quot;, values_to = &quot;factors&quot;)  %&gt;%
+  mutate(factors = factor(factors, levels = c(&quot;Control&quot;,
+                                              &quot;I&quot;, &quot;II&quot;, &quot;III/IV&quot;,
+                                              &quot;Grade I&quot;, &quot;Grade II&quot;, &quot;Grade III&quot;,
+                                              &quot;Endometrioid&quot;, &quot;Serous&quot;, &quot;Clear cell&quot;, &quot;Other&quot;,
+                                              &quot;Unknown&quot;)))
+
+labs &lt;- c(&quot;Stage&quot;, &quot;Grade&quot;, &quot;Histology&quot;)
+names(labs) &lt;- c(&quot;stage&quot;, &quot;grade&quot;, &quot;hist&quot;)
+
+p2 &lt;- tmp %&gt;%
+  mutate(types = factor(types, levels = c(&quot;stage&quot;, &quot;grade&quot;, &quot;hist&quot;))) %&gt;%
+  ggplot(aes(x = factors,
+             y = log(sum + 0.00001))) +
+  geom_violin(width = 0.4,
+              aes(colour = type)) +
+  geom_jitter(size = 0.3,
+              aes(colour = type)) +
+  ylab(expression(paste(atop(bold(&quot;WID™-qEC&quot;), &quot;log (&quot;~Sigma~&quot; PMR)&quot;)))) + 
+  xlab(&quot;&quot;) +
+  scale_colour_manual(values = cols[c(1,2)],
+                      name = &quot;&quot;) +
+  facet_wrap(~types,
+             scales = &quot;free_x&quot;,
+             labeller = labeller(types = labs)) +
+  theme(panel.grid = element_blank(),
+        legend.position = &quot;none&quot;,
+        axis.text.x = element_text(angle = 60,
+                                   hjust = 1,
+                                   margin = margin(-12, 0, 0, 0)),
+        legend.key = element_blank(),
+        legend.text = element_blank(),
+        legend.background = element_blank(),
+        plot.margin = margin(10, 10, 20, 10))
+
+plot &lt;- (p1 + p2) +
+  plot_layout(widths = c(1.2, 2.5)) + 
+  plot_annotation(tag_levels = &quot;A&quot;) &amp; 
+  theme(axis.title.x = element_text(margin = margin(t=-20)))
+
+plot</code></pre>
+<p><img src="4-age-stage-grade-histology_files/figure-html/unnamed-chunk-2-1.png" width="864" style="display: block; margin: auto;" /></p>
+</div>
+<div id="ethnicity-table-s3" class="section level2">
+<h2>Ethnicity (Table S3)</h2>
+<pre class="r"><code>mldat_tmp &lt;- mldat %&gt;%
+  filter(set == &quot;FORECEE Validation&quot; &amp; ethnicity != &quot;Unknown&quot;) %&gt;%
+  mutate(ethnicity = factor(ethnicity, levels = c(&quot;White&quot;, &quot;Non-white&quot;))) %&gt;%
+  droplevels() %&gt;%
+  mutate(sum = `ZSCAN12\n(cg25060829 [ii])` + `GYPC\n(cg15768103 [ii])` + `GYPC\n(cg15975865 [i])`) %&gt;%
+  mutate(thresh1 = case_when(sum &gt;= cut$threshold[1] ~ &quot;Endometrial cancer&quot;,
+                             sum &lt; cut$threshold[1] ~ &quot;Control&quot;)) %&gt;%
+  mutate(thresh2 = case_when(sum &gt;= cut$threshold[2] ~ &quot;Endometrial cancer&quot;,
+                             sum &lt; cut$threshold[2] ~ &quot;Control&quot;)) %&gt;%
+  mutate(type = factor(type, levels = c(&quot;Endometrial cancer&quot;, &quot;Control&quot;))) %&gt;%
+  mutate(thresh1 = factor(thresh1, levels = c(&quot;Endometrial cancer&quot;, &quot;Control&quot;))) %&gt;%
+  mutate(thresh2 = factor(thresh2, levels = c(&quot;Endometrial cancer&quot;, &quot;Control&quot;)))
+
+# create df
+dat &lt;- data.frame(matrix(nrow = 9, ncol = length(unique(mldat_tmp$ethnicity))+2))
+colnames(dat) &lt;- c(levels(mldat_tmp$ethnicity), &quot;threshold&quot;, &quot;type&quot;)
+dat$threshold &lt;- c(&quot;&quot;, rep(&quot;Threshold 1&quot;, 4), rep(&quot;Threshold 2&quot;, 4))
+dat$type &lt;- c( &quot;n (controls, cases)&quot;, rep(c(&quot;Sensitivity – % (95% CI)&quot;, &quot;Specificity – % (95% CI)&quot;, &quot;PPV – % (95% CI) †&quot;, &quot;NPV – % (95% CI) †&quot;), 2))
+
+for(i in  1:length(levels(mldat_tmp$ethnicity))){
+  name &lt;- levels(mldat_tmp$ethnicity)[i]
+  tmp &lt;- mldat_tmp %&gt;%
+    filter(ethnicity == name)
+  pop_prev &lt;- 0.09
+  
+  tab &lt;- table(tmp$thresh1, tmp$type)
+  rval &lt;- summary(epi.tests(tab))
+  tab &lt;- matrix(c(tab[1,1], tab[2,1], tab[1,2], tab[2,2]), ncol = 2)
+  colnames(tab) &lt;- c(&quot;Case&quot;, &quot;Control&quot;)
+  rownames(tab) &lt;- c(&quot;Case&quot;, &quot;Control&quot;)
+  rval2 &lt;- BDtest(xmat=as.matrix(tab), pr=pop_prev, conf.level = 0.95)
+  
+  dat[1,i] &lt;- paste0(sum(tmp$type==&quot;Control&quot;), &quot;, &quot;, 
+                     sum(tmp$type == &quot;Endometrial cancer&quot;)) 
+  dat[2,i] &lt;- paste0(round(rval[3,1],2)*100, &quot; (&quot;,
+                     round(rval[3,2],2)*100, &quot;–&quot;,
+                     round(rval[3,3],2)*100, &quot;)&quot;)
+  dat[3,i] &lt;- paste0(round(rval[4,1],2)*100, &quot; (&quot;,
+                     round(rval[4,2],2)*100, &quot;–&quot;,
+                     round(rval[4,3],2)*100, &quot;)&quot;)
+  dat[4,i] &lt;- paste0(round(rval2$PPVNPVDAT[2,1],2)*100, &quot; (&quot;,
+                     round(rval2$PPVNPVDAT[2,2],2)*100, &quot;–&quot;,
+                     round(rval2$PPVNPVDAT[2,4],2)*100, &quot;)&quot;)
+  dat[5,i] &lt;- paste0(round(rval2$PPVNPVDAT[1,1],2)*100, &quot; (&quot;,
+                     round(rval2$PPVNPVDAT[1,2],2)*100, &quot;–&quot;,
+                     round(rval2$PPVNPVDAT[1,4],2)*100, &quot;)&quot;)
+  
+  tab &lt;- table(tmp$thresh2, tmp$type)
+  rval &lt;- summary(epi.tests(tab))
+  tab &lt;- matrix(c(tab[1,1], tab[2,1], tab[1,2], tab[2,2]), ncol = 2)
+  colnames(tab) &lt;- c(&quot;Case&quot;, &quot;Control&quot;)
+  rownames(tab) &lt;- c(&quot;Case&quot;, &quot;Control&quot;)
+  rval2 &lt;- BDtest(xmat=as.matrix(tab), pr=pop_prev, conf.level = 0.95)
+  
+  dat[6,i] &lt;- paste0(round(rval[3,1],2)*100, &quot; (&quot;,
+                     round(rval[3,2],2)*100, &quot;–&quot;,
+                     round(rval[3,3],2)*100, &quot;)&quot;)
+  dat[7,i] &lt;- paste0(round(rval[4,1],2)*100, &quot; (&quot;,
+                     round(rval[4,2],2)*100, &quot;–&quot;,
+                     round(rval[4,3],2)*100, &quot;)&quot;)
+  dat[8,i] &lt;- paste0(round(rval2$PPVNPVDAT[2,1],2)*100,&quot; (&quot;,
+                     round(rval2$PPVNPVDAT[2,2],2)*100, &quot;–&quot;,
+                     round(rval2$PPVNPVDAT[2,4],2)*100, &quot;)&quot;)
+  dat[9,i] &lt;- paste0(round(rval2$PPVNPVDAT[1,1],2)*100, &quot; (&quot;,
+                     round(rval2$PPVNPVDAT[1,2],2)*100, &quot;–&quot;,
+                     round(rval2$PPVNPVDAT[1,4],2)*100, &quot;)&quot;)
+}
+
+tbl &lt;- dat %&gt;%
+  gt(rowname_col = &quot;type&quot;, groupname_col = &quot;threshold&quot;) %&gt;%
+  cols_label(
+    White = &quot;White ethnicity&quot;,
+    `Non-white` = &quot;Non-white ethnicity&quot;
+  ) %&gt;%
+  tab_options(table.font.names = &quot;Guardian Sans&quot;,
+              column_labels.font.weight = &quot;bold&quot;,
+              row_group.font.weight = &quot;bold&quot;,
+              data_row.padding = 2,
+              column_labels.font.size = 12,
+              table.font.size = 10,
+              row_group.padding = 2,
+              row_group.border.right.width = px(10),
+              summary_row.padding = 2,
+              table.border.top.color = &quot;white&quot;,
+              row_group.border.top.width = px(1),
+              table.width = px(500),
+              row_group.border.bottom.width = px(1),
+              stub.border.width = px(0),
+              heading.title.font.size = 14) %&gt;% 
+  gt::tab_source_note(gt::md(&quot;**PPV** denotes positive predictive value, **NPV** negative predictive value.&lt;br&gt;† Assumed population prevalence: 9%&quot;))
+
+tbl</code></pre>
+<div id="qothrlmvzx" style="overflow-x:auto;overflow-y:auto;width:auto;height:auto;">
+<style>html {
+  font-family: 'Guardian Sans';
+}
+
+#qothrlmvzx .gt_table {
+  display: table;
+  border-collapse: collapse;
+  margin-left: auto;
+  margin-right: auto;
+  color: #333333;
+  font-size: 10px;
+  font-weight: normal;
+  font-style: normal;
+  background-color: #FFFFFF;
+  width: 500px;
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #FFFFFF;
+  border-right-style: none;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #A8A8A8;
+  border-left-style: none;
+  border-left-width: 2px;
+  border-left-color: #D3D3D3;
+}
+
+#qothrlmvzx .gt_heading {
+  background-color: #FFFFFF;
+  text-align: center;
+  border-bottom-color: #FFFFFF;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+}
+
+#qothrlmvzx .gt_title {
+  color: #333333;
+  font-size: 14px;
+  font-weight: initial;
+  padding-top: 4px;
+  padding-bottom: 4px;
+  border-bottom-color: #FFFFFF;
+  border-bottom-width: 0;
+}
+
+#qothrlmvzx .gt_subtitle {
+  color: #333333;
+  font-size: 85%;
+  font-weight: initial;
+  padding-top: 0;
+  padding-bottom: 6px;
+  border-top-color: #FFFFFF;
+  border-top-width: 0;
+}
+
+#qothrlmvzx .gt_bottom_border {
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+}
+
+#qothrlmvzx .gt_col_headings {
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+}
+
+#qothrlmvzx .gt_col_heading {
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 12px;
+  font-weight: bold;
+  text-transform: inherit;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+  vertical-align: bottom;
+  padding-top: 5px;
+  padding-bottom: 6px;
+  padding-left: 5px;
+  padding-right: 5px;
+  overflow-x: hidden;
+}
+
+#qothrlmvzx .gt_column_spanner_outer {
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 12px;
+  font-weight: bold;
+  text-transform: inherit;
+  padding-top: 0;
+  padding-bottom: 0;
+  padding-left: 4px;
+  padding-right: 4px;
+}
+
+#qothrlmvzx .gt_column_spanner_outer:first-child {
+  padding-left: 0;
+}
+
+#qothrlmvzx .gt_column_spanner_outer:last-child {
+  padding-right: 0;
+}
+
+#qothrlmvzx .gt_column_spanner {
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  vertical-align: bottom;
+  padding-top: 5px;
+  padding-bottom: 5px;
+  overflow-x: hidden;
+  display: inline-block;
+  width: 100%;
+}
+
+#qothrlmvzx .gt_group_heading {
+  padding: 2px;
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: bold;
+  text-transform: inherit;
+  border-top-style: solid;
+  border-top-width: 1px;
+  border-top-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 1px;
+  border-bottom-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 10px;
+  border-right-color: #D3D3D3;
+  vertical-align: middle;
+}
+
+#qothrlmvzx .gt_empty_group_heading {
+  padding: 0.5px;
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: bold;
+  border-top-style: solid;
+  border-top-width: 1px;
+  border-top-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 1px;
+  border-bottom-color: #D3D3D3;
+  vertical-align: middle;
+}
+
+#qothrlmvzx .gt_from_md > :first-child {
+  margin-top: 0;
+}
+
+#qothrlmvzx .gt_from_md > :last-child {
+  margin-bottom: 0;
+}
+
+#qothrlmvzx .gt_row {
+  padding-top: 2px;
+  padding-bottom: 2px;
+  padding-left: 5px;
+  padding-right: 5px;
+  margin: 10px;
+  border-top-style: solid;
+  border-top-width: 1px;
+  border-top-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+  vertical-align: middle;
+  overflow-x: hidden;
+}
+
+#qothrlmvzx .gt_stub {
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: initial;
+  text-transform: inherit;
+  border-right-style: solid;
+  border-right-width: 0px;
+  border-right-color: #D3D3D3;
+  padding-left: 12px;
+}
+
+#qothrlmvzx .gt_summary_row {
+  color: #333333;
+  background-color: #FFFFFF;
+  text-transform: inherit;
+  padding-top: 2px;
+  padding-bottom: 2px;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+#qothrlmvzx .gt_first_summary_row {
+  padding-top: 2px;
+  padding-bottom: 2px;
+  padding-left: 5px;
+  padding-right: 5px;
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #D3D3D3;
+}
+
+#qothrlmvzx .gt_grand_summary_row {
+  color: #333333;
+  background-color: #FFFFFF;
+  text-transform: inherit;
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+#qothrlmvzx .gt_first_grand_summary_row {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+  border-top-style: double;
+  border-top-width: 6px;
+  border-top-color: #D3D3D3;
+}
+
+#qothrlmvzx .gt_striped {
+  background-color: rgba(128, 128, 128, 0.05);
+}
+
+#qothrlmvzx .gt_table_body {
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+}
+
+#qothrlmvzx .gt_footnotes {
+  color: #333333;
+  background-color: #FFFFFF;
+  border-bottom-style: none;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 2px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+}
+
+#qothrlmvzx .gt_footnote {
+  margin: 0px;
+  font-size: 90%;
+  padding: 4px;
+}
+
+#qothrlmvzx .gt_sourcenotes {
+  color: #333333;
+  background-color: #FFFFFF;
+  border-bottom-style: none;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 2px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+}
+
+#qothrlmvzx .gt_sourcenote {
+  font-size: 90%;
+  padding: 4px;
+}
+
+#qothrlmvzx .gt_left {
+  text-align: left;
+}
+
+#qothrlmvzx .gt_center {
+  text-align: center;
+}
+
+#qothrlmvzx .gt_right {
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+
+#qothrlmvzx .gt_font_normal {
+  font-weight: normal;
+}
+
+#qothrlmvzx .gt_font_bold {
+  font-weight: bold;
+}
+
+#qothrlmvzx .gt_font_italic {
+  font-style: italic;
+}
+
+#qothrlmvzx .gt_super {
+  font-size: 65%;
+}
+
+#qothrlmvzx .gt_footnote_marks {
+  font-style: italic;
+  font-weight: normal;
+  font-size: 65%;
+}
+</style>
+<table class="gt_table">
+  
+  <thead class="gt_col_headings">
+    <tr>
+      <th class="gt_col_heading gt_columns_bottom_border gt_left" rowspan="1" colspan="1"></th>
+      <th class="gt_col_heading gt_columns_bottom_border gt_left" rowspan="1" colspan="1">White ethnicity</th>
+      <th class="gt_col_heading gt_columns_bottom_border gt_left" rowspan="1" colspan="1">Non-white ethnicity</th>
+    </tr>
+  </thead>
+  <tbody class="gt_table_body">
+    <tr class="gt_group_heading_row">
+      <td colspan="3" class="gt_empty_group_heading"></td>
+    </tr>
+    <tr><td class="gt_row gt_left gt_stub">n (controls, cases)</td>
+<td class="gt_row gt_left">60, 65</td>
+<td class="gt_row gt_left">5, 6</td></tr>
+    <tr class="gt_group_heading_row">
+      <td colspan="3" class="gt_group_heading">Threshold 1</td>
+    </tr>
+    <tr><td class="gt_row gt_left gt_stub">Sensitivity – % (95% CI)</td>
+<td class="gt_row gt_left">97 (89–100)</td>
+<td class="gt_row gt_left">100 (54–100)</td></tr>
+    <tr><td class="gt_row gt_left gt_stub">Specificity – % (95% CI)</td>
+<td class="gt_row gt_left">75 (62–85)</td>
+<td class="gt_row gt_left">80 (28–99)</td></tr>
+    <tr><td class="gt_row gt_left gt_stub">PPV – % (95% CI) †</td>
+<td class="gt_row gt_left">28 (21–37)</td>
+<td class="gt_row gt_left">21 (10–39)</td></tr>
+    <tr><td class="gt_row gt_left gt_stub">NPV – % (95% CI) †</td>
+<td class="gt_row gt_left">100 (99–100)</td>
+<td class="gt_row gt_left">98 (92–99)</td></tr>
+    <tr class="gt_group_heading_row">
+      <td colspan="3" class="gt_group_heading">Threshold 2</td>
+    </tr>
+    <tr><td class="gt_row gt_left gt_stub">Sensitivity – % (95% CI)</td>
+<td class="gt_row gt_left">83 (72–91)</td>
+<td class="gt_row gt_left">67 (22–96)</td></tr>
+    <tr><td class="gt_row gt_left gt_stub">Specificity – % (95% CI)</td>
+<td class="gt_row gt_left">97 (88–100)</td>
+<td class="gt_row gt_left">100 (48–100)</td></tr>
+    <tr><td class="gt_row gt_left gt_stub">PPV – % (95% CI) †</td>
+<td class="gt_row gt_left">71 (44–91)</td>
+<td class="gt_row gt_left">26 (8–51)</td></tr>
+    <tr><td class="gt_row gt_left gt_stub">NPV – % (95% CI) †</td>
+<td class="gt_row gt_left">98 (97–99)</td>
+<td class="gt_row gt_left">96 (91–98)</td></tr>
+  </tbody>
+  <tfoot class="gt_sourcenotes">
+    <tr>
+      <td class="gt_sourcenote" colspan="3"><strong>PPV</strong> denotes positive predictive value, <strong>NPV</strong> negative predictive value.<br>† Assumed population prevalence: 9%</td>
+    </tr>
+  </tfoot>
+  
+</table>
+</div>
+</div>
+
+
+
+
+</div>
+
+<script>
+
+// add bootstrap table styles to pandoc tables
+function bootstrapStylePandocTables() {
+  $('tr.odd').parent('tbody').parent('table').addClass('table table-condensed');
+}
+$(document).ready(function () {
+  bootstrapStylePandocTables();
+});
+
+
+</script>
+
+<!-- tabsets -->
+
+<script>
+$(document).ready(function () {
+  window.buildTabsets("TOC");
+});
+
+$(document).ready(function () {
+  $('.tabset-dropdown > .nav-tabs > li').click(function () {
+    $(this).parent().toggleClass('nav-tabs-open');
+  });
+});
+</script>
+
+<!-- code folding -->
+<script>
+$(document).ready(function () {
+  window.initializeCodeFolding("show" === "show");
+});
+</script>
+
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>

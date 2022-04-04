@@ -1,0 +1,239 @@
+---
+title: "DI 1. ML Development"
+output:
+  html_document:
+    code_folding: hide
+    toc: true
+    number_sections: false
+    theme: flatly
+---
+  
+  
+```{r setup, include=FALSE, message=FALSE, echo=FALSE}
+library(knitr)
+library(dplyr)
+library(tidyverse)
+library(ggplot2)
+library(tidyverse)
+library(patchwork)
+library(ggsci)
+library(pROC)
+
+knitr::opts_chunk$set(message = F,
+                      warning = F,
+                      echo = F)
+
+colour.pal.d8 <- c("#EA7580","#F2949A","#F6B3A1","#D8C99E","#3AB9AC","#109DB7","#0C6EA5","#172869")
+colour.pal.c <- colorRampPalette(colour.pal.d8)
+
+cols <- pal_nejm("default", alpha = 0.8)(8) # orange and purple
+
+load("~/Dropbox/index-dev/3C/2-EC/10-PCR-panel/5-manuscript/2-output/data.Rdata")
+```
+
+
+```{r fig.align = "center", fig.width = 9, fig.height = 7}
+cpgs <- unique(pheno1$cpg)[c(2, 3, 1)]
+
+range <- 500
+
+a1 <- pheno1 %>%
+  filter(cpg == cpgs[1]) %>%
+  ggplot(aes(x = ic,
+             y = beta,
+             colour = type)) +
+  geom_point(size = 0.5) +
+  geom_smooth(method = "lm",
+              se = FALSE) +
+  theme_minimal() +
+  theme(legend.position = "top",
+        panel.grid = element_blank(),
+        legend.background = element_blank(),
+        legend.key = element_rect(fill = NA, color = NA)) +
+  scale_colour_manual(values = cols[c(2,1)],
+                      name = "",
+                      labels = c("Control", "Endometrial cancer")) +
+  facet_wrap(~cpg,
+             nrow = 3,
+             scales='free') +
+  scale_x_continuous(limits=c(0,1)) +
+  scale_y_continuous(limits=c(0,1)) +
+  xlab("") +
+  ylab(expression(beta)) 
+
+a2 <- linked[[2]] %>%
+  ggplot(aes(x = pos,
+             y = mean,
+             group = type,
+             colour = type)) +
+  geom_point(size = 0.75) +
+  geom_line() +
+  xlim(-range, range) +
+  ylim(0, 1) +
+  theme_minimal() +
+  theme(legend.position = "none",
+        panel.grid = element_blank()) +
+  scale_colour_manual(values = cols[c(2,1)],
+                      name = "") +
+  ylab(expression(beta)) +
+  facet_wrap(~cpg) +
+  xlab("") +
+  annotate("segment", x = 0, xend = 0, y = 0, yend = 0.9,
+           colour = "gray60", size = 0.4,
+           linetype = "dotted") 
+
+b1 <- pheno1 %>%
+  filter(cpg == cpgs[2]) %>%
+  ggplot(aes(x = ic,
+             y = beta,
+             colour = type)) +
+  geom_point(size = 0.5) +
+  geom_smooth(method = "lm",
+              se = FALSE) +
+  theme_minimal() +
+  theme(legend.position = "none",
+        panel.grid = element_blank(),
+        legend.background = element_blank()) +
+  scale_colour_manual(values = cols[c(2,1)],
+                      name = "") +
+  facet_wrap(~cpg,
+             nrow = 3,
+             scales='free') +
+  scale_x_continuous(limits=c(0,1)) +
+  scale_y_continuous(limits=c(0,1)) +
+  xlab("") +
+  ylab(expression(beta))
+
+b2 <- linked[[3]] %>%
+  ggplot(aes(x = pos,
+             y = mean,
+             group = type,
+             colour = type)) +
+  geom_point(size = 0.75) +
+  geom_line() +
+  xlim(-range, range) +
+  ylim(0, 1) +
+  theme_minimal() +
+  theme(legend.position = "none",
+        panel.grid = element_blank()) +
+  scale_colour_manual(values = cols[c(2,1)],
+                      name = "") +
+  ylab(expression(beta)) +
+  facet_wrap(~cpg) +
+  xlab("") +
+  annotate("segment", x = 0, xend = 0, y = 0, yend = 0.9,
+           colour = "gray60", size = 0.4,
+           linetype = "dotted")
+
+c1 <- pheno1 %>%
+  filter(cpg == cpgs[3]) %>%
+  ggplot(aes(x = ic,
+             y = beta,
+             colour = type)) +
+  geom_point(size = 0.5) +
+  geom_smooth(method = "lm",
+              se = FALSE) +
+  theme_minimal() +
+  theme(legend.position = "none",
+        panel.grid = element_blank(),
+        legend.background = element_blank()) +
+  scale_colour_manual(values = cols[c(2,1)],
+                      name = "") +
+  facet_wrap(~cpg,
+             nrow = 3,
+             scales='free') +
+  scale_x_continuous(limits=c(0,1)) +
+  scale_y_continuous(limits=c(0,1)) +
+  xlab("immune cell composition") +
+  ylab(expression(beta))
+
+c2 <- linked[[1]] %>%
+  ggplot(aes(x = pos,
+             y = mean,
+             group = type,
+             colour = type)) +
+  geom_point(size = 0.75) +
+  geom_line() +
+  xlim(-range, range) +
+  ylim(0, 1) +
+  theme_minimal() +
+  theme(legend.position = "none",
+        panel.grid = element_blank()) +
+  scale_colour_manual(values = cols[c(2,1)],
+                      name = "") +
+  ylab(expression(beta)) +
+  facet_wrap(~cpg) +
+  xlab("bp") +
+  annotate("segment", x = 0, xend = 0, y = 0, yend = 0.9,
+           colour = "gray60", size = 0.4,
+           linetype = "dotted")
+
+
+#--------------------------------------
+# AUC plot
+#--------------------------------------
+
+load("~/Dropbox/index-dev/3C/2-EC/10-PCR-panel/5-manuscript/1-output/mldat.Rdata")
+
+mldat <- mldat %>%
+  filter(set == "Pilot") %>%
+  mutate(type = factor(type, levels = c("Control", "Endometrial cancer")))
+
+dat <- mldat %>%
+  select(-c(id, type, set, age, ic, typedetail, department, grade, histology, menopause, selfsampling, stage, sum, substrate, setting, setname, hist, controldiag, collection, time_to_diagnosis, ImC, bleeding, DNAmut)) %>%
+  droplevels()
+
+rocs <- data.frame(matrix(nrow = ncol(dat), ncol = 3))
+for (i in 1:ncol(dat)){
+  x <- roc(as.factor(mldat$type), dat[,i])
+  rocs[i,2] <- x$auc[[1]]
+  rocs[i,3] <- coords(x, "best", transpose = TRUE)[[1]]
+}
+
+rocs[,1] <- colnames(dat)
+colnames(rocs) <- c("name", "auc", "threshold")
+rocs <- rocs[order(rocs$auc, decreasing = TRUE),]
+
+rocs[,1] <- gsub("\n", " ", rocs[,1])
+colours <- ifelse(grepl("ZSCAN12", rocs[,1]) == TRUE | grepl("GYPC", rocs[,1]) == TRUE, "selected", "not selected")
+
+d <- rocs %>%
+  ggplot(aes(auc,
+             reorder(name, auc),
+             colour = colours,
+             size = colours)) +
+  geom_point() +
+  xlab("AUC") +
+  ylab("")  +
+  scale_colour_manual(values = c("gray60", cols[1]),
+                      name = "") +
+  scale_size_manual(values = c(1, 2.5),
+                    name = "") +
+  xlim(c(0.5,1)) +
+  theme(legend.position = "top",
+        panel.grid.major = element_blank(),
+        axis.text.y = element_text(size = 8),
+        legend.key = element_rect(fill = alpha("white", 0.0)),
+        panel.grid = element_blank())
+
+# a <- (a1 / b1 / c1) | (a2 / b2 / c2) + plot_layout(tag_level = "new")
+# 
+# (a | d) + plot_annotation(tag_levels = "A") & theme(axis.title = element_text(size = 10))
+
+# design <- "
+# AABBGGG
+# CCDDGGG
+# EEFFGGG
+# "
+# 
+# a1 + a2 + b1 + b2 + c1 + c2 + d + plot_layout(design = design) + plot_annotation(tag_levels = "A")
+
+a <- (a1 / b1 / c1) + plot_layout(tag_level = "keep")
+b <- (a2 / b2 / c2) + plot_layout(tag_level = "keep")
+c <- d + plot_layout(tag_level = "keep")
+
+(a | b | c) + plot_annotation(tag_levels = "A")  & theme(axis.title = element_text(size = 10))
+```
+
+
+**DI 1. Selection of methylight targets in the FORECEE training dataset.** Example plots of selected CpG `r expression(beta)` values in control samples and endometrial cancer cases versus IC (**A-C**) and CpGs in their proximity (within 500 bp; **D-E**). **G** shows AUC values of individual methylight reactions for discrimination of controls and cancer cases. The top 3 reactions were selected for further analysis.

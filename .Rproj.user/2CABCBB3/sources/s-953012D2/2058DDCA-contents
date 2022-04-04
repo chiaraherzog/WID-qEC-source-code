@@ -1,0 +1,102 @@
+library(dplyr)
+library(pROC)
+
+#------------- threshold
+
+load("~/Dropbox/index-dev/3C/2-EC/10-PCR-panel/5-manuscript/1-output/mldat.Rdata")
+
+mldat <- mldat %>%
+  filter(!is.na(type) & !set %in% c("Barcelona Set 1", "CC", "CIN")) %>%
+  filter((set %in% "Barcelona Validation Set" & type %in% c("Control", "Endometrial cancer") | (set %in% c("Pilot", "FORECEE", "PMB", "KI")))) %>%
+  droplevels() %>%
+  mutate(type = case_when(type == "Control"  ~ "Control",
+                          type == "Endometrial cancer" ~ "EC")) %>%
+  mutate(sum = `ZSCAN12\n(cg25060829 [ii])` + `GYPC\n(cg15768103 [ii])` + `GYPC\n(cg15975865 [i])`)
+
+pilot <- mldat %>%
+  filter(set == "Pilot") %>% 
+  droplevels()
+
+y <- roc(pilot$type, pilot$sum)
+cut <- cutoffs <- coords(y, "best", best.method = "youden")
+
+#------------- data
+load("~/Dropbox/index-dev/3C/2-EC/10-PCR-panel/5-manuscript/4-output/mldat_merge.Rdata")
+
+table(mldat$mmr)
+
+table(mldat$type, mldat$mmr, useNA = "always") 
+table(mldat$typedetail, mldat$mmr, useNA = "always") # some NA types were actually OCs
+
+mldat <- mldat %>%
+  filter(!is.na(type) & (type == "Endometrial cancer" & mmr != "N/A") | (type == "Control" & mmr == "N/A")) %>%
+  droplevels() %>%
+  mutate(sum = `ZSCAN12\n(cg25060829 [ii])` + `GYPC\n(cg15768103 [ii])` + `GYPC\n(cg15975865 [i])`) %>%
+  mutate(thresh1 = case_when(sum >= cut$threshold[1] ~ "Endometrial cancer",
+                             sum < cut$threshold[1] ~ "Control")) %>%
+  mutate(thresh2 = case_when(sum >= cut$threshold[2] ~ "Endometrial cancer",
+                             sum < cut$threshold[2] ~ "Control")) %>%
+  mutate(type = factor(type, levels = c("Endometrial cancer", "Control"))) %>%
+  mutate(thresh1 = factor(thresh1, levels = c("Endometrial cancer", "Control"))) %>%
+  mutate(thresh2 = factor(thresh2, levels = c("Endometrial cancer", "Control"))) 
+
+dat <- data.frame(matrix(nrow = 3, ncol = 4))
+colnames(dat) <- c("threshold", "type", "MMR proficient", "MMR deficient")
+dat$threshold <- c("", "Threshold 1", "Threshold 2")
+dat$type <- c( "n", rep("Sensitivity – % (95% CI)", 2))
+
+
+for(i in  2:length(levels(mldat$mmr))){
+  name <- levels(mldat$mmr)[i]
+  tmp <- mldat %>%
+    filter(mmr %in% c(name, "N/A")) %>%
+    droplevels()
+  set <- unique(tmp$set)
+  
+  tab <- table(tmp$thresh1, tmp$type)
+  rval <- summary(epi.tests(tab))
+  
+  dat[1,i+1] <- paste0(sum(tmp$type == "Endometrial cancer"), " endometrial cancers")
+  dat[2,i+1] <- paste0(round(rval[3,1],2)*100, " (",
+                       round(rval[3,2],2)*100, "–",
+                       round(rval[3,3],2)*100, ")")
+  
+  tab <- table(tmp$thresh2, tmp$type)
+  rval <- summary(epi.tests(tab))
+  
+  dat[3,i+1] <- paste0(round(rval[3,1],2)*100, " (",
+                       round(rval[3,2],2)*100, "–",
+                       round(rval[3,3],2)*100, ")")
+}
+
+tbl <- dat %>%
+  gt(rowname_col = "type", groupname_col = "threshold") %>%
+  text_transform(locations = cells_body(),
+                 fn = function(x){
+                   gsub("[.]", "·", x)
+                 }
+  ) %>%
+  tab_options(table.font.names = "Guardian Sans",
+              column_labels.font.weight = "bold",
+              row_group.font.weight = "bold",
+              data_row.padding = 2,
+              column_labels.font.size = 12,
+              table.font.size = 11,
+              row_group.padding = 2,
+              row_group.border.right.width = px(10),
+              summary_row.padding = 2,
+              table.width = px(600),
+              table.border.top.color = "white",
+              row_group.border.top.width = px(1),
+              row_group.border.bottom.width = px(1),
+              stub.border.width = px(0),
+              heading.title.font.size = 14)
+
+
+gtsave(tbl, file = "~/Dropbox/index-dev/3C/2-EC/10-PCR-panel/5-manuscript/tables/s5-mmr.html")
+
+pagedown::chrome_print("~/Dropbox/index-dev/3C/2-EC/10-PCR-panel/5-manuscript/tables/s5-mmr.html", output = "~/Dropbox/index-dev/3C/2-EC/10-PCR-panel/5-manuscript/tables/s5-mmr.pdf")
+
+
+
+

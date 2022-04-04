@@ -1,0 +1,81 @@
+library(knitr)
+library(dplyr)
+library(tidyverse)
+library(ggplot2)
+library(tidyverse)
+library(patchwork)
+library(ggsci)
+library(pROC)
+library(broom)
+library(gtsummary)
+library(gt)
+library(epiR)
+library(gridExtra)
+library(grid)
+library(tidyheatmap)
+library(ROCnReg)
+
+knitr::opts_chunk$set(message = F,
+                      warning = F,
+                      echo = F,
+                      dev = "cairo_pdf")
+
+# Colour palette
+cols <- pal_jama(alpha = 0.8)(7)
+
+# Functions
+source("~/Dropbox/src/plot/plot_3_rocs.R")
+source("~/Dropbox/src/plot/plot_roc_slim.R")
+
+# Themes
+theme_gtsummary_journal(journal = "jama")
+theme_gtsummary_compact()
+
+font <- theme_set(
+  theme(text = element_text(family = "Guardian Sans")
+  )
+)
+
+load("~/Dropbox/index-dev/3C/2-EC/10-PCR-panel/5-manuscript/10-output/mldat_unique.Rdata")
+
+dat <- mldat %>%
+  filter(set == "Lynch Cohort") %>%
+  droplevels()
+
+plot <- dat %>%
+  ggplot(aes(x = type,
+             y = log(sum+0.0001))) +
+  geom_violin(aes(colour = type),
+              width = 0.2) +
+  geom_jitter(size = 0.75,
+              aes(colour = type)) +
+  scale_colour_jama() +
+  theme(panel.background = element_blank(),
+        legend.key = element_blank(),
+        legend.position = "top",
+        legend.title = element_blank()) +
+  xlab("") +
+  ylab(expression(paste(atop(bold("WID™-qEC"), "log (Σ PMR)")))) +
+  geom_hline(yintercept = log(0.03),
+             linetype = "dotted",
+             colour = cols[1]) +
+  geom_hline(yintercept = log(0.63),
+             linetype = "dotdash",
+             colour = cols[1]) +
+  annotate("text",
+           x = 2.3,
+           y = log(0.03)-0.3,
+           label = "Threshold 1",
+           size = 3,
+           colour = cols[1]) +
+  annotate("text",
+           x = 2.3,
+           y = log(0.63)-0.3,
+           label = "Threshold 2",
+           size = 3,
+           colour = cols[1])
+plot
+ggsave(plot, filename = "~/Dropbox/index-dev/3C/2-EC/10-PCR-panel/5-manuscript/figures/s14-threshold.pdf",
+       width = 3.5,
+       height = 3.5,
+       device = cairo_pdf)

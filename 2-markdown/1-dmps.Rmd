@@ -1,0 +1,101 @@
+---
+title: "1. Top 50 DMPs"
+author: "Chiara Herzog"
+date: April 4, 2022
+output:
+  rmarkdown::html_document:
+    theme: cosmo
+    code_folding: show
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE,
+                      warning = FALSE,
+                      message = FALSE)
+
+library(dplyr)
+library(tidyverse)
+library(ggplot2)
+library(ggsci)
+library(patchwork)
+library(GenomicRanges)
+
+# Set colours and themes
+font <- theme_set(
+  theme(text = element_text(family = "Guardian Sans")
+  )
+)
+cols <- pal_jama(alpha = 0.8)(7)
+
+# Read in data
+load("../0-data/array_data.Rdata")
+```
+
+# Plots
+
+* All top 50 DMPs in data frame.
+* Plotting only exemplary 3
+
+```{r fig.align = "center", fig.width = 10, fig.height = 4.5}
+cg <- unique(pheno1$cpg)
+
+pheno1 <- pheno1 %>%
+  filter(cpg %in% cg[1:10])
+
+range <- 500
+
+for (i in 1:length(unique(pheno1$cpg))){
+  cpg <- unique(pheno1$cpg)[i]
+  
+  p1 <- pheno1 %>%
+    filter(cpg == unique(pheno1$cpg)[i]) %>%
+    droplevels() %>%
+    ggplot(aes(x = ic,
+               y = beta,
+               colour = type)) +
+    geom_point(size = 0.5) +
+    geom_smooth(method = "lm") +
+    theme_gray() +
+    theme(legend.position = "none",
+          panel.grid = element_blank()) +
+    scale_colour_manual(values = cols[c(1, 2)],
+                        name = "") +
+    facet_wrap(~cpg,
+               nrow = nrow(c),
+               scales='free') +
+    scale_x_continuous(limits=c(0,1)) +
+    scale_y_continuous(limits=c(0,1))
+  
+  z <- character(length(linked))
+  for (i in 1:length(linked)){
+    z[i] <- unique(linked[[i]]$cpg)
+  }
+  
+  z <- character(length(linked))
+  for (i in 1:length(linked)){
+    z[i] <- unique(linked[[i]]$cpg)
+  }
+  
+  ind <- na.omit(match(cpg, z))
+  
+  y <- linked[[ind]]
+  p2 <- y %>%
+    ggplot(aes(x = pos,
+               y = mean,
+               group = type,
+               colour = type)) +
+    geom_point(size = 0.5) +
+    geom_line() +
+    xlim(-range, range) +
+    ylim(0, 1) +
+    theme(legend.position = "none",
+          panel.grid = element_blank()) +
+    scale_colour_manual(values = cols[c(1, 2)],
+                        name = "") +
+    ylab("beta") +
+    facet_wrap(~cpg) +
+    xlab("")
+  
+  print(p1 + p2)
+}
+```

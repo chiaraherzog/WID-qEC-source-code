@@ -1,0 +1,130 @@
+# EC db
+
+library(ggsci)
+library(dplyr)
+library(ggplot2)
+library(tidyverse)
+library(patchwork)
+cols <- pal_lancet("lanonc")(8)
+
+
+load("~/Documents/Work/data.nosync/TCGA_EC/beta.Rdata")
+load("~/Documents/Work/data.nosync/TCGA_EC/pheno.Rdata")
+identical(colnames(beta), rownames(pheno))
+
+# DB
+db <- rowMeans(beta[,pheno$definition=="Primary solid Tumor"]) - rowMeans(beta[,pheno$definition=="Solid Tissue Normal"])
+head(db)
+hist(db)
+db <- db[order(abs(db), decreasing = TRUE)]
+head(db)
+
+
+library(IlluminaHumanMethylation450kanno.ilmn12.hg19)
+data <- getAnnotation(IlluminaHumanMethylation450kanno.ilmn12.hg19)
+"cg25060829" %in% rownames(data)
+"cg15975865" %in% rownames(data)
+"cg15768103" %in% rownames(data)
+# all 3 (2x GYPC + ZSCAN12) present :)
+
+match("cg15768103", names(db))
+match("cg25060829", names(db))
+match("cg15975865", names(db))
+
+# ZSCAN12
+zscan <- db["cg25060829"]
+zscananno <- paste0("ZSCAN12 (cg25060829)\nrank = ",
+                    match("cg25060829", names(db)),  "\ndb = ", round(db["cg25060829"],2))
+
+# GYPC2
+gypc1 <- db["cg15975865"]
+gypc1anno <- paste0("GYPC (cg15975865)\nrank = ",
+                    match("cg15975865", names(db)),  "\ndb = ", round(db["cg15975865"],2))
+
+
+# GYPC1
+gypc2 <- db["cg15768103"]
+gypc2anno <- paste0("GYPC (cg15768103)\nrank = ",
+                    match("cg15768103", names(db)), "\ndb = ", round(db["cg15768103"],2))
+
+
+
+# Histogram
+a <- db %>%
+  as.data.frame() %>%
+  ggplot(aes(x = db)) +
+  geom_density(bw = 0.00002,
+               size = 0.5,
+               colour = "gray60") +
+  xlab(expression(paste(Delta~beta))) +
+  ylab("Density") +
+  geom_vline(xintercept = zscan,
+             linetype = "dashed",
+             colour = cols[1]) +
+  geom_vline(xintercept = gypc1,
+             linetype = "dashed",
+             colour = cols[2]) +
+  geom_vline(xintercept = gypc2,
+             linetype = "dashed",
+             colour = cols[3]) +
+  annotate("label",
+           label = gypc1anno,
+           x = 0.58,
+           y = 1500,
+           fill = cols[2],
+           colour = "white",
+           size = 3.5,
+           label.size = NA) +
+  annotate("label",
+           label = zscananno,
+           x = 0.52,
+           y = 1000,
+           fill = cols[1],
+           colour = "white",
+           size = 3.5,
+           label.size = NA) +
+  annotate("label",
+           label = gypc2anno,
+           x = 0.48,
+           y = 500,
+           fill = cols[3],
+           colour = "white",
+           size = 3.5,
+           label.size = NA) +
+  theme_gray() +
+  theme(panel.grid = element_blank())
+
+# Individual plots
+sub <- beta[rownames(beta) %in% c("cg25060829", "cg15975865", "cg15768103"),]
+pheno2 <- cbind(pheno, t(sub)) %>%
+  pivot_longer(c("cg25060829", "cg15975865", "cg15768103"), names_to = "cg", values_to = "beta") %>%
+  mutate(cg = case_when(cg == "cg25060829" ~ "ZSCAN12 (cg25060829)",
+                   cg == "cg15975865" ~ "GYPC (cg15975865)",
+                   cg == "cg15768103" ~ "GYPC (cg15768103)")) %>%
+  mutate(type = case_when(definition == "Primary solid Tumor" ~ "Primary solid\ntumour",
+                          definition == "Solid Tissue Normal" ~ "Normal solid\nendometrial tissue")) %>%
+  mutate(type = factor(type, levels = c("Normal solid\nendometrial tissue", "Primary solid\ntumour")))
+
+b <- pheno2  %>%
+  ggplot(aes(x = type,
+             y = beta,
+             colour = type)) +
+  geom_violin() +
+  geom_jitter(size = 0.2)+
+  geom_boxplot(width = 0.1) +
+  scale_colour_manual(values = cols[c(1,2)],
+                      name = "") +
+  facet_wrap(~cg) +
+  xlab("") +
+  ylab(expression(paste(beta~"in TCGA data"))) +
+  theme_gray() +
+  theme(legend.position = "none",
+        panel.grid = element_blank())
+
+plot <- (a /b) +
+  plot_annotation(tag_levels = "A")
+
+ggsave(plot,
+       file = "~/Dropbox/index-dev/3C/2-EC/10-PCR-panel/5-manuscript/6-output/TCGA_data.png",
+       width = 10,
+       height = 8)

@@ -1,0 +1,178 @@
+---
+title: "2. MethyLight marker and threshold selection"
+author: "Chiara Herzog"
+date: ""
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE,
+                      warning = FALSE,
+                      message = FALSE)
+
+library(dplyr)
+library(tidyverse)
+library(ggplot2)
+library(ggsci)
+library(pROC)
+library(patchwork)
+library(ggrepel)
+library(gridExtra)
+
+# Set colours and themes
+font <- theme_set(
+  theme(text = element_text(family = "Guardian Sans")
+  )
+)
+cols <- pal_jama(alpha = 0.8)(7)
+
+# Read in data
+load("0-data/WID-qEC_manuscript_data.Rdata")
+
+# Read in function
+source("1-source-codes/plot_roc.R")
+```
+
+# Ranking performance of markers by AUC
+
+* AUC is calculated for each individual region
+
+```{r fig.align = "center", fig.width = 4.5, fig.height = 6}
+mldat <- mldat %>%
+  filter(set == "FORECEE Pilot") %>%
+  droplevels() %>%
+  mutate(type = case_when(type == "Control" ~ "Control",
+                          type == "EC" ~ "Endometrial cancer")) %>%
+  mutate(type = factor(type, levels = c("Control", "Endometrial cancer")))
+
+dat <- mldat %>%
+  select(10:46) %>%
+  droplevels()
+
+rocs <- data.frame(matrix(nrow = ncol(dat), ncol = 3))
+for (i in 1:ncol(dat)){
+  x <- roc(as.factor(mldat$type), dat[,i])
+  rocs[i,2] <- x$auc[[1]]
+  rocs[i,3] <- coords(x, "best", transpose = TRUE)[[1]]
+}
+
+rocs[,1] <- colnames(dat)
+colnames(rocs) <- c("name", "auc", "threshold")
+rocs <- rocs[order(rocs$auc, decreasing = TRUE),]
+
+rocs[,1] <- gsub("\n", " ", rocs[,1])
+colours <- ifelse(grepl("ZSCAN12", rocs[,1]) == TRUE | grepl("GYPC", rocs[,1]) == TRUE, "selected", "not selected")
+
+rocs %>%
+  ggplot(aes(auc,
+             reorder(name, auc),
+             colour = colours,
+             size = colours)) +
+  geom_point() +
+  xlab("AUC") +
+  ylab("")  +
+  scale_colour_manual(values = c("gray60", cols[2]),
+                      name = "") +
+  scale_size_manual(values = c(1, 2.5),
+                    name = "") +
+  xlim(c(0.7,1)) +
+  theme(legend.position = "top",
+        panel.grid.major = element_blank(),
+        axis.text.y = element_text(size = 8,
+                                   hjust = 1),
+        legend.key = element_rect(fill = alpha("white", 0.0)),
+        panel.grid = element_blank())
+```
+
+
+## Threshold selection for top 3
+
+* Showing the individual log PMR values for the three top regions above, as well as the sum of their values.
+* The thresholds are calculated using Youden's index on the receiver operating characteristic.
+* The two thresholds (0.03 and 0.63) are then consistently used throughout the manuscript.
+
+```{r fig.align = "center", fig.width = 9, fig.height = 8}
+
+mldat <- mldat %>%
+  pivot_longer(c(`ZSCAN12\n(cg25060829 [ii])`, `GYPC\n(cg15768103 [ii])`, `GYPC\n(cg15975865 [i])`), names_to = "locus", values_to = "pmr") 
+
+p1 <- mldat %>%
+  ggplot(aes(x = type,
+             y = log(pmr+0.00001),
+             colour = type)) +
+  geom_violin(width = 0.2) +
+  geom_jitter(size = 0.5,
+              aes(colour = type)) +
+  facet_wrap(~locus) +
+  xlab("") +
+  ylab(expression(paste("log (PMR)", sep = ""))) + 
+  scale_colour_manual(values = cols[c(1,2)],
+                      name = "") +
+  theme(axis.text.x = element_text(angle = 60,
+                                   hjust = 1),
+        panel.grid = element_blank(),
+        legend.position = "none"
+  ) 
+
+p2 <- mldat %>%
+  ggplot(aes(x = type,
+             y = log(sum+0.00001),
+             colour = type)) +
+  geom_violin(width = 0.2) +
+  geom_jitter(size = 0.5,
+              aes(colour = type)) +
+  xlab("") +
+  ylab(expression(paste(atop(bold("WID™-qEC"), "log ("~Sigma~" PMR)")))) + 
+  scale_colour_manual(values = cols[c(1,2)],
+                      name = "") +
+  theme(axis.text.x = element_text(angle = 60,
+                                   hjust = 1),
+        panel.grid = element_blank(),
+        legend.position = "none")
+
+p3 <- plot_roc(as.factor(mldat$type), mldat$sum, "sum(PMR)") +
+  theme(panel.grid = element_blank())
+
+design <- "
+AAAAA
+BBCCD
+"
+
+y <- roc(mldat$type, mldat$sum)
+cut <- cutoffs <- coords(y, "best", best.method = "youden")
+
+cut_round <- round(cut, 2)
+colnames(cut_round) <- c("Threshold", "Specificity (%)", "Sensitivity (%)")
+cut_round$`Specificity (%)` <- cut_round$`Specificity (%)`*100
+cut_round$`Sensitivity (%)` <- cut_round$`Sensitivity (%)`*100
+cut_round <- t(cut_round)
+colnames(cut_round) <- c("# 1", "# 2")
+
+p3 <- p3 +
+  geom_point(aes(x = 1-cut$specificity[2],
+                 y = cut$sensitivity[2]),
+             shape = 21,
+             size = 3,
+             fill = cols[3]) +
+  annotate("text",
+           label = "Threshold 2",
+           x = 1-cut$specificity[2]+0.17,
+           y = cut$sensitivity[2]-0.07,
+           colour = cols[3],
+           size = 2.95) +
+  geom_point(aes(x = 1-cut$specificity[1],
+                 y = cut$sensitivity[1]),
+             shape = 24,
+             size = 3,
+             fill = cols[6]) +
+  annotate("text",
+           label = "Threshold 1",
+           x = 1-cut$specificity[1]+0.17,
+           y = cut$sensitivity[1]+0.05,
+           colour = cols[6], size = 2.95)
+
+p1 + p2 + p3 +
+  gridExtra::tableGrob(cut_round,
+                       theme = ttheme_default(base_size = 8)) +
+  plot_layout(design = design)
+```

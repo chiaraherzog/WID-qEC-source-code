@@ -1,0 +1,475 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+<meta charset="utf-8" />
+<meta name="generator" content="pandoc" />
+<meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
+
+
+<meta name="author" content="Chiara Herzog" />
+
+<meta name="date" content="2022-04-04" />
+
+<title>8. PPV/NPV</title>
+
+<script src="site_libs/header-attrs-2.11/header-attrs.js"></script>
+<script src="site_libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link href="site_libs/bootstrap-3.3.5/css/cosmo.min.css" rel="stylesheet" />
+<script src="site_libs/bootstrap-3.3.5/js/bootstrap.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/html5shiv.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/respond.min.js"></script>
+<style>h1 {font-size: 34px;}
+       h1.title {font-size: 38px;}
+       h2 {font-size: 30px;}
+       h3 {font-size: 24px;}
+       h4 {font-size: 18px;}
+       h5 {font-size: 16px;}
+       h6 {font-size: 12px;}
+       code {color: inherit; background-color: rgba(0, 0, 0, 0.04);}
+       pre:not([class]) { background-color: white }</style>
+<script src="site_libs/navigation-1.1/tabsets.js"></script>
+<script src="site_libs/navigation-1.1/codefolding.js"></script>
+<link href="site_libs/highlightjs-9.12.0/default.css" rel="stylesheet" />
+<script src="site_libs/highlightjs-9.12.0/highlight.js"></script>
+
+<style type="text/css">
+  code{white-space: pre-wrap;}
+  span.smallcaps{font-variant: small-caps;}
+  span.underline{text-decoration: underline;}
+  div.column{display: inline-block; vertical-align: top; width: 50%;}
+  div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+  ul.task-list{list-style: none;}
+    </style>
+
+<style type="text/css">code{white-space: pre;}</style>
+<script type="text/javascript">
+if (window.hljs) {
+  hljs.configure({languages: []});
+  hljs.initHighlightingOnLoad();
+  if (document.readyState && document.readyState === "complete") {
+    window.setTimeout(function() { hljs.initHighlighting(); }, 0);
+  }
+}
+</script>
+
+
+
+
+
+
+
+
+<style type = "text/css">
+.main-container {
+  max-width: 940px;
+  margin-left: auto;
+  margin-right: auto;
+}
+img {
+  max-width:100%;
+}
+.tabbed-pane {
+  padding-top: 12px;
+}
+.html-widget {
+  margin-bottom: 20px;
+}
+button.code-folding-btn:focus {
+  outline: none;
+}
+summary {
+  display: list-item;
+}
+pre code {
+  padding: 0;
+}
+</style>
+
+
+<style type="text/css">
+.dropdown-submenu {
+  position: relative;
+}
+.dropdown-submenu>.dropdown-menu {
+  top: 0;
+  left: 100%;
+  margin-top: -6px;
+  margin-left: -1px;
+  border-radius: 0 6px 6px 6px;
+}
+.dropdown-submenu:hover>.dropdown-menu {
+  display: block;
+}
+.dropdown-submenu>a:after {
+  display: block;
+  content: " ";
+  float: right;
+  width: 0;
+  height: 0;
+  border-color: transparent;
+  border-style: solid;
+  border-width: 5px 0 5px 5px;
+  border-left-color: #cccccc;
+  margin-top: 5px;
+  margin-right: -10px;
+}
+.dropdown-submenu:hover>a:after {
+  border-left-color: #adb5bd;
+}
+.dropdown-submenu.pull-left {
+  float: none;
+}
+.dropdown-submenu.pull-left>.dropdown-menu {
+  left: -100%;
+  margin-left: 10px;
+  border-radius: 6px 0 6px 6px;
+}
+</style>
+
+<script type="text/javascript">
+// manage active state of menu based on current page
+$(document).ready(function () {
+  // active menu anchor
+  href = window.location.pathname
+  href = href.substr(href.lastIndexOf('/') + 1)
+  if (href === "")
+    href = "index.html";
+  var menuAnchor = $('a[href="' + href + '"]');
+
+  // mark it active
+  menuAnchor.tab('show');
+
+  // if it's got a parent navbar menu mark it active as well
+  menuAnchor.closest('li.dropdown').addClass('active');
+
+  // Navbar adjustments
+  var navHeight = $(".navbar").first().height() + 15;
+  var style = document.createElement('style');
+  var pt = "padding-top: " + navHeight + "px; ";
+  var mt = "margin-top: -" + navHeight + "px; ";
+  var css = "";
+  // offset scroll position for anchor links (for fixed navbar)
+  for (var i = 1; i <= 6; i++) {
+    css += ".section h" + i + "{ " + pt + mt + "}\n";
+  }
+  style.innerHTML = "body {" + pt + "padding-bottom: 40px; }\n" + css;
+  document.head.appendChild(style);
+});
+</script>
+
+<!-- tabsets -->
+
+<style type="text/css">
+.tabset-dropdown > .nav-tabs {
+  display: inline-table;
+  max-height: 500px;
+  min-height: 44px;
+  overflow-y: auto;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+.tabset-dropdown > .nav-tabs > li.active:before {
+  content: "";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li.active:before {
+  content: "&#xe258;";
+  border: none;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open:before {
+  content: "";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs > li.active {
+  display: block;
+}
+
+.tabset-dropdown > .nav-tabs > li > a,
+.tabset-dropdown > .nav-tabs > li > a:focus,
+.tabset-dropdown > .nav-tabs > li > a:hover {
+  border: none;
+  display: inline-block;
+  border-radius: 4px;
+  background-color: transparent;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li {
+  display: block;
+  float: none;
+}
+
+.tabset-dropdown > .nav-tabs > li {
+  display: none;
+}
+</style>
+
+<!-- code folding -->
+<style type="text/css">
+.code-folding-btn { margin-bottom: 4px; }
+</style>
+
+
+
+
+</head>
+
+<body>
+
+
+<div class="container-fluid main-container">
+
+
+
+
+<div class="navbar navbar-default  navbar-fixed-top" role="navigation">
+  <div class="container">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar">
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand" href="index.html">WID-qEC source code</a>
+    </div>
+    <div id="navbar" class="navbar-collapse collapse">
+      <ul class="nav navbar-nav">
+        <li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+    WID-qEC source code
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="index.html">Overview</a>
+    </li>
+    <li>
+      <a href="1-dmps.html">1. Top 50 DMPs (array data)</a>
+    </li>
+    <li>
+      <a href="2-markers_thresholds.html">2. Marker and threshold selection</a>
+    </li>
+    <li>
+      <a href="3-main.html">3. Main display items</a>
+    </li>
+    <li>
+      <a href="4-age-stage-grade-histology.html">4. Epidemiological factors</a>
+    </li>
+    <li>
+      <a href="5-barcelona-set.html">5. Barcelona Validation set</a>
+    </li>
+    <li>
+      <a href="6-lynch-cohort.html">6. Lynch Cohort</a>
+    </li>
+    <li>
+      <a href="7-karolinska-cohort.html">7. Karolinska Cohort</a>
+    </li>
+    <li>
+      <a href="8-ppv-npv.html">8. PPV/NPV</a>
+    </li>
+  </ul>
+</li>
+      </ul>
+      <ul class="nav navbar-nav navbar-right">
+        
+      </ul>
+    </div><!--/.nav-collapse -->
+  </div><!--/.container -->
+</div><!--/.navbar -->
+
+<div id="header">
+
+<div class="btn-group pull-right float-right">
+<button type="button" class="btn btn-default btn-xs btn-secondary btn-sm dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><span>Code</span> <span class="caret"></span></button>
+<ul class="dropdown-menu dropdown-menu-right" style="min-width: 50px;">
+<li><a id="rmd-show-all-code" href="#">Show All Code</a></li>
+<li><a id="rmd-hide-all-code" href="#">Hide All Code</a></li>
+</ul>
+</div>
+
+
+
+<h1 class="title toc-ignore">8. PPV/NPV</h1>
+<h4 class="author">Chiara Herzog</h4>
+<h4 class="date">April 4, 2022</h4>
+
+</div>
+
+
+<div id="ppvnpv-value" class="section level2">
+<h2>PPV/NPV value</h2>
+<pre class="r"><code>mldat_tmp &lt;- mldat %&gt;%
+  filter(set != &quot;FORECEE Pilot&quot;) %&gt;%
+  mutate(set = as.character(set)) %&gt;%
+  mutate(set = ifelse(set != &quot;Karolinska Cohort&quot;, set,
+                          ifelse(set == &quot;Karolinska Cohort&quot; &amp; time_to_diagnosis &lt; 365,
+                                 &quot;Karolinska Cohort\n(&lt;1 y)&quot;,
+                                 &quot;Karolinska Cohort\n(&gt;=1 y)&quot;))) %&gt;%
+  mutate(set = factor(set, levels = c(&quot;FORECEE Validation&quot;,
+                                      &quot;Barcelona Validation&quot;,
+                                      &quot;PMB Cohort&quot;, 
+                                      &quot;Lynch Cohort&quot;,
+                                      &quot;Karolinska Cohort\n(&lt;1 y)&quot;,
+                                      &quot;Karolinska Cohort\n(&gt;=1 y)&quot;))) %&gt;%
+  mutate(thresh1 = case_when(sum &gt;= cut$threshold[1] ~ &quot;Endometrial cancer&quot;,
+                             sum &lt; cut$threshold[1] ~ &quot;Control&quot;)) %&gt;%
+  mutate(thresh2 = case_when(sum &gt;= cut$threshold[2] ~ &quot;Endometrial cancer&quot;,
+                             sum &lt; cut$threshold[2] ~ &quot;Control&quot;)) %&gt;%
+  mutate(type = factor(type, levels = c(&quot;Endometrial cancer&quot;, &quot;Control&quot;))) %&gt;%
+  mutate(thresh1 = factor(thresh1, levels = c(&quot;Endometrial cancer&quot;, &quot;Control&quot;))) %&gt;%
+  mutate(thresh2 = factor(thresh2, levels = c(&quot;Endometrial cancer&quot;, &quot;Control&quot;)))
+
+dat &lt;- data.frame(matrix(nrow = 180, ncol = 8))
+colnames(dat) &lt;- c(&quot;set&quot;, &quot;prev&quot;, &quot;PPV&quot;, &quot;ppv_lo&quot;, &quot;ppv_hi&quot;, &quot;NPV&quot;, &quot;npv_lo&quot;, &quot;npv_hi&quot;)
+dat$set &lt;- rep(unique(mldat_tmp$set), each = 30)
+dat$prev &lt;- rep(seq(from = 0.0009, to = 0.15, 0.005), 6)
+
+for(i in  1:nrow(dat)){
+  
+  tmp &lt;- mldat_tmp %&gt;%
+    filter(set == as.character(dat$set[i]))
+  pop_prev &lt;- dat$prev[i]
+  
+  tab &lt;- table(tmp$thresh1, tmp$type)
+  rval &lt;- summary(epi.tests(tab))
+  tab &lt;- matrix(c(tab[1,1], tab[2,1], tab[1,2], tab[2,2]), ncol = 2)
+  colnames(tab) &lt;- c(&quot;Case&quot;, &quot;Control&quot;)
+  rownames(tab) &lt;- c(&quot;Case&quot;, &quot;Control&quot;)
+  rval2 &lt;- BDtest(xmat=as.matrix(tab), pr=pop_prev, conf.level = 0.95)
+  
+  dat$PPV[i] &lt;- rval2$PPVNPVDAT$Estimate[2]
+  dat$ppv_lo[i] &lt;- rval2$PPVNPVDAT$`Lower 95% limit`[2]
+  dat$ppv_hi[i] &lt;- rval2$PPVNPVDAT$`Upper 97.5% limit`[2]
+  dat$NPV[i] &lt;- rval2$PPVNPVDAT$Estimate[1]
+  dat$npv_lo[i] &lt;- rval2$PPVNPVDAT$`Lower 95% limit`[1]
+  dat$npv_hi[i] &lt;- rval2$PPVNPVDAT$`Upper 97.5% limit`[1]
+  
+}
+
+
+dat2 &lt;- dat %&gt;%
+  pivot_longer(cols = c(&quot;PPV&quot;, &quot;NPV&quot;),
+               names_to = &quot;type&quot;,
+               values_to = &quot;value&quot;) %&gt;%
+  pivot_longer(cols = c(&quot;ppv_hi&quot;, &quot;npv_hi&quot;),
+               names_to = &quot;hi_val&quot;,
+               values_to = &quot;hi&quot;) %&gt;%
+  pivot_longer(cols = c(&quot;ppv_lo&quot;, &quot;npv_lo&quot;),
+               values_to = &quot;lo&quot;,
+               names_to = &quot;lo_val&quot;) %&gt;%
+  filter((type == &quot;PPV&quot; &amp; hi_val == &quot;ppv_hi&quot; &amp; lo_val == &quot;ppv_lo&quot;) | (type== &quot;NPV&quot; &amp; hi_val == &quot;npv_hi&quot; &amp; lo_val == &quot;npv_lo&quot;)) %&gt;%
+  select(set, prev, type, value, hi, lo) %&gt;%
+  mutate(true = case_when(set %in% c(&quot;FORECEE Validation&quot;, &quot;Barcelona Validation Set&quot;) ~ 0.09,
+                          set == &quot;Lynch Cohort&quot; ~ 3/25,
+                          set == &quot;PMB Cohort&quot; ~ 8/74,
+                          grepl(&quot;Karolinska Cohort&quot;, set) ~ 0.0009)) %&gt;%
+  mutate(setname = case_when(set == &quot;FORECEE Validation&quot; ~ &quot;FORECEE\nValidation&quot;,
+                             set == &quot;Karolinska Cohort\n(&lt;1 y)&quot; ~ &quot;Karolinska Cohort\n(&lt;1 y)&quot;,
+                             set == &quot;Karolinska Cohort\n(&gt;=1 y)&quot; ~ &quot;Karolinska Cohort\n(&gt;=1 y)&quot;,
+                             set == &quot;Barcelona Validation&quot; ~ &quot;Barcelona\nValidation&quot;,
+                             set == &quot;PMB Cohort&quot; ~ &quot;PMB\nCohort&quot;,
+                             set == &quot;Lynch Cohort&quot; ~ &quot;Lynch\nCohort&quot;)) %&gt;%
+  mutate(setname = factor(setname, levels = c(&quot;FORECEE\nValidation&quot;,
+                                              &quot;Barcelona\nValidation&quot;,
+                                              &quot;PMB\nCohort&quot;,
+                                              &quot;Lynch\nCohort&quot;,
+                                              &quot;Karolinska Cohort\n(&lt;1 y)&quot;,
+                                              &quot;Karolinska Cohort\n(&gt;=1 y)&quot;)))
+
+
+plot &lt;- dat2 %&gt;%
+  ggplot(aes(x = prev,
+             y = value)) +
+  geom_vline(aes(xintercept = true),
+             size = 0.5,
+             linetype = &quot;dotted&quot;,
+             colour = &quot;gray60&quot;) +
+  geom_ribbon(aes(ymin = lo,
+                  ymax = hi,
+                  fill = type),
+              alpha = 0.2) +
+  geom_line(aes(colour = type)) +
+  facet_wrap(~setname,
+             nrow = 1) +
+  theme(legend.position = &quot;top&quot;) +
+  xlab(&quot;Assumed population prevalence&quot;) +
+  ylab(&quot;Predictive Value&quot;) +
+  scale_colour_manual(values = cols[c(5,6)],
+                      name = &quot;&quot;,
+                      aesthetics = c(&quot;fill&quot;, &quot;colour&quot;)) +
+  theme(panel.grid = element_blank(),
+        legend.key = element_blank(),
+        legend.position = &quot;top&quot;,
+        legend.title = element_blank(),
+        panel.spacing.x = unit(1, &quot;lines&quot;))
+
+plot</code></pre>
+<p><img src="8-ppv-npv_files/figure-html/unnamed-chunk-1-1.png" width="960" style="display: block; margin: auto;" /></p>
+</div>
+
+
+
+
+</div>
+
+<script>
+
+// add bootstrap table styles to pandoc tables
+function bootstrapStylePandocTables() {
+  $('tr.odd').parent('tbody').parent('table').addClass('table table-condensed');
+}
+$(document).ready(function () {
+  bootstrapStylePandocTables();
+});
+
+
+</script>
+
+<!-- tabsets -->
+
+<script>
+$(document).ready(function () {
+  window.buildTabsets("TOC");
+});
+
+$(document).ready(function () {
+  $('.tabset-dropdown > .nav-tabs > li').click(function () {
+    $(this).parent().toggleClass('nav-tabs-open');
+  });
+});
+</script>
+
+<!-- code folding -->
+<script>
+$(document).ready(function () {
+  window.initializeCodeFolding("show" === "show");
+});
+</script>
+
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>

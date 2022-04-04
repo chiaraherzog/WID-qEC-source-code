@@ -1,0 +1,572 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+<meta charset="utf-8" />
+<meta name="generator" content="pandoc" />
+<meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
+
+
+<meta name="author" content="Chiara Herzog" />
+
+<meta name="date" content="2022-04-04" />
+
+<title>2. MethyLight marker and threshold selection</title>
+
+<script src="site_libs/header-attrs-2.11/header-attrs.js"></script>
+<script src="site_libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link href="site_libs/bootstrap-3.3.5/css/cosmo.min.css" rel="stylesheet" />
+<script src="site_libs/bootstrap-3.3.5/js/bootstrap.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/html5shiv.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/respond.min.js"></script>
+<style>h1 {font-size: 34px;}
+       h1.title {font-size: 38px;}
+       h2 {font-size: 30px;}
+       h3 {font-size: 24px;}
+       h4 {font-size: 18px;}
+       h5 {font-size: 16px;}
+       h6 {font-size: 12px;}
+       code {color: inherit; background-color: rgba(0, 0, 0, 0.04);}
+       pre:not([class]) { background-color: white }</style>
+<script src="site_libs/navigation-1.1/tabsets.js"></script>
+<script src="site_libs/navigation-1.1/codefolding.js"></script>
+<link href="site_libs/highlightjs-9.12.0/default.css" rel="stylesheet" />
+<script src="site_libs/highlightjs-9.12.0/highlight.js"></script>
+
+<style type="text/css">
+  code{white-space: pre-wrap;}
+  span.smallcaps{font-variant: small-caps;}
+  span.underline{text-decoration: underline;}
+  div.column{display: inline-block; vertical-align: top; width: 50%;}
+  div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+  ul.task-list{list-style: none;}
+    </style>
+
+<style type="text/css">code{white-space: pre;}</style>
+<script type="text/javascript">
+if (window.hljs) {
+  hljs.configure({languages: []});
+  hljs.initHighlightingOnLoad();
+  if (document.readyState && document.readyState === "complete") {
+    window.setTimeout(function() { hljs.initHighlighting(); }, 0);
+  }
+}
+</script>
+
+
+
+
+
+
+
+
+<style type = "text/css">
+.main-container {
+  max-width: 940px;
+  margin-left: auto;
+  margin-right: auto;
+}
+img {
+  max-width:100%;
+}
+.tabbed-pane {
+  padding-top: 12px;
+}
+.html-widget {
+  margin-bottom: 20px;
+}
+button.code-folding-btn:focus {
+  outline: none;
+}
+summary {
+  display: list-item;
+}
+pre code {
+  padding: 0;
+}
+</style>
+
+
+<style type="text/css">
+.dropdown-submenu {
+  position: relative;
+}
+.dropdown-submenu>.dropdown-menu {
+  top: 0;
+  left: 100%;
+  margin-top: -6px;
+  margin-left: -1px;
+  border-radius: 0 6px 6px 6px;
+}
+.dropdown-submenu:hover>.dropdown-menu {
+  display: block;
+}
+.dropdown-submenu>a:after {
+  display: block;
+  content: " ";
+  float: right;
+  width: 0;
+  height: 0;
+  border-color: transparent;
+  border-style: solid;
+  border-width: 5px 0 5px 5px;
+  border-left-color: #cccccc;
+  margin-top: 5px;
+  margin-right: -10px;
+}
+.dropdown-submenu:hover>a:after {
+  border-left-color: #adb5bd;
+}
+.dropdown-submenu.pull-left {
+  float: none;
+}
+.dropdown-submenu.pull-left>.dropdown-menu {
+  left: -100%;
+  margin-left: 10px;
+  border-radius: 6px 0 6px 6px;
+}
+</style>
+
+<script type="text/javascript">
+// manage active state of menu based on current page
+$(document).ready(function () {
+  // active menu anchor
+  href = window.location.pathname
+  href = href.substr(href.lastIndexOf('/') + 1)
+  if (href === "")
+    href = "index.html";
+  var menuAnchor = $('a[href="' + href + '"]');
+
+  // mark it active
+  menuAnchor.tab('show');
+
+  // if it's got a parent navbar menu mark it active as well
+  menuAnchor.closest('li.dropdown').addClass('active');
+
+  // Navbar adjustments
+  var navHeight = $(".navbar").first().height() + 15;
+  var style = document.createElement('style');
+  var pt = "padding-top: " + navHeight + "px; ";
+  var mt = "margin-top: -" + navHeight + "px; ";
+  var css = "";
+  // offset scroll position for anchor links (for fixed navbar)
+  for (var i = 1; i <= 6; i++) {
+    css += ".section h" + i + "{ " + pt + mt + "}\n";
+  }
+  style.innerHTML = "body {" + pt + "padding-bottom: 40px; }\n" + css;
+  document.head.appendChild(style);
+});
+</script>
+
+<!-- tabsets -->
+
+<style type="text/css">
+.tabset-dropdown > .nav-tabs {
+  display: inline-table;
+  max-height: 500px;
+  min-height: 44px;
+  overflow-y: auto;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+.tabset-dropdown > .nav-tabs > li.active:before {
+  content: "";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li.active:before {
+  content: "&#xe258;";
+  border: none;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open:before {
+  content: "";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs > li.active {
+  display: block;
+}
+
+.tabset-dropdown > .nav-tabs > li > a,
+.tabset-dropdown > .nav-tabs > li > a:focus,
+.tabset-dropdown > .nav-tabs > li > a:hover {
+  border: none;
+  display: inline-block;
+  border-radius: 4px;
+  background-color: transparent;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li {
+  display: block;
+  float: none;
+}
+
+.tabset-dropdown > .nav-tabs > li {
+  display: none;
+}
+</style>
+
+<!-- code folding -->
+<style type="text/css">
+.code-folding-btn { margin-bottom: 4px; }
+</style>
+
+
+
+
+</head>
+
+<body>
+
+
+<div class="container-fluid main-container">
+
+
+
+
+<div class="navbar navbar-default  navbar-fixed-top" role="navigation">
+  <div class="container">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar">
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand" href="index.html">WID-qEC source code</a>
+    </div>
+    <div id="navbar" class="navbar-collapse collapse">
+      <ul class="nav navbar-nav">
+        <li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+    WID-qEC source code
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="index.html">Overview</a>
+    </li>
+    <li>
+      <a href="1-dmps.html">1. Top 50 DMPs (array data)</a>
+    </li>
+    <li>
+      <a href="2-markers_thresholds.html">2. Marker and threshold selection</a>
+    </li>
+    <li>
+      <a href="3-main.html">3. Main display items</a>
+    </li>
+    <li>
+      <a href="4-age-stage-grade-histology.html">4. Epidemiological factors</a>
+    </li>
+    <li>
+      <a href="5-barcelona-set.html">5. Barcelona Validation set</a>
+    </li>
+    <li>
+      <a href="6-lynch-cohort.html">6. Lynch Cohort</a>
+    </li>
+    <li>
+      <a href="7-karolinska-cohort.html">7. Karolinska Cohort</a>
+    </li>
+    <li>
+      <a href="8-ppv-npv.html">8. PPV/NPV</a>
+    </li>
+  </ul>
+</li>
+      </ul>
+      <ul class="nav navbar-nav navbar-right">
+        
+      </ul>
+    </div><!--/.nav-collapse -->
+  </div><!--/.container -->
+</div><!--/.navbar -->
+
+<div id="header">
+
+<div class="btn-group pull-right float-right">
+<button type="button" class="btn btn-default btn-xs btn-secondary btn-sm dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><span>Code</span> <span class="caret"></span></button>
+<ul class="dropdown-menu dropdown-menu-right" style="min-width: 50px;">
+<li><a id="rmd-show-all-code" href="#">Show All Code</a></li>
+<li><a id="rmd-hide-all-code" href="#">Hide All Code</a></li>
+</ul>
+</div>
+
+
+
+<h1 class="title toc-ignore">2. MethyLight marker and threshold selection</h1>
+<h4 class="author">Chiara Herzog</h4>
+<h4 class="date">April 4, 2022</h4>
+
+</div>
+
+
+<div id="ranking-performance-of-methylight-markers-by-auc" class="section level1">
+<h1>Ranking performance of MethyLight markers by AUC</h1>
+<ul>
+<li>AUC is calculated for each individual region</li>
+</ul>
+<pre class="r"><code>mldat &lt;- mldat %&gt;%
+  filter(set == &quot;FORECEE Pilot&quot;) %&gt;%
+  droplevels() %&gt;%
+  mutate(type = factor(type, levels = c(&quot;Control&quot;, &quot;Endometrial cancer&quot;)))
+
+dat &lt;- mldat %&gt;%
+  select(10:46) %&gt;%
+  droplevels()
+
+rocs &lt;- data.frame(matrix(nrow = ncol(dat), ncol = 3))
+for (i in 1:ncol(dat)){
+  x &lt;- roc(as.factor(mldat$type), dat[,i])
+  rocs[i,2] &lt;- x$auc[[1]]
+  rocs[i,3] &lt;- coords(x, &quot;best&quot;, transpose = TRUE)[[1]]
+}
+
+rocs[,1] &lt;- colnames(dat)
+colnames(rocs) &lt;- c(&quot;name&quot;, &quot;auc&quot;, &quot;threshold&quot;)
+rocs &lt;- rocs[order(rocs$auc, decreasing = TRUE),]
+
+rocs[,1] &lt;- gsub(&quot;\n&quot;, &quot; &quot;, rocs[,1])
+colours &lt;- ifelse(grepl(&quot;ZSCAN12&quot;, rocs[,1]) == TRUE | grepl(&quot;GYPC&quot;, rocs[,1]) == TRUE, &quot;selected&quot;, &quot;not selected&quot;)
+
+rocs %&gt;%
+  ggplot(aes(auc,
+             reorder(name, auc),
+             colour = colours,
+             size = colours)) +
+  geom_point() +
+  xlab(&quot;AUC&quot;) +
+  ylab(&quot;&quot;)  +
+  scale_colour_manual(values = c(&quot;gray60&quot;, cols[2]),
+                      name = &quot;&quot;) +
+  scale_size_manual(values = c(1, 2.5),
+                    name = &quot;&quot;) +
+  xlim(c(0.7,1)) +
+  theme(legend.position = &quot;top&quot;,
+        panel.grid.major = element_blank(),
+        axis.text.y = element_text(size = 8,
+                                   hjust = 1),
+        legend.key = element_rect(fill = alpha(&quot;white&quot;, 0.0)),
+        panel.grid = element_blank())</code></pre>
+<p><img src="2-markers_thresholds_files/figure-html/unnamed-chunk-1-1.png" width="432" style="display: block; margin: auto;" /></p>
+<div id="beta-values-of-index-cpgs-in-top-three-regions-in-tcga-ec-data" class="section level2">
+<h2>Beta values of index CpGs in top three regions in TCGA-EC data</h2>
+<ul>
+<li>TCGA data was accessed from TCGA using the TCGAbiolinks package using the following code:</li>
+</ul>
+<pre class="r"><code>library(TCGAbiolinks)
+query &lt;- GDCquery(project = &quot;TCGA-UCEC&quot;,
+                  data.category = &quot;DNA Methylation&quot;,
+                  platform = &quot;Illumina Human Methylation 450&quot;,
+                  sample.type = c(&quot;Primary Tumor&quot;,
+                                  &quot;Solid Tissue Normal&quot;))
+
+query_pheno &lt;- GDCquery_clinic(project = &quot;TCGA-UCEC&quot;,
+                               type = &quot;clinical&quot;)
+
+dat &lt;- query$results[[1]]
+ind &lt;- match(dat$cases.submitter_id, query_pheno$submitter_id)
+
+tcga_pheno &lt;- query_pheno[ind,]
+save(tcga_pheno, file = &quot;tcga_pheno.Rdata&quot;)
+GDCdownload(query, method = &quot;client&quot;, files.per.chunk = 10) # RIP internet
+data &lt;- GDCprepare(query)
+save(data, file = &quot;data.Rdata&quot;)
+
+library(SummarizedExperiment)
+beta &lt;- assays(data)[[1]]
+beta &lt;- na.omit(beta)
+save(beta, file = &quot;beta.Rdata&quot;)</code></pre>
+<ul>
+<li>Plots:</li>
+</ul>
+<pre class="r"><code># df &lt;- tcga %&gt;%
+#   nest(-cg) %&gt;%
+#   mutate(test = map(data, ~ tidy(t.test(beta ~ type, .x)))) %&gt;%
+#   unnest(test) %&gt;%
+#   mutate(padj = p.adjust(p.value, n = 378254)) %&gt;% # number of CpGs in beta
+#   mutate(p = paste0(&quot;p=&quot;,signif(padj,3))) %&gt;%
+#   select(cg, p)   %&gt;%
+#   mutate(cg = factor(cg))
+
+tcga %&gt;%
+  ggplot(aes(x = type,
+             y = beta,
+             colour = type)) +
+  geom_violin() +
+  geom_jitter(size = 0.2)+
+  geom_boxplot(width = 0.1) +
+  scale_colour_manual(values = cols[c(1,2)],
+                      name = &quot;&quot;) +
+  facet_wrap(~cg) +
+  annotate(&quot;segment&quot;,
+           x = 1, xend = 2,
+           y = 1, yend = 1,
+           size = 0.25,
+           colour = &quot;gray40&quot;) +
+  xlab(&quot;&quot;) +
+  ylab(&quot;beta in TCGA data&quot;) +
+  theme_gray() +
+  theme(legend.position = &quot;none&quot;,
+        panel.grid = element_blank(),
+        text = element_text(family = &quot;Guardian Sans&quot;)) +
+  geom_text(data = tcga_pvals,
+            mapping = aes(x = 1.5, y = 1.03, label = p),
+            colour = &quot;gray40&quot;,
+            size = 3.5)</code></pre>
+<p><img src="2-markers_thresholds_files/figure-html/unnamed-chunk-3-1.png" width="672" style="display: block; margin: auto;" /></p>
+</div>
+<div id="threshold-selection-for-top-three-methylight-regions" class="section level2">
+<h2>Threshold selection for top three MethyLight regions</h2>
+<ul>
+<li>Showing the individual log PMR values for the three top regions above, as well as the sum of their values.</li>
+<li>The thresholds are calculated using Youden’s index on the receiver operating characteristic.</li>
+<li>The two thresholds (0.03 and 0.63) are then consistently used throughout the manuscript.</li>
+</ul>
+<pre class="r"><code>mldat &lt;- mldat %&gt;%
+  pivot_longer(c(`ZSCAN12\n(cg25060829 [ii])`, `GYPC\n(cg15768103 [ii])`, `GYPC\n(cg15975865 [i])`), names_to = &quot;locus&quot;, values_to = &quot;pmr&quot;) 
+
+p1 &lt;- mldat %&gt;%
+  ggplot(aes(x = type,
+             y = log(pmr+0.00001),
+             colour = type)) +
+  geom_violin(width = 0.2) +
+  geom_jitter(size = 0.5,
+              aes(colour = type)) +
+  facet_wrap(~locus) +
+  xlab(&quot;&quot;) +
+  ylab(expression(paste(&quot;log (PMR)&quot;, sep = &quot;&quot;))) + 
+  scale_colour_manual(values = cols[c(1,2)],
+                      name = &quot;&quot;) +
+  theme(axis.text.x = element_text(angle = 60,
+                                   hjust = 1),
+        panel.grid = element_blank(),
+        legend.position = &quot;none&quot;
+  ) 
+
+p2 &lt;- mldat %&gt;%
+  ggplot(aes(x = type,
+             y = log(sum+0.00001),
+             colour = type)) +
+  geom_violin(width = 0.2) +
+  geom_jitter(size = 0.5,
+              aes(colour = type)) +
+  xlab(&quot;&quot;) +
+  ylab(expression(paste(atop(bold(&quot;WID™-qEC&quot;), &quot;log (&quot;~Sigma~&quot; PMR)&quot;)))) + 
+  scale_colour_manual(values = cols[c(1,2)],
+                      name = &quot;&quot;) +
+  theme(axis.text.x = element_text(angle = 60,
+                                   hjust = 1),
+        panel.grid = element_blank(),
+        legend.position = &quot;none&quot;)
+
+p3 &lt;- plot_roc(as.factor(mldat$type), mldat$sum, &quot;sum(PMR)&quot;) +
+  theme(panel.grid = element_blank())
+
+design &lt;- &quot;
+AAAAA
+BBCCD
+&quot;
+
+y &lt;- roc(mldat$type, mldat$sum)
+cut &lt;- cutoffs &lt;- coords(y, &quot;best&quot;, best.method = &quot;youden&quot;)
+
+cut_round &lt;- round(cut, 2)
+colnames(cut_round) &lt;- c(&quot;Threshold&quot;, &quot;Specificity (%)&quot;, &quot;Sensitivity (%)&quot;)
+cut_round$`Specificity (%)` &lt;- cut_round$`Specificity (%)`*100
+cut_round$`Sensitivity (%)` &lt;- cut_round$`Sensitivity (%)`*100
+cut_round &lt;- t(cut_round)
+colnames(cut_round) &lt;- c(&quot;# 1&quot;, &quot;# 2&quot;)
+
+p3 &lt;- p3 +
+  geom_point(aes(x = 1-cut$specificity[2],
+                 y = cut$sensitivity[2]),
+             shape = 21,
+             size = 3,
+             fill = cols[3]) +
+  annotate(&quot;text&quot;,
+           label = &quot;Threshold 2&quot;,
+           x = 1-cut$specificity[2]+0.17,
+           y = cut$sensitivity[2]-0.07,
+           colour = cols[3],
+           size = 2.95) +
+  geom_point(aes(x = 1-cut$specificity[1],
+                 y = cut$sensitivity[1]),
+             shape = 24,
+             size = 3,
+             fill = cols[6]) +
+  annotate(&quot;text&quot;,
+           label = &quot;Threshold 1&quot;,
+           x = 1-cut$specificity[1]+0.17,
+           y = cut$sensitivity[1]+0.05,
+           colour = cols[6], size = 2.95)
+
+p1 + p2 + p3 +
+  gridExtra::tableGrob(cut_round,
+                       theme = ttheme_default(base_size = 8)) +
+  plot_layout(design = design)</code></pre>
+<p><img src="2-markers_thresholds_files/figure-html/unnamed-chunk-4-1.png" width="864" style="display: block; margin: auto;" /></p>
+</div>
+</div>
+
+
+
+
+</div>
+
+<script>
+
+// add bootstrap table styles to pandoc tables
+function bootstrapStylePandocTables() {
+  $('tr.odd').parent('tbody').parent('table').addClass('table table-condensed');
+}
+$(document).ready(function () {
+  bootstrapStylePandocTables();
+});
+
+
+</script>
+
+<!-- tabsets -->
+
+<script>
+$(document).ready(function () {
+  window.buildTabsets("TOC");
+});
+
+$(document).ready(function () {
+  $('.tabset-dropdown > .nav-tabs > li').click(function () {
+    $(this).parent().toggleClass('nav-tabs-open');
+  });
+});
+</script>
+
+<!-- code folding -->
+<script>
+$(document).ready(function () {
+  window.initializeCodeFolding("show" === "show");
+});
+</script>
+
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>

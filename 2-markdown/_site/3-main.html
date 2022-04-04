@@ -1,0 +1,2506 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+<meta charset="utf-8" />
+<meta name="generator" content="pandoc" />
+<meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
+
+
+<meta name="author" content="Chiara Herzog" />
+
+<meta name="date" content="2022-04-04" />
+
+<title>3. Main display items</title>
+
+<script src="site_libs/header-attrs-2.11/header-attrs.js"></script>
+<script src="site_libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link href="site_libs/bootstrap-3.3.5/css/cosmo.min.css" rel="stylesheet" />
+<script src="site_libs/bootstrap-3.3.5/js/bootstrap.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/html5shiv.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/respond.min.js"></script>
+<style>h1 {font-size: 34px;}
+       h1.title {font-size: 38px;}
+       h2 {font-size: 30px;}
+       h3 {font-size: 24px;}
+       h4 {font-size: 18px;}
+       h5 {font-size: 16px;}
+       h6 {font-size: 12px;}
+       code {color: inherit; background-color: rgba(0, 0, 0, 0.04);}
+       pre:not([class]) { background-color: white }</style>
+<script src="site_libs/navigation-1.1/tabsets.js"></script>
+<script src="site_libs/navigation-1.1/codefolding.js"></script>
+<link href="site_libs/highlightjs-9.12.0/default.css" rel="stylesheet" />
+<script src="site_libs/highlightjs-9.12.0/highlight.js"></script>
+
+<style type="text/css">
+  code{white-space: pre-wrap;}
+  span.smallcaps{font-variant: small-caps;}
+  span.underline{text-decoration: underline;}
+  div.column{display: inline-block; vertical-align: top; width: 50%;}
+  div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+  ul.task-list{list-style: none;}
+    </style>
+
+<style type="text/css">code{white-space: pre;}</style>
+<script type="text/javascript">
+if (window.hljs) {
+  hljs.configure({languages: []});
+  hljs.initHighlightingOnLoad();
+  if (document.readyState && document.readyState === "complete") {
+    window.setTimeout(function() { hljs.initHighlighting(); }, 0);
+  }
+}
+</script>
+
+
+
+
+
+
+
+
+<style type = "text/css">
+.main-container {
+  max-width: 940px;
+  margin-left: auto;
+  margin-right: auto;
+}
+img {
+  max-width:100%;
+}
+.tabbed-pane {
+  padding-top: 12px;
+}
+.html-widget {
+  margin-bottom: 20px;
+}
+button.code-folding-btn:focus {
+  outline: none;
+}
+summary {
+  display: list-item;
+}
+pre code {
+  padding: 0;
+}
+</style>
+
+
+<style type="text/css">
+.dropdown-submenu {
+  position: relative;
+}
+.dropdown-submenu>.dropdown-menu {
+  top: 0;
+  left: 100%;
+  margin-top: -6px;
+  margin-left: -1px;
+  border-radius: 0 6px 6px 6px;
+}
+.dropdown-submenu:hover>.dropdown-menu {
+  display: block;
+}
+.dropdown-submenu>a:after {
+  display: block;
+  content: " ";
+  float: right;
+  width: 0;
+  height: 0;
+  border-color: transparent;
+  border-style: solid;
+  border-width: 5px 0 5px 5px;
+  border-left-color: #cccccc;
+  margin-top: 5px;
+  margin-right: -10px;
+}
+.dropdown-submenu:hover>a:after {
+  border-left-color: #adb5bd;
+}
+.dropdown-submenu.pull-left {
+  float: none;
+}
+.dropdown-submenu.pull-left>.dropdown-menu {
+  left: -100%;
+  margin-left: 10px;
+  border-radius: 6px 0 6px 6px;
+}
+</style>
+
+<script type="text/javascript">
+// manage active state of menu based on current page
+$(document).ready(function () {
+  // active menu anchor
+  href = window.location.pathname
+  href = href.substr(href.lastIndexOf('/') + 1)
+  if (href === "")
+    href = "index.html";
+  var menuAnchor = $('a[href="' + href + '"]');
+
+  // mark it active
+  menuAnchor.tab('show');
+
+  // if it's got a parent navbar menu mark it active as well
+  menuAnchor.closest('li.dropdown').addClass('active');
+
+  // Navbar adjustments
+  var navHeight = $(".navbar").first().height() + 15;
+  var style = document.createElement('style');
+  var pt = "padding-top: " + navHeight + "px; ";
+  var mt = "margin-top: -" + navHeight + "px; ";
+  var css = "";
+  // offset scroll position for anchor links (for fixed navbar)
+  for (var i = 1; i <= 6; i++) {
+    css += ".section h" + i + "{ " + pt + mt + "}\n";
+  }
+  style.innerHTML = "body {" + pt + "padding-bottom: 40px; }\n" + css;
+  document.head.appendChild(style);
+});
+</script>
+
+<!-- tabsets -->
+
+<style type="text/css">
+.tabset-dropdown > .nav-tabs {
+  display: inline-table;
+  max-height: 500px;
+  min-height: 44px;
+  overflow-y: auto;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+.tabset-dropdown > .nav-tabs > li.active:before {
+  content: "";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li.active:before {
+  content: "&#xe258;";
+  border: none;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open:before {
+  content: "";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs > li.active {
+  display: block;
+}
+
+.tabset-dropdown > .nav-tabs > li > a,
+.tabset-dropdown > .nav-tabs > li > a:focus,
+.tabset-dropdown > .nav-tabs > li > a:hover {
+  border: none;
+  display: inline-block;
+  border-radius: 4px;
+  background-color: transparent;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li {
+  display: block;
+  float: none;
+}
+
+.tabset-dropdown > .nav-tabs > li {
+  display: none;
+}
+</style>
+
+<!-- code folding -->
+<style type="text/css">
+.code-folding-btn { margin-bottom: 4px; }
+</style>
+
+
+
+
+</head>
+
+<body>
+
+
+<div class="container-fluid main-container">
+
+
+
+
+<div class="navbar navbar-default  navbar-fixed-top" role="navigation">
+  <div class="container">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar">
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand" href="index.html">WID-qEC source code</a>
+    </div>
+    <div id="navbar" class="navbar-collapse collapse">
+      <ul class="nav navbar-nav">
+        <li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+    WID-qEC source code
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="index.html">Overview</a>
+    </li>
+    <li>
+      <a href="1-dmps.html">1. Top 50 DMPs (array data)</a>
+    </li>
+    <li>
+      <a href="2-markers_thresholds.html">2. Marker and threshold selection</a>
+    </li>
+    <li>
+      <a href="3-main.html">3. Main display items</a>
+    </li>
+    <li>
+      <a href="4-age-stage-grade-histology.html">4. Epidemiological factors</a>
+    </li>
+    <li>
+      <a href="5-barcelona-set.html">5. Barcelona Validation set</a>
+    </li>
+    <li>
+      <a href="6-lynch-cohort.html">6. Lynch Cohort</a>
+    </li>
+    <li>
+      <a href="7-karolinska-cohort.html">7. Karolinska Cohort</a>
+    </li>
+    <li>
+      <a href="8-ppv-npv.html">8. PPV/NPV</a>
+    </li>
+  </ul>
+</li>
+      </ul>
+      <ul class="nav navbar-nav navbar-right">
+        
+      </ul>
+    </div><!--/.nav-collapse -->
+  </div><!--/.container -->
+</div><!--/.navbar -->
+
+<div id="header">
+
+<div class="btn-group pull-right float-right">
+<button type="button" class="btn btn-default btn-xs btn-secondary btn-sm dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><span>Code</span> <span class="caret"></span></button>
+<ul class="dropdown-menu dropdown-menu-right" style="min-width: 50px;">
+<li><a id="rmd-show-all-code" href="#">Show All Code</a></li>
+<li><a id="rmd-hide-all-code" href="#">Hide All Code</a></li>
+</ul>
+</div>
+
+
+
+<h1 class="title toc-ignore">3. Main display items</h1>
+<h4 class="author">Chiara Herzog</h4>
+<h4 class="date">April 4, 2022</h4>
+
+</div>
+
+
+<div id="main-tables" class="section level1 tabset tabset-fade">
+<h1 class="tabset tabset-fade">Main tables</h1>
+<div id="table-1.-cohort-descriptions." class="section level2">
+<h2>Table 1. Cohort descriptions.</h2>
+<ul>
+<li>For manuscript, “N/A” rows were removed due to redundancy.</li>
+</ul>
+<pre class="r"><code>dat &lt;- mldat %&gt;%
+  filter(set != &quot;FORECEE Pilot&quot;) %&gt;%
+  mutate(type = case_when(type == &quot;Control&quot; ~ &quot;Control&quot;,
+                          type == &quot;Endometrial cancer&quot; ~ &quot;EC&quot;)) %&gt;%
+  droplevels()
+
+tbl &lt;- dat %&gt;%
+  dplyr::select(age, menopause, set, substrate, setting, collection, ethnicity, time_to_diagnosis, controldiag, type, grade, stage, hist) %&gt;%
+  droplevels() %&gt;%
+  tbl_strata(strata = set,
+             .tbl_fun= 
+               ~ .x %&gt;%
+               tbl_summary(by = type,
+                           type = list(age ~ &quot;continuous&quot;,
+                                       substrate ~ &quot;categorical&quot;,
+                                       grade ~ &quot;categorical&quot;,
+                                       time_to_diagnosis ~ &quot;continuous&quot;),
+                           statistic = list(age ~ &quot;{median} ({min} – {max})&quot;,
+                                            time_to_diagnosis ~ &quot;{median} ({min} – {max})&quot;),
+                           missing = &quot;no&quot;,
+                           label = list(age ~ &quot;Age&quot;,
+                                        menopause ~ &quot;Menopausal status&quot;,
+                                        substrate ~ &quot;Substrate&quot;,
+                                        collection ~ &quot;Collection&quot;,
+                                        setting ~ &quot;Setting&quot;,
+                                        ethnicity ~ &quot;Ethnicity&quot;,
+                                        time_to_diagnosis ~ &quot;Time to event&quot;,
+                                        grade ~ &quot;Clinical grade (cases)&quot;,
+                                        stage ~ &quot;Cancer stage (cases)&quot;,
+                                        controldiag ~ &quot;Control diagnosis (controls)&quot;,
+                                        hist ~ &quot;Histology (Cases)&quot;)) %&gt;%
+               modify_header(update = all_stat_cols() ~&quot;**{level}**&lt;br&gt;n = {n}&quot;) %&gt;%
+               bold_labels() %&gt;%
+               modify_footnote(everything() ~ NA))
+
+
+t1 &lt;- tbl %&gt;%
+  as_gt() %&gt;%
+  text_transform(locations = cells_body(),
+                 fn = function(x){
+                   paste0(ifelse(x == &quot;0 (0)&quot;, &quot;&quot;,
+                                 ifelse(x == &quot;0 (NA)&quot;, &quot;&quot;,
+                                        ifelse(x == &quot;NA (NA – NA)&quot;, &quot;&quot;,
+                                               ifelse(x == &quot;NA (Inf – -Inf)&quot;, &quot;&quot;, 
+                                                      ifelse(x == &quot;0.0000 (0.0000-0.0000)&quot;, &quot;&quot;, 
+                                                             ifelse(x == &quot;NA (Inf--Inf)&quot;, &quot;&quot;, x)))))))}
+  ) %&gt;%
+  text_transform(locations = cells_body(),
+                 fn = function(x){
+                   paste0(ifelse(x == &quot;0.0000 (0.0000 – 0.0000)&quot;, &quot;&quot;, x))}
+  ) %&gt;%
+  gt::tab_source_note(gt::html(&quot;&lt;b&gt;LBC-TP&lt;/b&gt; denotes liquid-based cytology (Thinprep), &lt;b&gt;HCP&lt;/b&gt; healthcare professional, &lt;b&gt;IQR&lt;/b&gt; interquartile range, &lt;b&gt;CAH&lt;/b&gt; complex atypical hyperplasia.&lt;br&gt;* other histologies include carcinosarcoma, mucinous, small cell and squamous cancers.&quot;)) %&gt;%
+  tab_options(
+    table.font.size = 10,
+    table.font.names = &quot;Guardian Sans&quot;
+  ) 
+
+
+t1</code></pre>
+<div id="ixvfpxtemd" style="overflow-x:auto;overflow-y:auto;width:auto;height:auto;">
+<style>html {
+  font-family: 'Guardian Sans';
+}
+
+#ixvfpxtemd .gt_table {
+  display: table;
+  border-collapse: collapse;
+  margin-left: auto;
+  margin-right: auto;
+  color: #333333;
+  font-size: 10px;
+  font-weight: normal;
+  font-style: normal;
+  background-color: #FFFFFF;
+  width: auto;
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #A8A8A8;
+  border-right-style: none;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #A8A8A8;
+  border-left-style: none;
+  border-left-width: 2px;
+  border-left-color: #D3D3D3;
+}
+
+#ixvfpxtemd .gt_heading {
+  background-color: #FFFFFF;
+  text-align: center;
+  border-bottom-color: #FFFFFF;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+}
+
+#ixvfpxtemd .gt_title {
+  color: #333333;
+  font-size: 125%;
+  font-weight: initial;
+  padding-top: 4px;
+  padding-bottom: 4px;
+  border-bottom-color: #FFFFFF;
+  border-bottom-width: 0;
+}
+
+#ixvfpxtemd .gt_subtitle {
+  color: #333333;
+  font-size: 85%;
+  font-weight: initial;
+  padding-top: 0;
+  padding-bottom: 6px;
+  border-top-color: #FFFFFF;
+  border-top-width: 0;
+}
+
+#ixvfpxtemd .gt_bottom_border {
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+}
+
+#ixvfpxtemd .gt_col_headings {
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+}
+
+#ixvfpxtemd .gt_col_heading {
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: normal;
+  text-transform: inherit;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+  vertical-align: bottom;
+  padding-top: 5px;
+  padding-bottom: 6px;
+  padding-left: 5px;
+  padding-right: 5px;
+  overflow-x: hidden;
+}
+
+#ixvfpxtemd .gt_column_spanner_outer {
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: normal;
+  text-transform: inherit;
+  padding-top: 0;
+  padding-bottom: 0;
+  padding-left: 4px;
+  padding-right: 4px;
+}
+
+#ixvfpxtemd .gt_column_spanner_outer:first-child {
+  padding-left: 0;
+}
+
+#ixvfpxtemd .gt_column_spanner_outer:last-child {
+  padding-right: 0;
+}
+
+#ixvfpxtemd .gt_column_spanner {
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  vertical-align: bottom;
+  padding-top: 5px;
+  padding-bottom: 5px;
+  overflow-x: hidden;
+  display: inline-block;
+  width: 100%;
+}
+
+#ixvfpxtemd .gt_group_heading {
+  padding: 1px;
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: initial;
+  text-transform: inherit;
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+  vertical-align: middle;
+}
+
+#ixvfpxtemd .gt_empty_group_heading {
+  padding: 0.5px;
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: initial;
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  vertical-align: middle;
+}
+
+#ixvfpxtemd .gt_from_md > :first-child {
+  margin-top: 0;
+}
+
+#ixvfpxtemd .gt_from_md > :last-child {
+  margin-bottom: 0;
+}
+
+#ixvfpxtemd .gt_row {
+  padding-top: 1px;
+  padding-bottom: 1px;
+  padding-left: 5px;
+  padding-right: 5px;
+  margin: 10px;
+  border-top-style: solid;
+  border-top-width: 1px;
+  border-top-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+  vertical-align: middle;
+  overflow-x: hidden;
+}
+
+#ixvfpxtemd .gt_stub {
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: initial;
+  text-transform: inherit;
+  border-right-style: solid;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+  padding-left: 12px;
+}
+
+#ixvfpxtemd .gt_summary_row {
+  color: #333333;
+  background-color: #FFFFFF;
+  text-transform: inherit;
+  padding-top: 1px;
+  padding-bottom: 1px;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+#ixvfpxtemd .gt_first_summary_row {
+  padding-top: 1px;
+  padding-bottom: 1px;
+  padding-left: 5px;
+  padding-right: 5px;
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #D3D3D3;
+}
+
+#ixvfpxtemd .gt_grand_summary_row {
+  color: #333333;
+  background-color: #FFFFFF;
+  text-transform: inherit;
+  padding-top: 1px;
+  padding-bottom: 1px;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+#ixvfpxtemd .gt_first_grand_summary_row {
+  padding-top: 1px;
+  padding-bottom: 1px;
+  padding-left: 5px;
+  padding-right: 5px;
+  border-top-style: double;
+  border-top-width: 6px;
+  border-top-color: #D3D3D3;
+}
+
+#ixvfpxtemd .gt_striped {
+  background-color: rgba(128, 128, 128, 0.05);
+}
+
+#ixvfpxtemd .gt_table_body {
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+}
+
+#ixvfpxtemd .gt_footnotes {
+  color: #333333;
+  background-color: #FFFFFF;
+  border-bottom-style: none;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 2px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+}
+
+#ixvfpxtemd .gt_footnote {
+  margin: 0px;
+  font-size: 90%;
+  padding: 1px;
+}
+
+#ixvfpxtemd .gt_sourcenotes {
+  color: #333333;
+  background-color: #FFFFFF;
+  border-bottom-style: none;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 2px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+}
+
+#ixvfpxtemd .gt_sourcenote {
+  font-size: 90%;
+  padding: 1px;
+}
+
+#ixvfpxtemd .gt_left {
+  text-align: left;
+}
+
+#ixvfpxtemd .gt_center {
+  text-align: center;
+}
+
+#ixvfpxtemd .gt_right {
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+
+#ixvfpxtemd .gt_font_normal {
+  font-weight: normal;
+}
+
+#ixvfpxtemd .gt_font_bold {
+  font-weight: bold;
+}
+
+#ixvfpxtemd .gt_font_italic {
+  font-style: italic;
+}
+
+#ixvfpxtemd .gt_super {
+  font-size: 65%;
+}
+
+#ixvfpxtemd .gt_footnote_marks {
+  font-style: italic;
+  font-weight: normal;
+  font-size: 65%;
+}
+</style>
+<table class="gt_table">
+  
+  <thead class="gt_col_headings">
+    <tr>
+      <th class="gt_col_heading gt_columns_bottom_border gt_left" rowspan="2" colspan="1"><strong>Characteristic</strong></th>
+      <th class="gt_center gt_columns_top_border gt_column_spanner_outer" rowspan="1" colspan="2">
+        <span class="gt_column_spanner"><strong>FORECEE Validation</strong></span>
+      </th>
+      <th class="gt_center gt_columns_top_border gt_column_spanner_outer" rowspan="1" colspan="2">
+        <span class="gt_column_spanner"><strong>Barcelona Validation</strong></span>
+      </th>
+      <th class="gt_center gt_columns_top_border gt_column_spanner_outer" rowspan="1" colspan="2">
+        <span class="gt_column_spanner"><strong>PMB Cohort</strong></span>
+      </th>
+      <th class="gt_center gt_columns_top_border gt_column_spanner_outer" rowspan="1" colspan="2">
+        <span class="gt_column_spanner"><strong>Lynch Cohort</strong></span>
+      </th>
+      <th class="gt_center gt_columns_top_border gt_column_spanner_outer" rowspan="1" colspan="2">
+        <span class="gt_column_spanner"><strong>Karolinska Cohort</strong></span>
+      </th>
+    </tr>
+    <tr>
+      <th class="gt_col_heading gt_columns_bottom_border gt_center" rowspan="1" colspan="1"><strong>Control</strong><br>n = 66</th>
+      <th class="gt_col_heading gt_columns_bottom_border gt_center" rowspan="1" colspan="1"><strong>EC</strong><br>n = 71</th>
+      <th class="gt_col_heading gt_columns_bottom_border gt_center" rowspan="1" colspan="1"><strong>Control</strong><br>n = 120</th>
+      <th class="gt_col_heading gt_columns_bottom_border gt_center" rowspan="1" colspan="1"><strong>EC</strong><br>n = 131</th>
+      <th class="gt_col_heading gt_columns_bottom_border gt_center" rowspan="1" colspan="1"><strong>Control</strong><br>n = 55</th>
+      <th class="gt_col_heading gt_columns_bottom_border gt_center" rowspan="1" colspan="1"><strong>EC</strong><br>n = 8</th>
+      <th class="gt_col_heading gt_columns_bottom_border gt_center" rowspan="1" colspan="1"><strong>Control</strong><br>n = 22</th>
+      <th class="gt_col_heading gt_columns_bottom_border gt_center" rowspan="1" colspan="1"><strong>EC</strong><br>n = 3</th>
+      <th class="gt_col_heading gt_columns_bottom_border gt_center" rowspan="1" colspan="1"><strong>Control</strong><br>n = 54</th>
+      <th class="gt_col_heading gt_columns_bottom_border gt_center" rowspan="1" colspan="1"><strong>EC</strong><br>n = 32</th>
+    </tr>
+  </thead>
+  <tbody class="gt_table_body">
+    <tr><td class="gt_row gt_left" style="font-weight: bold;">Age, Median (Range)</td>
+<td class="gt_row gt_center">65 (30 – 86)</td>
+<td class="gt_row gt_center">68 (50 – 86)</td>
+<td class="gt_row gt_center">68 (32 – 88)</td>
+<td class="gt_row gt_center">66 (42 – 91)</td>
+<td class="gt_row gt_center">58 (47 – 90)</td>
+<td class="gt_row gt_center">58 (47 – 92)</td>
+<td class="gt_row gt_center">43 (35 – 63)</td>
+<td class="gt_row gt_center">43 (40 – 55)</td>
+<td class="gt_row gt_center">50 (40 – 87)</td>
+<td class="gt_row gt_center">62 (30 – 96)</td></tr>
+    <tr><td class="gt_row gt_left" style="font-weight: bold;">Menopausal status, n (%)</td>
+<td class="gt_row gt_center"></td>
+<td class="gt_row gt_center"></td>
+<td class="gt_row gt_center"></td>
+<td class="gt_row gt_center"></td>
+<td class="gt_row gt_center"></td>
+<td class="gt_row gt_center"></td>
+<td class="gt_row gt_center"></td>
+<td class="gt_row gt_center"></td>
+<td class="gt_row gt_center"></td>
+<td class="gt_row gt_center"></td></tr>
+    <tr><td class="gt_row gt_left" style="text-align: left; text-indent: 10px;">Pre</td>
+<td class="gt_row gt_center">1 (1.5)</td>
+<td class="gt_row gt_center">1 (1.4)</td>
+<td class="gt_row gt_center">18 (15)</td>
+<td class="gt_row gt_center">6 (4.6)</td>
+<td class="gt_row gt_center"></td>
+<td class="gt_row gt_center"></td>
+<td class="gt_row gt_center"></td>
+<td class="gt_row gt_center"></td>
+<td class="gt_row gt_center"></td>
+<td class="gt_row gt_center"></td></tr>
+    <tr><td class="gt_row gt_left" style="text-align: left; text-indent: 10px;">Peri</td>
+<td class="gt_row gt_center"></td>
+<td class="gt_row gt_center"></td>
+<td class="gt_row gt_center">3 (2.5)</td>
+<td class="gt_row gt_center">8 (6.1)</td>
+<td class="gt_row gt_center"></td>
+<td class="gt_row gt_center"></td>
+<td class="gt_row gt_center"></td>
+<td class="gt_row gt_center"></td>
+<td class="gt_row gt_center"></td>
+<td class="gt_row gt_center"></td></tr>
+    <tr><td class="gt_row gt_left" style="text-align: left; text-indent: 10px;">Post</td>
+<td class="gt_row gt_center">65 (98)</td>
+<td class="gt_row gt_center">70 (99)</td>
+<td class="gt_row gt_center">98 (82)</td>
+<td class="gt_row gt_center">117 (89)</td>
+<td class="gt_row gt_center">55 (100)</td>
+<td class="gt_row gt_center">8 (100)</td>
+<td class="gt_row gt_center"></td>
+<td class="gt_row gt_center"></td>
+<td class="gt_row gt_center"></td>
+<td class="gt_row gt_center"></td></tr>
+    <tr><td class="gt_row gt_left" style="text-align: left; text-indent: 10px;">Unknown</td>
+<td class="gt_row gt_center"></td>
+<td class="gt_row gt_center"></td>
+<td class="gt_row gt_center">1 (0.8)</td>
+<td class="gt_row gt_center"></td>
+<td class="gt_row gt_center"></td>
+<td class="gt_row gt_center"></td>
+<td class="gt_row gt_center">22 (100)</td>
+<td class="gt_row gt_center">3 (100)</td>
+<td class="gt_row gt_center">54 (100)</td>
+<td class="gt_row gt_center">32 (100)</td></tr>
+    <tr><td class="gt_row gt_left" style="font-weight: bold;">Substrate, n (%)</td>
+<td class="gt_row gt_center"></td>
+<td class="gt_row gt_center"></td>
+<td class="gt_row gt_center"></td>
+<td class="gt_row gt_center"></td>
+<td class="gt_row gt_center"></td>
+<td class="gt_row gt_center"></td>
+<td class="gt_row gt_center"></td>
+<td class="gt_row gt_center"></td>
+<td class="gt_row gt_center"></td>
+<td class="gt_row gt_center"></td></tr>
+    <tr><td class="gt_row gt_left" style="text-align: left; text-indent: 10px;">LBC-TP</td>
+<td class="gt_row gt_center">66 (100)</td>
+<td class="gt_row gt_center">71 (100)</td>
+<td class="gt_row gt_center"></td>
+<td class="gt_row gt_center"></td>
+<td class="gt_row gt_center"></td>
+<td class="gt_row gt_center"></td>
+<td class="gt_row gt_center">22 (100)</td>
+<td class="gt_row gt_center">3 (100)</td>
+<td class="gt_row gt_center">54 (100)</td>
+<td class="gt_row gt_center">32 (100)</td></tr>
+    <tr><td class="gt_row gt_left" style="text-align: left; text-indent: 10px;">Evalyn Brush</td>
+<td class="gt_row gt_center"></td>
+<td class="gt_row gt_center"></td>
+<td class="gt_row gt_center">120 (100)</td>
+<td class="gt_row gt_center">131 (100)</td>
+<td class="gt_row gt_center"></td>
+<td class="gt_row gt_center"></td>
+<td class="gt_row gt_center"></td>
+<td class="gt_row gt_center"></td>
+<td class="gt_row gt_center"></td>
+<td class="gt_row gt_center"></td></tr>
+    <tr><td class="gt_row gt_left" style="text-align: left; text-indent: 10px;">Vaginal Swab</td>
+<td class="gt_row gt_center"></td>
+<td class="gt_row gt_center"></td>
+<td class="gt_row gt_center"></td>
+<td class="gt_row gt_center"></td>
+<td class="gt_row gt_center">55 (100)</td>
+<td class="gt_row gt_center">8 (100)</td>
+<td class="gt_row gt_center"></td>
+<td class="gt_row gt_center"></td>
+<td class="gt_row gt_center"></td>
+<td class="gt_row gt_center"></td></tr>
+    <tr><td class="gt_row gt_left" style="font-weight: bold;">Setting, n (%)</td>
+<td class="gt_row gt_center"></td>
+<td class="gt_row gt_center"></td>
+<td class="gt_row gt_center"></td>
+<td class="gt_row gt_center"></td>
+<td class="gt_row gt_center"></td>
+<td class="gt_row gt_center"></td>
+<td class="gt_row gt_center"></td>
+<td class="gt_row gt_center"></td>
+<td class="gt_row gt_center"></td>
+<td class="gt_row gt_center"></td></tr>
+    <tr><td class="gt_row gt_left" style="text-align: left; text-indent: 10px;">Case/Control</td>
+<td class="gt_row gt_center">66 (100)</td>
+<td class="gt_row gt_center">71 (100)</td>
+<td class="gt_row gt_center">120 (100)</td>
+<td class="gt_row gt_center">131 (100)</td>
+<td class="gt_row gt_center"></td>
+<td class="gt_row gt_center"></td>
+<td class="gt_row gt_center"></td>
+<td class="gt_row gt_center"></td>
+<td class="gt_row gt_center"></td>
+<td class="gt_row gt_center"></td></tr>
+    <tr><td class="gt_row gt_left" style="text-align: left; text-indent: 10px;">Cohort</td>
+<td class="gt_row gt_center"></td>
+<td class="gt_row gt_center"></td>
+<td class="gt_row gt_center"></td>
+<td class="gt_row gt_center"></td>
+<td class="gt_row gt_center">55 (100)</td>
+<td class="gt_row gt_center">8 (100)</td>
+<td class="gt_row gt_center">22 (100)</td>
+<td class="gt_row gt_center">3 (100)</td>
+<td class="gt_row gt_center"></td>
+<td class="gt_row gt_center"></td></tr>
+    <tr><td class="gt_row gt_left" style="text-align: left; text-indent: 10px;">Cohort (nested case/control)</td>
+<td class="gt_row gt_center"></td>
+<td class="gt_row gt_center"></td>
+<td class="gt_row gt_center"></td>
+<td class="gt_row gt_center"></td>
+<td class="gt_row gt_center"></td>
+<td class="gt_row gt_center"></td>
+<td class="gt_row gt_center"></td>
+<td class="gt_row gt_center"></td>
+<td class="gt_row gt_center">54 (100)</td>
+<td class="gt_row gt_center">32 (100)</td></tr>
+    <tr><td class="gt_row gt_left" style="font-weight: bold;">Collection, n (%)</td>
+<td class="gt_row gt_center"></td>
+<td class="gt_row gt_center"></td>
+<td class="gt_row gt_center"></td>
+<td class="gt_row gt_center"></td>
+<td class="gt_row gt_center"></td>
+<td class="gt_row gt_center"></td>
+<td class="gt_row gt_center"></td>
+<td class="gt_row gt_center"></td>
+<td class="gt_row gt_center"></td>
+<td class="gt_row gt_center"></td></tr>
+    <tr><td class="gt_row gt_left" style="text-align: left; text-indent: 10px;">HCP</td>
+<td class="gt_row gt_center">66 (100)</td>
+<td class="gt_row gt_center">71 (100)</td>
+<td class="gt_row gt_center"></td>
+<td class="gt_row gt_center"></td>
+<td class="gt_row gt_center">55 (100)</td>
+<td class="gt_row gt_center">8 (100)</td>
+<td class="gt_row gt_center">22 (100)</td>
+<td class="gt_row gt_center">3 (100)</td>
+<td class="gt_row gt_center">54 (100)</td>
+<td class="gt_row gt_center">32 (100)</td></tr>
+    <tr><td class="gt_row gt_left" style="text-align: left; text-indent: 10px;">Self</td>
+<td class="gt_row gt_center"></td>
+<td class="gt_row gt_center"></td>
+<td class="gt_row gt_center">73 (61)</td>
+<td class="gt_row gt_center">48 (37)</td>
+<td class="gt_row gt_center"></td>
+<td class="gt_row gt_center"></td>
+<td class="gt_row gt_center"></td>
+<td class="gt_row gt_center"></td>
+<td class="gt_row gt_center"></td>
+<td class="gt_row gt_center"></td></tr>
+    <tr><td class="gt_row gt_left" style="text-align: left; text-indent: 10px;">Self (HCP assisted)</td>
+<td class="gt_row gt_center"></td>
+<td class="gt_row gt_center"></td>
+<td class="gt_row gt_center">47 (39)</td>
+<td class="gt_row gt_center">83 (63)</td>
+<td class="gt_row gt_center"></td>
+<td class="gt_row gt_center"></td>
+<td class="gt_row gt_center"></td>
+<td class="gt_row gt_center"></td>
+<td class="gt_row gt_center"></td>
+<td class="gt_row gt_center"></td></tr>
+    <tr><td class="gt_row gt_left" style="font-weight: bold;">Ethnicity, n (%)</td>
+<td class="gt_row gt_center"></td>
+<td class="gt_row gt_center"></td>
+<td class="gt_row gt_center"></td>
+<td class="gt_row gt_center"></td>
+<td class="gt_row gt_center"></td>
+<td class="gt_row gt_center"></td>
+<td class="gt_row gt_center"></td>
+<td class="gt_row gt_center"></td>
+<td class="gt_row gt_center"></td>
+<td class="gt_row gt_center"></td></tr>
+    <tr><td class="gt_row gt_left" style="text-align: left; text-indent: 10px;">White</td>
+<td class="gt_row gt_center">60 (91)</td>
+<td class="gt_row gt_center">65 (92)</td>
+<td class="gt_row gt_center"></td>
+<td class="gt_row gt_center"></td>
+<td class="gt_row gt_center"></td>
+<td class="gt_row gt_center"></td>
+<td class="gt_row gt_center">19 (86)</td>
+<td class="gt_row gt_center">1 (33)</td>
+<td class="gt_row gt_center"></td>
+<td class="gt_row gt_center"></td></tr>
+    <tr><td class="gt_row gt_left" style="text-align: left; text-indent: 10px;">Non-white</td>
+<td class="gt_row gt_center">5 (7.6)</td>
+<td class="gt_row gt_center">6 (8.5)</td>
+<td class="gt_row gt_center"></td>
+<td class="gt_row gt_center"></td>
+<td class="gt_row gt_center"></td>
+<td class="gt_row gt_center"></td>
+<td class="gt_row gt_center">3 (14)</td>
+<td class="gt_row gt_center">2 (67)</td>
+<td class="gt_row gt_center"></td>
+<td class="gt_row gt_center"></td></tr>
+    <tr><td class="gt_row gt_left" style="text-align: left; text-indent: 10px;">Unknown</td>
+<td class="gt_row gt_center">1 (1.5)</td>
+<td class="gt_row gt_center"></td>
+<td class="gt_row gt_center">120 (100)</td>
+<td class="gt_row gt_center">131 (100)</td>
+<td class="gt_row gt_center">55 (100)</td>
+<td class="gt_row gt_center">8 (100)</td>
+<td class="gt_row gt_center"></td>
+<td class="gt_row gt_center"></td>
+<td class="gt_row gt_center">54 (100)</td>
+<td class="gt_row gt_center">32 (100)</td></tr>
+    <tr><td class="gt_row gt_left" style="font-weight: bold;">Time to event, Median (Range)</td>
+<td class="gt_row gt_center"></td>
+<td class="gt_row gt_center"></td>
+<td class="gt_row gt_center"></td>
+<td class="gt_row gt_center"></td>
+<td class="gt_row gt_center"></td>
+<td class="gt_row gt_center"></td>
+<td class="gt_row gt_center"></td>
+<td class="gt_row gt_center">0 (0 – 254)</td>
+<td class="gt_row gt_center">755 (14 – 1,724)</td>
+<td class="gt_row gt_center">198 (2 – 1,095)</td></tr>
+    <tr><td class="gt_row gt_left" style="font-weight: bold;">Control diagnosis (controls), n (%)</td>
+<td class="gt_row gt_center"></td>
+<td class="gt_row gt_center"></td>
+<td class="gt_row gt_center"></td>
+<td class="gt_row gt_center"></td>
+<td class="gt_row gt_center"></td>
+<td class="gt_row gt_center"></td>
+<td class="gt_row gt_center"></td>
+<td class="gt_row gt_center"></td>
+<td class="gt_row gt_center"></td>
+<td class="gt_row gt_center"></td></tr>
+    <tr><td class="gt_row gt_left" style="text-align: left; text-indent: 10px;">Normal, no diagnosis</td>
+<td class="gt_row gt_center">37 (56)</td>
+<td class="gt_row gt_center"></td>
+<td class="gt_row gt_center"></td>
+<td class="gt_row gt_center"></td>
+<td class="gt_row gt_center"></td>
+<td class="gt_row gt_center"></td>
+<td class="gt_row gt_center"></td>
+<td class="gt_row gt_center"></td>
+<td class="gt_row gt_center"></td>
+<td class="gt_row gt_center"></td></tr>
+    <tr><td class="gt_row gt_left" style="text-align: left; text-indent: 10px;">Benign gynecological condition</td>
+<td class="gt_row gt_center">29 (44)</td>
+<td class="gt_row gt_center"></td>
+<td class="gt_row gt_center">102 (85)</td>
+<td class="gt_row gt_center"></td>
+<td class="gt_row gt_center">51 (93)</td>
+<td class="gt_row gt_center"></td>
+<td class="gt_row gt_center"></td>
+<td class="gt_row gt_center"></td>
+<td class="gt_row gt_center"></td>
+<td class="gt_row gt_center"></td></tr>
+    <tr><td class="gt_row gt_left" style="text-align: left; text-indent: 10px;">Hospital control</td>
+<td class="gt_row gt_center"></td>
+<td class="gt_row gt_center"></td>
+<td class="gt_row gt_center">18 (15)</td>
+<td class="gt_row gt_center"></td>
+<td class="gt_row gt_center"></td>
+<td class="gt_row gt_center"></td>
+<td class="gt_row gt_center"></td>
+<td class="gt_row gt_center"></td>
+<td class="gt_row gt_center"></td>
+<td class="gt_row gt_center"></td></tr>
+    <tr><td class="gt_row gt_left" style="text-align: left; text-indent: 10px;">CAH</td>
+<td class="gt_row gt_center"></td>
+<td class="gt_row gt_center"></td>
+<td class="gt_row gt_center"></td>
+<td class="gt_row gt_center"></td>
+<td class="gt_row gt_center">2 (3.6)</td>
+<td class="gt_row gt_center"></td>
+<td class="gt_row gt_center"></td>
+<td class="gt_row gt_center"></td>
+<td class="gt_row gt_center"></td>
+<td class="gt_row gt_center"></td></tr>
+    <tr><td class="gt_row gt_left" style="text-align: left; text-indent: 10px;">Unknown</td>
+<td class="gt_row gt_center"></td>
+<td class="gt_row gt_center"></td>
+<td class="gt_row gt_center"></td>
+<td class="gt_row gt_center"></td>
+<td class="gt_row gt_center">2 (3.6)</td>
+<td class="gt_row gt_center"></td>
+<td class="gt_row gt_center"></td>
+<td class="gt_row gt_center"></td>
+<td class="gt_row gt_center">54 (100)</td>
+<td class="gt_row gt_center"></td></tr>
+    <tr><td class="gt_row gt_left" style="text-align: left; text-indent: 10px;">N/A</td>
+<td class="gt_row gt_center"></td>
+<td class="gt_row gt_center">71 (100)</td>
+<td class="gt_row gt_center"></td>
+<td class="gt_row gt_center">131 (100)</td>
+<td class="gt_row gt_center"></td>
+<td class="gt_row gt_center">8 (100)</td>
+<td class="gt_row gt_center"></td>
+<td class="gt_row gt_center">3 (100)</td>
+<td class="gt_row gt_center"></td>
+<td class="gt_row gt_center">32 (100)</td></tr>
+    <tr><td class="gt_row gt_left" style="font-weight: bold;">Clinical grade (cases), n (%)</td>
+<td class="gt_row gt_center"></td>
+<td class="gt_row gt_center"></td>
+<td class="gt_row gt_center"></td>
+<td class="gt_row gt_center"></td>
+<td class="gt_row gt_center"></td>
+<td class="gt_row gt_center"></td>
+<td class="gt_row gt_center"></td>
+<td class="gt_row gt_center"></td>
+<td class="gt_row gt_center"></td>
+<td class="gt_row gt_center"></td></tr>
+    <tr><td class="gt_row gt_left" style="text-align: left; text-indent: 10px;">Grade I</td>
+<td class="gt_row gt_center"></td>
+<td class="gt_row gt_center">16 (23)</td>
+<td class="gt_row gt_center"></td>
+<td class="gt_row gt_center">53 (40)</td>
+<td class="gt_row gt_center"></td>
+<td class="gt_row gt_center"></td>
+<td class="gt_row gt_center"></td>
+<td class="gt_row gt_center"></td>
+<td class="gt_row gt_center"></td>
+<td class="gt_row gt_center"></td></tr>
+    <tr><td class="gt_row gt_left" style="text-align: left; text-indent: 10px;">Grade II</td>
+<td class="gt_row gt_center"></td>
+<td class="gt_row gt_center">21 (30)</td>
+<td class="gt_row gt_center"></td>
+<td class="gt_row gt_center">15 (11)</td>
+<td class="gt_row gt_center"></td>
+<td class="gt_row gt_center"></td>
+<td class="gt_row gt_center"></td>
+<td class="gt_row gt_center"></td>
+<td class="gt_row gt_center"></td>
+<td class="gt_row gt_center"></td></tr>
+    <tr><td class="gt_row gt_left" style="text-align: left; text-indent: 10px;">Grade III</td>
+<td class="gt_row gt_center"></td>
+<td class="gt_row gt_center">29 (41)</td>
+<td class="gt_row gt_center"></td>
+<td class="gt_row gt_center">62 (47)</td>
+<td class="gt_row gt_center"></td>
+<td class="gt_row gt_center"></td>
+<td class="gt_row gt_center"></td>
+<td class="gt_row gt_center"></td>
+<td class="gt_row gt_center"></td>
+<td class="gt_row gt_center"></td></tr>
+    <tr><td class="gt_row gt_left" style="text-align: left; text-indent: 10px;">Unknown</td>
+<td class="gt_row gt_center"></td>
+<td class="gt_row gt_center">5 (7.0)</td>
+<td class="gt_row gt_center"></td>
+<td class="gt_row gt_center">1 (0.8)</td>
+<td class="gt_row gt_center"></td>
+<td class="gt_row gt_center">8 (100)</td>
+<td class="gt_row gt_center"></td>
+<td class="gt_row gt_center">3 (100)</td>
+<td class="gt_row gt_center"></td>
+<td class="gt_row gt_center">32 (100)</td></tr>
+    <tr><td class="gt_row gt_left" style="text-align: left; text-indent: 10px;">N/A</td>
+<td class="gt_row gt_center">66 (100)</td>
+<td class="gt_row gt_center"></td>
+<td class="gt_row gt_center">120 (100)</td>
+<td class="gt_row gt_center"></td>
+<td class="gt_row gt_center">55 (100)</td>
+<td class="gt_row gt_center"></td>
+<td class="gt_row gt_center">22 (100)</td>
+<td class="gt_row gt_center"></td>
+<td class="gt_row gt_center">54 (100)</td>
+<td class="gt_row gt_center"></td></tr>
+    <tr><td class="gt_row gt_left" style="font-weight: bold;">Cancer stage (cases), n (%)</td>
+<td class="gt_row gt_center"></td>
+<td class="gt_row gt_center"></td>
+<td class="gt_row gt_center"></td>
+<td class="gt_row gt_center"></td>
+<td class="gt_row gt_center"></td>
+<td class="gt_row gt_center"></td>
+<td class="gt_row gt_center"></td>
+<td class="gt_row gt_center"></td>
+<td class="gt_row gt_center"></td>
+<td class="gt_row gt_center"></td></tr>
+    <tr><td class="gt_row gt_left" style="text-align: left; text-indent: 10px;">I</td>
+<td class="gt_row gt_center"></td>
+<td class="gt_row gt_center">40 (56)</td>
+<td class="gt_row gt_center"></td>
+<td class="gt_row gt_center">92 (70)</td>
+<td class="gt_row gt_center"></td>
+<td class="gt_row gt_center"></td>
+<td class="gt_row gt_center"></td>
+<td class="gt_row gt_center">3 (100)</td>
+<td class="gt_row gt_center"></td>
+<td class="gt_row gt_center"></td></tr>
+    <tr><td class="gt_row gt_left" style="text-align: left; text-indent: 10px;">II</td>
+<td class="gt_row gt_center"></td>
+<td class="gt_row gt_center">5 (7.0)</td>
+<td class="gt_row gt_center"></td>
+<td class="gt_row gt_center">4 (3.1)</td>
+<td class="gt_row gt_center"></td>
+<td class="gt_row gt_center"></td>
+<td class="gt_row gt_center"></td>
+<td class="gt_row gt_center"></td>
+<td class="gt_row gt_center"></td>
+<td class="gt_row gt_center"></td></tr>
+    <tr><td class="gt_row gt_left" style="text-align: left; text-indent: 10px;">III/IV</td>
+<td class="gt_row gt_center"></td>
+<td class="gt_row gt_center">22 (31)</td>
+<td class="gt_row gt_center"></td>
+<td class="gt_row gt_center">34 (26)</td>
+<td class="gt_row gt_center"></td>
+<td class="gt_row gt_center"></td>
+<td class="gt_row gt_center"></td>
+<td class="gt_row gt_center"></td>
+<td class="gt_row gt_center"></td>
+<td class="gt_row gt_center"></td></tr>
+    <tr><td class="gt_row gt_left" style="text-align: left; text-indent: 10px;">N/A</td>
+<td class="gt_row gt_center">66 (100)</td>
+<td class="gt_row gt_center"></td>
+<td class="gt_row gt_center">120 (100)</td>
+<td class="gt_row gt_center"></td>
+<td class="gt_row gt_center">55 (100)</td>
+<td class="gt_row gt_center"></td>
+<td class="gt_row gt_center">22 (100)</td>
+<td class="gt_row gt_center"></td>
+<td class="gt_row gt_center">54 (100)</td>
+<td class="gt_row gt_center"></td></tr>
+    <tr><td class="gt_row gt_left" style="text-align: left; text-indent: 10px;">Unknown</td>
+<td class="gt_row gt_center"></td>
+<td class="gt_row gt_center">4 (5.6)</td>
+<td class="gt_row gt_center"></td>
+<td class="gt_row gt_center">1 (0.8)</td>
+<td class="gt_row gt_center"></td>
+<td class="gt_row gt_center">8 (100)</td>
+<td class="gt_row gt_center"></td>
+<td class="gt_row gt_center"></td>
+<td class="gt_row gt_center"></td>
+<td class="gt_row gt_center">32 (100)</td></tr>
+    <tr><td class="gt_row gt_left" style="font-weight: bold;">Histology (Cases), n (%)</td>
+<td class="gt_row gt_center"></td>
+<td class="gt_row gt_center"></td>
+<td class="gt_row gt_center"></td>
+<td class="gt_row gt_center"></td>
+<td class="gt_row gt_center"></td>
+<td class="gt_row gt_center"></td>
+<td class="gt_row gt_center"></td>
+<td class="gt_row gt_center"></td>
+<td class="gt_row gt_center"></td>
+<td class="gt_row gt_center"></td></tr>
+    <tr><td class="gt_row gt_left" style="text-align: left; text-indent: 10px;">Endometrioid</td>
+<td class="gt_row gt_center"></td>
+<td class="gt_row gt_center">47 (66)</td>
+<td class="gt_row gt_center"></td>
+<td class="gt_row gt_center">94 (72)</td>
+<td class="gt_row gt_center"></td>
+<td class="gt_row gt_center">6 (75)</td>
+<td class="gt_row gt_center"></td>
+<td class="gt_row gt_center">3 (100)</td>
+<td class="gt_row gt_center"></td>
+<td class="gt_row gt_center"></td></tr>
+    <tr><td class="gt_row gt_left" style="text-align: left; text-indent: 10px;">Serous</td>
+<td class="gt_row gt_center"></td>
+<td class="gt_row gt_center">11 (15)</td>
+<td class="gt_row gt_center"></td>
+<td class="gt_row gt_center">19 (15)</td>
+<td class="gt_row gt_center"></td>
+<td class="gt_row gt_center"></td>
+<td class="gt_row gt_center"></td>
+<td class="gt_row gt_center"></td>
+<td class="gt_row gt_center"></td>
+<td class="gt_row gt_center"></td></tr>
+    <tr><td class="gt_row gt_left" style="text-align: left; text-indent: 10px;">Clear cell</td>
+<td class="gt_row gt_center"></td>
+<td class="gt_row gt_center">3 (4.2)</td>
+<td class="gt_row gt_center"></td>
+<td class="gt_row gt_center">3 (2.3)</td>
+<td class="gt_row gt_center"></td>
+<td class="gt_row gt_center"></td>
+<td class="gt_row gt_center"></td>
+<td class="gt_row gt_center"></td>
+<td class="gt_row gt_center"></td>
+<td class="gt_row gt_center"></td></tr>
+    <tr><td class="gt_row gt_left" style="text-align: left; text-indent: 10px;">Other *</td>
+<td class="gt_row gt_center"></td>
+<td class="gt_row gt_center">6 (8.5)</td>
+<td class="gt_row gt_center"></td>
+<td class="gt_row gt_center">15 (11)</td>
+<td class="gt_row gt_center"></td>
+<td class="gt_row gt_center">2 (25)</td>
+<td class="gt_row gt_center"></td>
+<td class="gt_row gt_center"></td>
+<td class="gt_row gt_center"></td>
+<td class="gt_row gt_center"></td></tr>
+    <tr><td class="gt_row gt_left" style="text-align: left; text-indent: 10px;">Unknown</td>
+<td class="gt_row gt_center"></td>
+<td class="gt_row gt_center">4 (5.6)</td>
+<td class="gt_row gt_center"></td>
+<td class="gt_row gt_center"></td>
+<td class="gt_row gt_center"></td>
+<td class="gt_row gt_center"></td>
+<td class="gt_row gt_center"></td>
+<td class="gt_row gt_center"></td>
+<td class="gt_row gt_center"></td>
+<td class="gt_row gt_center">32 (100)</td></tr>
+    <tr><td class="gt_row gt_left" style="text-align: left; text-indent: 10px;">N/A</td>
+<td class="gt_row gt_center">66 (100)</td>
+<td class="gt_row gt_center"></td>
+<td class="gt_row gt_center">120 (100)</td>
+<td class="gt_row gt_center"></td>
+<td class="gt_row gt_center">55 (100)</td>
+<td class="gt_row gt_center"></td>
+<td class="gt_row gt_center">22 (100)</td>
+<td class="gt_row gt_center"></td>
+<td class="gt_row gt_center">54 (100)</td>
+<td class="gt_row gt_center"></td></tr>
+  </tbody>
+  <tfoot class="gt_sourcenotes">
+    <tr>
+      <td class="gt_sourcenote" colspan="11"><b>LBC-TP</b> denotes liquid-based cytology (Thinprep), <b>HCP</b> healthcare professional, <b>IQR</b> interquartile range, <b>CAH</b> complex atypical hyperplasia.<br>* other histologies include carcinosarcoma, mucinous, small cell and squamous cancers.</td>
+    </tr>
+  </tfoot>
+  
+</table>
+</div>
+</div>
+<div id="table-2.-sensitivity-specificity-and-ppvnpvs." class="section level2">
+<h2>Table 2. Sensitivity, specificity, and PPV/NPVs.</h2>
+<pre class="r"><code># Prep cutoff data
+mldat_tmp &lt;- mldat %&gt;%
+  mutate(set = factor(set, levels = c(&quot;FORECEE Validation&quot;,
+                                      &quot;Barcelona Validation&quot;,
+                                      &quot;PMB Cohort&quot;, 
+                                      &quot;Lynch Cohort&quot;,
+                                      &quot;Karolinska Cohort&quot;))) %&gt;%
+  mutate(thresh1 = case_when(sum &gt;= cut$threshold[1] ~ &quot;Endometrial cancer&quot;,
+                             sum &lt; cut$threshold[1] ~ &quot;Control&quot;)) %&gt;%
+  mutate(thresh2 = case_when(sum &gt;= cut$threshold[2] ~ &quot;Endometrial cancer&quot;,
+                             sum &lt; cut$threshold[2] ~ &quot;Control&quot;)) %&gt;%
+  mutate(type = factor(type, levels = c(&quot;Endometrial cancer&quot;, &quot;Control&quot;))) %&gt;%
+  mutate(thresh1 = factor(thresh1, levels = c(&quot;Endometrial cancer&quot;, &quot;Control&quot;))) %&gt;%
+  mutate(thresh2 = factor(thresh2, levels = c(&quot;Endometrial cancer&quot;, &quot;Control&quot;)))
+
+
+
+# Create df
+dat &lt;- data.frame(matrix(nrow = 10, ncol = length(unique(mldat_tmp$set))+1))
+colnames(dat) &lt;- c(levels(mldat_tmp$set), &quot;threshold&quot;, &quot;type&quot;)
+dat$threshold &lt;- c(&quot;&quot;, &quot;&quot;, rep(&quot;Threshold 1&quot;, 4), rep(&quot;Threshold 2&quot;, 4))
+dat$type &lt;- c( &quot;endometrial cancers&quot;, &quot;cancer-free controls&quot;, rep(c(&quot;Sensitivity – % (95% CI)&quot;, &quot;Specificity – % (95% CI)&quot;, &quot;PPV – % (95% CI) †&quot;, &quot;NPV – % (95% CI) †&quot;), 2))
+
+for(i in  1:length(levels(mldat_tmp$set))){
+  name &lt;- levels(mldat_tmp$set)[i]
+  tmp &lt;- mldat_tmp %&gt;%
+    filter(set == name)
+  
+  pop_prev &lt;- case_when(name %in% c(&quot;FORECEE Validation&quot;,
+                                    &quot;Barcelona Validation&quot;) ~ 0.09,
+                        name == &quot;Lynch Cohort&quot; ~ 3/25,
+                        name == &quot;PMB Cohort&quot; ~ 8/74,
+                        name == &quot;Karolinska Cohort&quot; ~ 0.0009)
+  
+  tab &lt;- table(tmp$thresh1, tmp$type)
+  rval &lt;- summary(epi.tests(tab))
+  tab &lt;- matrix(c(tab[1,1], tab[2,1], tab[1,2], tab[2,2]), ncol = 2)
+  colnames(tab) &lt;- c(&quot;Case&quot;, &quot;Control&quot;)
+  rownames(tab) &lt;- c(&quot;Case&quot;, &quot;Control&quot;)
+  rval2 &lt;- BDtest(xmat=as.matrix(tab), pr=pop_prev, conf.level = 0.95)
+  
+  dat[1,i] &lt;- as.character(sum(tmp$type==&quot;Endometrial cancer&quot;))
+  dat[2,i] &lt;- as.character(sum(tmp$type==&quot;Control&quot;))
+  dat[3,i] &lt;- paste0(round(rval[3,1],2)*100, &quot; (&quot;,
+                     round(rval[3,2],2)*100, &quot;–&quot;,
+                     round(rval[3,3],2)*100, &quot;)&quot;)
+  dat[4,i] &lt;- paste0(round(rval[4,1],2)*100, &quot; (&quot;,
+                     round(rval[4,2],2)*100, &quot;–&quot;,
+                     round(rval[4,3],2)*100, &quot;)&quot;)
+  dat[5,i] &lt;- paste0(round(rval2$PPVNPVDAT[2,1],2)*100, &quot; (&quot;,
+                     round(rval2$PPVNPVDAT[2,2],2)*100, &quot;–&quot;,
+                     round(rval2$PPVNPVDAT[2,4],2)*100, &quot;)&quot;)
+  dat[6,i] &lt;- paste0(round(rval2$PPVNPVDAT[1,1],2)*100, &quot; (&quot;,
+                     round(rval2$PPVNPVDAT[1,2],2)*100, &quot;–&quot;,
+                     round(rval2$PPVNPVDAT[1,4],2)*100, &quot;)&quot;)
+  
+  tab &lt;- table(tmp$thresh2, tmp$type)
+  rval &lt;- summary(epi.tests(tab))
+  tab &lt;- matrix(c(tab[1,1], tab[2,1], tab[1,2], tab[2,2]), ncol = 2)
+  colnames(tab) &lt;- c(&quot;Case&quot;, &quot;Control&quot;)
+  rownames(tab) &lt;- c(&quot;Case&quot;, &quot;Control&quot;)
+  rval2 &lt;- BDtest(xmat=as.matrix(tab), pr=pop_prev, conf.level = 0.95)
+  
+  dat[7,i] &lt;- paste0(round(rval[3,1],2)*100, &quot; (&quot;,
+                     round(rval[3,2],2)*100, &quot;–&quot;,
+                     round(rval[3,3],2)*100, &quot;)&quot;)
+  dat[8,i] &lt;- paste0(round(rval[4,1],2)*100, &quot; (&quot;,
+                     round(rval[4,2],2)*100, &quot;–&quot;,
+                     round(rval[4,3],2)*100, &quot;)&quot;)
+  dat[9,i] &lt;- paste0(round(rval2$PPVNPVDAT[2,1],2)*100,&quot; (&quot;,
+                     round(rval2$PPVNPVDAT[2,2],2)*100, &quot;–&quot;,
+                     round(rval2$PPVNPVDAT[2,4],2)*100, &quot;)&quot;)
+  dat[10,i] &lt;- paste0(round(rval2$PPVNPVDAT[1,1],2)*100, &quot; (&quot;,
+                     round(rval2$PPVNPVDAT[1,2],2)*100, &quot;–&quot;,
+                     round(rval2$PPVNPVDAT[1,4],2)*100, &quot;)&quot;)
+}
+
+tbl &lt;- dat %&gt;%
+  gt(rowname_col = &quot;type&quot;, groupname_col = &quot;threshold&quot;) %&gt;%
+  cols_label(
+    &quot;FORECEE Validation&quot; = html(&quot;FORECEE&lt;br&gt;Validation&quot;),
+    &quot;Barcelona Validation&quot; = html(&quot;Barcelona&lt;br&gt;Validation&quot;),
+    &quot;PMB Cohort&quot; = html(&quot;PMB&lt;br&gt;Cohort&quot;),
+    &quot;Lynch Cohort&quot; = html(&quot;Lynch&lt;br&gt;Cohort&quot;),
+    &quot;Karolinska Cohort&quot; = html(&quot;Karolinska&lt;br&gt;Cohort&quot;)
+  ) %&gt;%
+  tab_options(table.font.names = &quot;Guardian Sans&quot;,
+              column_labels.font.weight = &quot;bold&quot;,
+              row_group.font.weight = &quot;bold&quot;,
+              data_row.padding = 2,
+              column_labels.font.size = 12,
+              table.font.size = 10,
+              row_group.padding = 2,
+              row_group.border.right.width = px(10),
+              summary_row.padding = 2,
+              table.border.top.color = &quot;white&quot;,
+              row_group.border.top.width = px(1),
+              row_group.border.bottom.width = px(1),
+              stub.border.width = px(0),
+              heading.title.font.size = 14) %&gt;% 
+  tab_spanner(label = &quot;Diagnostic&quot;,
+              columns = c(&quot;FORECEE Validation&quot;, &quot;Barcelona Validation&quot;, &quot;PMB Cohort&quot;)) %&gt;%
+  tab_spanner(label = &quot;Predictive&quot;,
+              columns = c(&quot;Lynch Cohort&quot;, &quot;Karolinska Cohort&quot;)) %&gt;%
+  gt::tab_source_note(gt::md(&quot;**PPV** denotes positive predictive value, **NPV** negative predictive value.&lt;br&gt;† Assumed population prevalences: consecutively included women (PMB cohort): 10.8%; symptomatic datasets (FORECEE, Barcelona Validation Set): 9%; asymptomatic/screening set (Karolinska Cohort): &lt;0.1%. Lynch cohort: 12%.&quot;))
+
+tbl</code></pre>
+<div id="abukgxetyg" style="overflow-x:auto;overflow-y:auto;width:auto;height:auto;">
+<style>html {
+  font-family: 'Guardian Sans';
+}
+
+#abukgxetyg .gt_table {
+  display: table;
+  border-collapse: collapse;
+  margin-left: auto;
+  margin-right: auto;
+  color: #333333;
+  font-size: 10px;
+  font-weight: normal;
+  font-style: normal;
+  background-color: #FFFFFF;
+  width: auto;
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #FFFFFF;
+  border-right-style: none;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #A8A8A8;
+  border-left-style: none;
+  border-left-width: 2px;
+  border-left-color: #D3D3D3;
+}
+
+#abukgxetyg .gt_heading {
+  background-color: #FFFFFF;
+  text-align: center;
+  border-bottom-color: #FFFFFF;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+}
+
+#abukgxetyg .gt_title {
+  color: #333333;
+  font-size: 14px;
+  font-weight: initial;
+  padding-top: 4px;
+  padding-bottom: 4px;
+  border-bottom-color: #FFFFFF;
+  border-bottom-width: 0;
+}
+
+#abukgxetyg .gt_subtitle {
+  color: #333333;
+  font-size: 85%;
+  font-weight: initial;
+  padding-top: 0;
+  padding-bottom: 6px;
+  border-top-color: #FFFFFF;
+  border-top-width: 0;
+}
+
+#abukgxetyg .gt_bottom_border {
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+}
+
+#abukgxetyg .gt_col_headings {
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+}
+
+#abukgxetyg .gt_col_heading {
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 12px;
+  font-weight: bold;
+  text-transform: inherit;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+  vertical-align: bottom;
+  padding-top: 5px;
+  padding-bottom: 6px;
+  padding-left: 5px;
+  padding-right: 5px;
+  overflow-x: hidden;
+}
+
+#abukgxetyg .gt_column_spanner_outer {
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 12px;
+  font-weight: bold;
+  text-transform: inherit;
+  padding-top: 0;
+  padding-bottom: 0;
+  padding-left: 4px;
+  padding-right: 4px;
+}
+
+#abukgxetyg .gt_column_spanner_outer:first-child {
+  padding-left: 0;
+}
+
+#abukgxetyg .gt_column_spanner_outer:last-child {
+  padding-right: 0;
+}
+
+#abukgxetyg .gt_column_spanner {
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  vertical-align: bottom;
+  padding-top: 5px;
+  padding-bottom: 5px;
+  overflow-x: hidden;
+  display: inline-block;
+  width: 100%;
+}
+
+#abukgxetyg .gt_group_heading {
+  padding: 2px;
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: bold;
+  text-transform: inherit;
+  border-top-style: solid;
+  border-top-width: 1px;
+  border-top-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 1px;
+  border-bottom-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 10px;
+  border-right-color: #D3D3D3;
+  vertical-align: middle;
+}
+
+#abukgxetyg .gt_empty_group_heading {
+  padding: 0.5px;
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: bold;
+  border-top-style: solid;
+  border-top-width: 1px;
+  border-top-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 1px;
+  border-bottom-color: #D3D3D3;
+  vertical-align: middle;
+}
+
+#abukgxetyg .gt_from_md > :first-child {
+  margin-top: 0;
+}
+
+#abukgxetyg .gt_from_md > :last-child {
+  margin-bottom: 0;
+}
+
+#abukgxetyg .gt_row {
+  padding-top: 2px;
+  padding-bottom: 2px;
+  padding-left: 5px;
+  padding-right: 5px;
+  margin: 10px;
+  border-top-style: solid;
+  border-top-width: 1px;
+  border-top-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+  vertical-align: middle;
+  overflow-x: hidden;
+}
+
+#abukgxetyg .gt_stub {
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: initial;
+  text-transform: inherit;
+  border-right-style: solid;
+  border-right-width: 0px;
+  border-right-color: #D3D3D3;
+  padding-left: 12px;
+}
+
+#abukgxetyg .gt_summary_row {
+  color: #333333;
+  background-color: #FFFFFF;
+  text-transform: inherit;
+  padding-top: 2px;
+  padding-bottom: 2px;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+#abukgxetyg .gt_first_summary_row {
+  padding-top: 2px;
+  padding-bottom: 2px;
+  padding-left: 5px;
+  padding-right: 5px;
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #D3D3D3;
+}
+
+#abukgxetyg .gt_grand_summary_row {
+  color: #333333;
+  background-color: #FFFFFF;
+  text-transform: inherit;
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+#abukgxetyg .gt_first_grand_summary_row {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+  border-top-style: double;
+  border-top-width: 6px;
+  border-top-color: #D3D3D3;
+}
+
+#abukgxetyg .gt_striped {
+  background-color: rgba(128, 128, 128, 0.05);
+}
+
+#abukgxetyg .gt_table_body {
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+}
+
+#abukgxetyg .gt_footnotes {
+  color: #333333;
+  background-color: #FFFFFF;
+  border-bottom-style: none;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 2px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+}
+
+#abukgxetyg .gt_footnote {
+  margin: 0px;
+  font-size: 90%;
+  padding: 4px;
+}
+
+#abukgxetyg .gt_sourcenotes {
+  color: #333333;
+  background-color: #FFFFFF;
+  border-bottom-style: none;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 2px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+}
+
+#abukgxetyg .gt_sourcenote {
+  font-size: 90%;
+  padding: 4px;
+}
+
+#abukgxetyg .gt_left {
+  text-align: left;
+}
+
+#abukgxetyg .gt_center {
+  text-align: center;
+}
+
+#abukgxetyg .gt_right {
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+
+#abukgxetyg .gt_font_normal {
+  font-weight: normal;
+}
+
+#abukgxetyg .gt_font_bold {
+  font-weight: bold;
+}
+
+#abukgxetyg .gt_font_italic {
+  font-style: italic;
+}
+
+#abukgxetyg .gt_super {
+  font-size: 65%;
+}
+
+#abukgxetyg .gt_footnote_marks {
+  font-style: italic;
+  font-weight: normal;
+  font-size: 65%;
+}
+</style>
+<table class="gt_table">
+  
+  <thead class="gt_col_headings">
+    <tr>
+      <th class="gt_col_heading gt_columns_bottom_border gt_left" rowspan="2" colspan="1"></th>
+      <th class="gt_center gt_columns_top_border gt_column_spanner_outer" rowspan="1" colspan="3">
+        <span class="gt_column_spanner">Diagnostic</span>
+      </th>
+      <th class="gt_center gt_columns_top_border gt_column_spanner_outer" rowspan="1" colspan="2">
+        <span class="gt_column_spanner">Predictive</span>
+      </th>
+    </tr>
+    <tr>
+      <th class="gt_col_heading gt_columns_bottom_border gt_left" rowspan="1" colspan="1">FORECEE<br>Validation</th>
+      <th class="gt_col_heading gt_columns_bottom_border gt_left" rowspan="1" colspan="1">Barcelona<br>Validation</th>
+      <th class="gt_col_heading gt_columns_bottom_border gt_left" rowspan="1" colspan="1">PMB<br>Cohort</th>
+      <th class="gt_col_heading gt_columns_bottom_border gt_left" rowspan="1" colspan="1">Lynch<br>Cohort</th>
+      <th class="gt_col_heading gt_columns_bottom_border gt_left" rowspan="1" colspan="1">Karolinska<br>Cohort</th>
+    </tr>
+  </thead>
+  <tbody class="gt_table_body">
+    <tr class="gt_group_heading_row">
+      <td colspan="6" class="gt_empty_group_heading"></td>
+    </tr>
+    <tr><td class="gt_row gt_left gt_stub">endometrial cancers</td>
+<td class="gt_row gt_left">71</td>
+<td class="gt_row gt_left">131</td>
+<td class="gt_row gt_left">8</td>
+<td class="gt_row gt_left">3</td>
+<td class="gt_row gt_left">32</td></tr>
+    <tr><td class="gt_row gt_left gt_stub">cancer-free controls</td>
+<td class="gt_row gt_left">66</td>
+<td class="gt_row gt_left">120</td>
+<td class="gt_row gt_left">55</td>
+<td class="gt_row gt_left">22</td>
+<td class="gt_row gt_left">54</td></tr>
+    <tr class="gt_group_heading_row">
+      <td colspan="6" class="gt_group_heading">Threshold 1</td>
+    </tr>
+    <tr><td class="gt_row gt_left gt_stub">Sensitivity – % (95% CI)</td>
+<td class="gt_row gt_left">97 (90–100)</td>
+<td class="gt_row gt_left">90 (84–95)</td>
+<td class="gt_row gt_left">100 (63–100)</td>
+<td class="gt_row gt_left">33 (1–91)</td>
+<td class="gt_row gt_left">84 (67–95)</td></tr>
+    <tr><td class="gt_row gt_left gt_stub">Specificity – % (95% CI)</td>
+<td class="gt_row gt_left">76 (64–85)</td>
+<td class="gt_row gt_left">87 (79–92)</td>
+<td class="gt_row gt_left">89 (78–96)</td>
+<td class="gt_row gt_left">100 (85–100)</td>
+<td class="gt_row gt_left">80 (66–89)</td></tr>
+    <tr><td class="gt_row gt_left gt_stub">PPV – % (95% CI) †</td>
+<td class="gt_row gt_left">28 (22–38)</td>
+<td class="gt_row gt_left">40 (31–51)</td>
+<td class="gt_row gt_left">45 (31–60)</td>
+<td class="gt_row gt_left">51 (17–80)</td>
+<td class="gt_row gt_left">0 (0–1)</td></tr>
+    <tr><td class="gt_row gt_left gt_stub">NPV – % (95% CI) †</td>
+<td class="gt_row gt_left">100 (99–100)</td>
+<td class="gt_row gt_left">99 (98–99)</td>
+<td class="gt_row gt_left">98 (94–99)</td>
+<td class="gt_row gt_left">92 (87–96)</td>
+<td class="gt_row gt_left">100 (100–100)</td></tr>
+    <tr class="gt_group_heading_row">
+      <td colspan="6" class="gt_group_heading">Threshold 2</td>
+    </tr>
+    <tr><td class="gt_row gt_left gt_stub">Sensitivity – % (95% CI)</td>
+<td class="gt_row gt_left">82 (71–90)</td>
+<td class="gt_row gt_left">79 (71–85)</td>
+<td class="gt_row gt_left">100 (63–100)</td>
+<td class="gt_row gt_left">0 (0–71)</td>
+<td class="gt_row gt_left">69 (50–84)</td></tr>
+    <tr><td class="gt_row gt_left gt_stub">Specificity – % (95% CI)</td>
+<td class="gt_row gt_left">97 (89–100)</td>
+<td class="gt_row gt_left">98 (93–99)</td>
+<td class="gt_row gt_left">98 (90–100)</td>
+<td class="gt_row gt_left">100 (85–100)</td>
+<td class="gt_row gt_left">98 (90–100)</td></tr>
+    <tr><td class="gt_row gt_left gt_stub">PPV – % (95% CI) †</td>
+<td class="gt_row gt_left">73 (46–91)</td>
+<td class="gt_row gt_left">76 (55–91)</td>
+<td class="gt_row gt_left">72 (47–87)</td>
+<td class="gt_row gt_left">37 (9–76)</td>
+<td class="gt_row gt_left">3 (1–19)</td></tr>
+    <tr><td class="gt_row gt_left gt_stub">NPV – % (95% CI) †</td>
+<td class="gt_row gt_left">98 (97–99)</td>
+<td class="gt_row gt_left">98 (97–98)</td>
+<td class="gt_row gt_left">98 (94–99)</td>
+<td class="gt_row gt_left">90 (86–94)</td>
+<td class="gt_row gt_left">100 (100–100)</td></tr>
+  </tbody>
+  <tfoot class="gt_sourcenotes">
+    <tr>
+      <td class="gt_sourcenote" colspan="6"><strong>PPV</strong> denotes positive predictive value, <strong>NPV</strong> negative predictive value.<br>† Assumed population prevalences: consecutively included women (PMB cohort): 10.8%; symptomatic datasets (FORECEE, Barcelona Validation Set): 9%; asymptomatic/screening set (Karolinska Cohort): &lt;0.1%. Lynch cohort: 12%.</td>
+    </tr>
+  </tfoot>
+  
+</table>
+</div>
+</div>
+<div id="table-3.-menopausal-status-and-histology." class="section level2">
+<h2>Table 3. Menopausal status and histology.</h2>
+<pre class="r"><code># Prep data
+tmp &lt;- mldat %&gt;%
+  filter(set %in% c(&quot;Barcelona Validation&quot;, &quot;FORECEE Validation&quot;) &amp; menopause %in% c(&quot;Pre&quot;, &quot;Post&quot;)) %&gt;%
+  mutate(set = factor(set, levels = c(&quot;FORECEE Validation&quot;, &quot;Barcelona Validation&quot;))) %&gt;%
+  mutate(sum_cutoff = case_when(sum &gt;= 0.03 ~ &quot;positive&quot;,
+                                sum &lt; 0.03 ~ &quot;negative&quot;)) %&gt;%
+  mutate(sum_cutoff2 = case_when(sum &gt;= 0.63 ~ &quot;positive&quot;,
+                                 sum &lt; 0.63 ~ &quot;negative&quot;)) %&gt;%
+  mutate(type = factor(type, levels = c(&quot;Endometrial cancer&quot;, &quot;Control&quot;)),
+         sum_cutoff = factor(sum_cutoff, levels = c(&quot;positive&quot;, &quot;negative&quot;)),
+         sum_cutoff2 = factor(sum_cutoff2, levels = c(&quot;positive&quot;, &quot;negative&quot;))) %&gt;%
+  droplevels()
+
+# Prep df
+dat &lt;- data.frame(matrix(nrow = 8, ncol = 4))
+colnames(dat) &lt;- c(&quot;threshold&quot;, &quot;type&quot;,
+                   &quot;Pre-menopause&quot;, &quot;Post-menopause&quot;)
+dat$threshold &lt;- rep(c(&quot;Threshold 1&quot;, &quot;Threshold 2&quot;), each = 4)
+dat$type &lt;- rep(c(&quot;Cancer cases, n&quot;,
+                  &quot;Controls, n&quot;,
+                  &quot;Sensitivity – % (95% CI)&quot;,
+                  &quot;Specificity – % (95% CI)&quot;),
+                2)
+
+for (i in 1:length(levels(tmp$menopause))){
+
+    meno &lt;- levels(tmp$menopause)[i]
+    tmp2 &lt;- tmp %&gt;%
+      filter(menopause == meno) %&gt;%
+      droplevels()
+    
+    # Threshold 1
+    tab &lt;- table(tmp2$sum_cutoff, tmp2$type)
+    rval &lt;- summary(epi.tests(tab))
+    
+    dat[1,i+2] &lt;- nrow(tmp2[tmp2$type==&quot;Endometrial cancer&quot;,])
+    dat[2,i+2] &lt;- nrow(tmp2[tmp2$type==&quot;Control&quot;,])
+    dat[3,i+2] &lt;- paste0(round(rval[3,1],2)*100, &quot; (&quot;, round(rval[3,2],2)*100, &quot;-&quot;, round(rval[3,3],2)*100, &quot;)&quot;)
+    dat[4,i+2] &lt;- paste0(round(rval[4,1],2)*100, &quot; (&quot;, round(rval[4,2],2)*100, &quot;-&quot;, round(rval[4,3],2)*100, &quot;)&quot;)
+    
+    # Threshold 2
+    tab &lt;- table(tmp2$sum_cutoff2, tmp2$type)
+    rval &lt;- summary(epi.tests(tab))
+    
+    dat[5,i+2] &lt;- nrow(tmp2[tmp2$type==&quot;Endometrial cancer&quot;,])
+    dat[6,i+2] &lt;- nrow(tmp2[tmp2$type==&quot;Control&quot;,])
+    dat[7,i+2] &lt;- paste0(round(rval[3,1],2)*100, &quot; (&quot;, round(rval[3,2],2)*100, &quot;-&quot;, round(rval[3,3],2)*100, &quot;)&quot;)
+    dat[8,i+2] &lt;- paste0(round(rval[4,1],2)*100, &quot; (&quot;, round(rval[4,2],2)*100, &quot;-&quot;, round(rval[4,3],2)*100, &quot;)&quot;)
+    
+}
+
+dat_m &lt;- dat
+
+
+# Do same for histology
+tmp &lt;- mldat %&gt;%
+  filter(!is.na(type) &amp; set %in% c(&quot;Barcelona Validation&quot;, &quot;FORECEE Validation&quot;)) %&gt;%
+  mutate(set = factor(set, levels = c(&quot;FORECEE Validation&quot;, &quot;Barcelona Validation&quot;))) %&gt;%
+  droplevels() %&gt;%
+  mutate(thresh1 = case_when(sum &gt;= cut$threshold[1] ~ &quot;Endometrial cancer&quot;,
+                             sum &lt; cut$threshold[1] ~ &quot;Control&quot;)) %&gt;%
+  mutate(thresh2 = case_when(sum &gt;= cut$threshold[2] ~ &quot;Endometrial cancer&quot;,
+                             sum &lt; cut$threshold[2] ~ &quot;Control&quot;)) %&gt;%
+  mutate(type = factor(type, levels = c(&quot;Endometrial cancer&quot;, &quot;Control&quot;))) %&gt;%
+  mutate(thresh1 = factor(thresh1, levels = c(&quot;Endometrial cancer&quot;, &quot;Control&quot;))) %&gt;%
+  mutate(thresh2 = factor(thresh2, levels = c(&quot;Endometrial cancer&quot;, &quot;Control&quot;))) %&gt;%
+  filter(hist %in% c(&quot;N/A&quot;, &quot;Serous&quot;, &quot;Endometrioid&quot;)) %&gt;%
+  mutate(hist = factor(hist, levels = c(&quot;N/A&quot;, &quot;Endometrioid&quot;, &quot;Serous&quot;)))
+
+# Prep df
+dat &lt;- data.frame(matrix(nrow = 8, ncol = 4))
+colnames(dat) &lt;- c(&quot;threshold&quot;, &quot;type&quot;,
+                   &quot;Endometrioid&quot;, &quot;Serous&quot;)
+dat$threshold &lt;- rep(c(&quot;Threshold 1&quot;, &quot;Threshold 2&quot;), each = 4)
+dat$type &lt;- rep(c(&quot;Cancer cases, n&quot;,
+                  &quot;Controls, n&quot;,
+                  &quot;Sensitivity – % (95% CI)&quot;,
+                  &quot;Specificity – % (95% CI)&quot;),
+                2)
+
+for (i in 2:length(levels(tmp$hist))){
+  
+    tmp2 &lt;- tmp %&gt;%
+      filter(hist %in% c(&quot;N/A&quot;, levels(tmp$hist)[i])) %&gt;%
+      droplevels()
+    
+    # Threshold 1
+    tab &lt;- table(tmp2$thresh1, tmp2$type)
+    rval &lt;- summary(epi.tests(tab))
+    
+    dat[1,i+1] &lt;- nrow(tmp2[tmp2$type==&quot;Endometrial cancer&quot;,])
+    dat[2,i+1] &lt;- nrow(tmp2[tmp2$type==&quot;Control&quot;,])
+    dat[3,i+1] &lt;- paste0(round(rval[3,1],2)*100, &quot; (&quot;, round(rval[3,2],2)*100, &quot;-&quot;, round(rval[3,3],2)*100, &quot;)&quot;)
+    dat[4,i+1] &lt;- paste0(round(rval[4,1],2)*100, &quot; (&quot;, round(rval[4,2],2)*100, &quot;-&quot;, round(rval[4,3],2)*100, &quot;)&quot;)
+    
+    # Threshold 2
+    tab &lt;- table(tmp2$thresh2, tmp2$type)
+    rval &lt;- summary(epi.tests(tab))
+    
+    dat[5,i+1] &lt;- nrow(tmp2[tmp2$type==&quot;Endometrial cancer&quot;,])
+    dat[6,i+1] &lt;- nrow(tmp2[tmp2$type==&quot;Control&quot;,])
+    dat[7,i+1] &lt;- paste0(round(rval[3,1],2)*100, &quot; (&quot;, round(rval[3,2],2)*100, &quot;-&quot;, round(rval[3,3],2)*100, &quot;)&quot;)
+    dat[8,i+1] &lt;- paste0(round(rval[4,1],2)*100, &quot; (&quot;, round(rval[4,2],2)*100, &quot;-&quot;, round(rval[4,3],2)*100, &quot;)&quot;)
+}
+
+dat_h &lt;- dat
+
+dat &lt;- left_join(dat_m, dat_h)
+
+tbl &lt;- dat %&gt;%
+  gt(rowname_col = &quot;type&quot;, groupname_col = &quot;threshold&quot;) %&gt;%
+  tab_spanner(label = &quot;Menopausal status&quot;,
+              columns = c(&quot;Pre-menopause&quot;,
+                          &quot;Post-menopause&quot;)) %&gt;%
+  tab_spanner(label = &quot;Histology&quot;,
+              columns = c(&quot;Endometrioid&quot;,
+                          &quot;Serous&quot;)) %&gt;%
+  text_transform(locations = cells_body(),
+                 fn = function(x){
+                   gsub(&quot;, &quot;, html(&quot;,&lt;br&gt;&quot;), x)
+                 }
+  ) %&gt;%
+  tab_options(table.font.names = &quot;Guardian Sans&quot;,
+              column_labels.font.weight = &quot;bold&quot;,
+              row_group.font.weight = &quot;bold&quot;,
+              data_row.padding = 2,
+              column_labels.font.size = 12,
+              table.font.size = 10,
+              row_group.padding = 2,
+              row_group.border.right.width = px(10),
+              summary_row.padding = 2,
+              table.border.top.color = &quot;white&quot;,
+              row_group.border.top.width = px(1),
+              row_group.border.bottom.width = px(1),
+              stub.border.width = px(0),
+              heading.title.font.size = 14)
+
+tbl</code></pre>
+<div id="aawybppxxc" style="overflow-x:auto;overflow-y:auto;width:auto;height:auto;">
+<style>html {
+  font-family: 'Guardian Sans';
+}
+
+#aawybppxxc .gt_table {
+  display: table;
+  border-collapse: collapse;
+  margin-left: auto;
+  margin-right: auto;
+  color: #333333;
+  font-size: 10px;
+  font-weight: normal;
+  font-style: normal;
+  background-color: #FFFFFF;
+  width: auto;
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #FFFFFF;
+  border-right-style: none;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #A8A8A8;
+  border-left-style: none;
+  border-left-width: 2px;
+  border-left-color: #D3D3D3;
+}
+
+#aawybppxxc .gt_heading {
+  background-color: #FFFFFF;
+  text-align: center;
+  border-bottom-color: #FFFFFF;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+}
+
+#aawybppxxc .gt_title {
+  color: #333333;
+  font-size: 14px;
+  font-weight: initial;
+  padding-top: 4px;
+  padding-bottom: 4px;
+  border-bottom-color: #FFFFFF;
+  border-bottom-width: 0;
+}
+
+#aawybppxxc .gt_subtitle {
+  color: #333333;
+  font-size: 85%;
+  font-weight: initial;
+  padding-top: 0;
+  padding-bottom: 6px;
+  border-top-color: #FFFFFF;
+  border-top-width: 0;
+}
+
+#aawybppxxc .gt_bottom_border {
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+}
+
+#aawybppxxc .gt_col_headings {
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+}
+
+#aawybppxxc .gt_col_heading {
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 12px;
+  font-weight: bold;
+  text-transform: inherit;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+  vertical-align: bottom;
+  padding-top: 5px;
+  padding-bottom: 6px;
+  padding-left: 5px;
+  padding-right: 5px;
+  overflow-x: hidden;
+}
+
+#aawybppxxc .gt_column_spanner_outer {
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 12px;
+  font-weight: bold;
+  text-transform: inherit;
+  padding-top: 0;
+  padding-bottom: 0;
+  padding-left: 4px;
+  padding-right: 4px;
+}
+
+#aawybppxxc .gt_column_spanner_outer:first-child {
+  padding-left: 0;
+}
+
+#aawybppxxc .gt_column_spanner_outer:last-child {
+  padding-right: 0;
+}
+
+#aawybppxxc .gt_column_spanner {
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  vertical-align: bottom;
+  padding-top: 5px;
+  padding-bottom: 5px;
+  overflow-x: hidden;
+  display: inline-block;
+  width: 100%;
+}
+
+#aawybppxxc .gt_group_heading {
+  padding: 2px;
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: bold;
+  text-transform: inherit;
+  border-top-style: solid;
+  border-top-width: 1px;
+  border-top-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 1px;
+  border-bottom-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 10px;
+  border-right-color: #D3D3D3;
+  vertical-align: middle;
+}
+
+#aawybppxxc .gt_empty_group_heading {
+  padding: 0.5px;
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: bold;
+  border-top-style: solid;
+  border-top-width: 1px;
+  border-top-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 1px;
+  border-bottom-color: #D3D3D3;
+  vertical-align: middle;
+}
+
+#aawybppxxc .gt_from_md > :first-child {
+  margin-top: 0;
+}
+
+#aawybppxxc .gt_from_md > :last-child {
+  margin-bottom: 0;
+}
+
+#aawybppxxc .gt_row {
+  padding-top: 2px;
+  padding-bottom: 2px;
+  padding-left: 5px;
+  padding-right: 5px;
+  margin: 10px;
+  border-top-style: solid;
+  border-top-width: 1px;
+  border-top-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+  vertical-align: middle;
+  overflow-x: hidden;
+}
+
+#aawybppxxc .gt_stub {
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: initial;
+  text-transform: inherit;
+  border-right-style: solid;
+  border-right-width: 0px;
+  border-right-color: #D3D3D3;
+  padding-left: 12px;
+}
+
+#aawybppxxc .gt_summary_row {
+  color: #333333;
+  background-color: #FFFFFF;
+  text-transform: inherit;
+  padding-top: 2px;
+  padding-bottom: 2px;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+#aawybppxxc .gt_first_summary_row {
+  padding-top: 2px;
+  padding-bottom: 2px;
+  padding-left: 5px;
+  padding-right: 5px;
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #D3D3D3;
+}
+
+#aawybppxxc .gt_grand_summary_row {
+  color: #333333;
+  background-color: #FFFFFF;
+  text-transform: inherit;
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+#aawybppxxc .gt_first_grand_summary_row {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+  border-top-style: double;
+  border-top-width: 6px;
+  border-top-color: #D3D3D3;
+}
+
+#aawybppxxc .gt_striped {
+  background-color: rgba(128, 128, 128, 0.05);
+}
+
+#aawybppxxc .gt_table_body {
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+}
+
+#aawybppxxc .gt_footnotes {
+  color: #333333;
+  background-color: #FFFFFF;
+  border-bottom-style: none;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 2px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+}
+
+#aawybppxxc .gt_footnote {
+  margin: 0px;
+  font-size: 90%;
+  padding: 4px;
+}
+
+#aawybppxxc .gt_sourcenotes {
+  color: #333333;
+  background-color: #FFFFFF;
+  border-bottom-style: none;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 2px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+}
+
+#aawybppxxc .gt_sourcenote {
+  font-size: 90%;
+  padding: 4px;
+}
+
+#aawybppxxc .gt_left {
+  text-align: left;
+}
+
+#aawybppxxc .gt_center {
+  text-align: center;
+}
+
+#aawybppxxc .gt_right {
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+
+#aawybppxxc .gt_font_normal {
+  font-weight: normal;
+}
+
+#aawybppxxc .gt_font_bold {
+  font-weight: bold;
+}
+
+#aawybppxxc .gt_font_italic {
+  font-style: italic;
+}
+
+#aawybppxxc .gt_super {
+  font-size: 65%;
+}
+
+#aawybppxxc .gt_footnote_marks {
+  font-style: italic;
+  font-weight: normal;
+  font-size: 65%;
+}
+</style>
+<table class="gt_table">
+  
+  <thead class="gt_col_headings">
+    <tr>
+      <th class="gt_col_heading gt_columns_bottom_border gt_left" rowspan="2" colspan="1"></th>
+      <th class="gt_center gt_columns_top_border gt_column_spanner_outer" rowspan="1" colspan="2">
+        <span class="gt_column_spanner">Menopausal status</span>
+      </th>
+      <th class="gt_center gt_columns_top_border gt_column_spanner_outer" rowspan="1" colspan="2">
+        <span class="gt_column_spanner">Histology</span>
+      </th>
+    </tr>
+    <tr>
+      <th class="gt_col_heading gt_columns_bottom_border gt_left" rowspan="1" colspan="1">Pre-menopause</th>
+      <th class="gt_col_heading gt_columns_bottom_border gt_left" rowspan="1" colspan="1">Post-menopause</th>
+      <th class="gt_col_heading gt_columns_bottom_border gt_left" rowspan="1" colspan="1">Endometrioid</th>
+      <th class="gt_col_heading gt_columns_bottom_border gt_left" rowspan="1" colspan="1">Serous</th>
+    </tr>
+  </thead>
+  <tbody class="gt_table_body">
+    <tr class="gt_group_heading_row">
+      <td colspan="5" class="gt_group_heading">Threshold 1</td>
+    </tr>
+    <tr><td class="gt_row gt_left gt_stub">Cancer cases, n</td>
+<td class="gt_row gt_left">7</td>
+<td class="gt_row gt_left">187</td>
+<td class="gt_row gt_left">141</td>
+<td class="gt_row gt_left">30</td></tr>
+    <tr><td class="gt_row gt_left gt_stub">Controls, n</td>
+<td class="gt_row gt_left">19</td>
+<td class="gt_row gt_left">163</td>
+<td class="gt_row gt_left">186</td>
+<td class="gt_row gt_left">186</td></tr>
+    <tr><td class="gt_row gt_left gt_stub">Sensitivity – % (95% CI)</td>
+<td class="gt_row gt_left">100 (59-100)</td>
+<td class="gt_row gt_left">93 (88-96)</td>
+<td class="gt_row gt_left">93 (87-97)</td>
+<td class="gt_row gt_left">97 (83-100)</td></tr>
+    <tr><td class="gt_row gt_left gt_stub">Specificity – % (95% CI)</td>
+<td class="gt_row gt_left">79 (54-94)</td>
+<td class="gt_row gt_left">83 (76-88)</td>
+<td class="gt_row gt_left">83 (77-88)</td>
+<td class="gt_row gt_left">83 (77-88)</td></tr>
+    <tr class="gt_group_heading_row">
+      <td colspan="5" class="gt_group_heading">Threshold 2</td>
+    </tr>
+    <tr><td class="gt_row gt_left gt_stub">Cancer cases, n</td>
+<td class="gt_row gt_left">7</td>
+<td class="gt_row gt_left">187</td>
+<td class="gt_row gt_left">141</td>
+<td class="gt_row gt_left">30</td></tr>
+    <tr><td class="gt_row gt_left gt_stub">Controls, n</td>
+<td class="gt_row gt_left">19</td>
+<td class="gt_row gt_left">163</td>
+<td class="gt_row gt_left">186</td>
+<td class="gt_row gt_left">186</td></tr>
+    <tr><td class="gt_row gt_left gt_stub">Sensitivity – % (95% CI)</td>
+<td class="gt_row gt_left">86 (42-100)</td>
+<td class="gt_row gt_left">80 (73-85)</td>
+<td class="gt_row gt_left">83 (76-89)</td>
+<td class="gt_row gt_left">80 (61-92)</td></tr>
+    <tr><td class="gt_row gt_left gt_stub">Specificity – % (95% CI)</td>
+<td class="gt_row gt_left">100 (82-100)</td>
+<td class="gt_row gt_left">97 (93-99)</td>
+<td class="gt_row gt_left">97 (94-99)</td>
+<td class="gt_row gt_left">97 (94-99)</td></tr>
+  </tbody>
+  
+  
+</table>
+</div>
+</div>
+<div id="figure-2." class="section level2">
+<h2>Figure 2.</h2>
+<pre class="r"><code>mldat_mut_us &lt;- mldat %&gt;%
+  filter(dnamut_analysis == &quot;Yes&quot; &amp; !is.na(dnamut_analysis) &amp; !is.na(us_thickness) &amp; !is.na(type)) %&gt;%
+  droplevels()
+
+p1 &lt;- plot_3_rocs(mldat_mut_us$type,
+                  mldat_mut_us$sum, mldat_mut_us$us_thickness, mldat_mut_us$dnamut_nmut,
+                  &quot;black&quot;, cols[7], cols[6],
+                  &quot;WID™-qEC&quot;, &quot;US&quot;, &quot;DNAmut&quot;)
+
+tmp &lt;- mldat %&gt;%
+  filter(set == &quot;Karolinska Cohort&quot; &amp; !is.na(time_to_diagnosis)) %&gt;%
+  mutate(thresh1 = case_when(sum &gt;= cut$threshold[1] ~ &quot;Endometrial cancer&quot;,
+                             sum &lt; cut$threshold[1] ~ &quot;Control&quot;)) %&gt;%
+  mutate(type = factor(type, levels = c(&quot;Endometrial cancer&quot;, &quot;Control&quot;))) %&gt;%
+  mutate(thresh1 = factor(thresh1, levels = c(&quot;Endometrial cancer&quot;, &quot;Control&quot;))) %&gt;%
+  droplevels() 
+
+p2 &lt;- tmp %&gt;%
+  mutate(type = factor(type, levels = c(&quot;Control&quot;, &quot;Endometrial cancer&quot;))) %&gt;%
+  ggplot(aes(x = time_to_diagnosis/365,
+             y = log(sum+0.00001),
+             colour = type)) +
+  geom_point(size = 1) +
+  scale_colour_jama() +
+  theme(panel.background = element_blank(),
+        legend.key = element_blank(),
+        legend.position = &quot;top&quot;,
+        legend.title = element_blank()) +
+  xlab(&quot;Time to diagnosis (years)&quot;) +
+  ylab(expression(paste(atop(bold(&quot;WID™-qEC&quot;), &quot;log (&quot;~Sigma~&quot; PMR)&quot;)))) +
+  geom_hline(yintercept = log(0.03),
+             linetype = &quot;dotted&quot;,
+             colour = cols[1]) +
+  geom_hline(yintercept = log(0.63),
+             linetype = &quot;dotdash&quot;,
+             colour = cols[1]) +
+  annotate(&quot;text&quot;,
+           x = 4,
+           y = log(0.03)-0.5,
+           label = &quot;Threshold 1&quot;,
+           size = 3,
+           colour = cols[1]) +
+  annotate(&quot;text&quot;,
+           x = 4,
+           y = log(0.63)-0.5,
+           label = &quot;Threshold 2&quot;,
+           size = 3,
+           colour = cols[1])
+
+(p1 + p2) +
+  plot_annotation(tag_levels = &quot;A&quot;) </code></pre>
+<p><img src="3-main_files/figure-html/unnamed-chunk-4-1.png" width="672" /></p>
+</div>
+</div>
+
+
+
+
+</div>
+
+<script>
+
+// add bootstrap table styles to pandoc tables
+function bootstrapStylePandocTables() {
+  $('tr.odd').parent('tbody').parent('table').addClass('table table-condensed');
+}
+$(document).ready(function () {
+  bootstrapStylePandocTables();
+});
+
+
+</script>
+
+<!-- tabsets -->
+
+<script>
+$(document).ready(function () {
+  window.buildTabsets("TOC");
+});
+
+$(document).ready(function () {
+  $('.tabset-dropdown > .nav-tabs > li').click(function () {
+    $(this).parent().toggleClass('nav-tabs-open');
+  });
+});
+</script>
+
+<!-- code folding -->
+<script>
+$(document).ready(function () {
+  window.initializeCodeFolding("show" === "show");
+});
+</script>
+
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>

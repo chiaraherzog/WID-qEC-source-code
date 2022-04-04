@@ -1,0 +1,25 @@
+name: "A simple cervico-vaginal epigenetic test for early endometrial cancer detection – validation in several cohort and case/control sets; source code"
+exclude: ["*.png", "*.Rdata","/output"]
+navbar:
+  title: "WID-qEC source code"
+  left:
+    - text: "WID-qEC source code"
+      menu:
+       - text: "Overview"
+         href: index.html
+       - text: "1. Top 50 DMPs (array data)"
+         href: 1-dmps.html
+       - text: "2. Marker and threshold selection"
+         href: 2-markers_thresholds.html
+       - text: "3. Main display items"
+         href: 3-main.html
+       - text: "4. Epidemiological factors"
+         href: 4-age-stage-grade-histology.html
+       - text: "5. Barcelona Validation set"
+         href: 5-barcelona-set.html
+       - text: "6. Lynch Cohort"
+         href: 6-lynch-cohort.html
+       - text: "7. Karolinska Cohort"
+         href: 7-karolinska-cohort.html
+       - text: "8. PPV/NPV"
+         href: 8-ppv-npv.html

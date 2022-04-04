@@ -1,0 +1,231 @@
+library(pROC)
+
+#==============================================================================#
+# load EC data
+
+beta_CO_EC_tr <- readRDS("~/Dropbox/data/3c/beta_CO_EC_tr.Rds")
+beta_CO_EC_val <- readRDS("~/Dropbox/data/3c/beta_CO_EC_val.Rds")
+pheno <- readRDS("~/Dropbox/ucl-iwh/3C/0-discovery-preprocess/6-files/3C_pheno.Rds")
+
+ind <- match(colnames(beta_CO_EC_tr), rownames(pheno))
+beta <- beta_CO_EC_tr
+type <- pheno$type[ind]
+type <- factor(type, levels=c('Endometrial','Control'))
+ic <- pheno$ic[ind]
+age <- pheno$age[ind]
+
+ind <- match(colnames(beta_CO_EC_val), rownames(pheno))
+type_val <- pheno$type[ind]
+type_val <- factor(type_val, levels=c('Endometrial','Control'))
+ic_val <- pheno$ic[ind]
+age_val <- pheno$age[ind]
+
+db <- readRDS("~/Dropbox/ucl-iwh/3C/2-EC/2-output/delta-beta.Rds")
+load("~/Dropbox/ucl-iwh/ec-oc-bc/local-analysis/R_files/EPICanno.ilm10b4.hg19.Rdata")
+
+
+#==============================================================================#
+# load CIN data
+
+beta_HPVp_CIN3_tr <- readRDS("~/Dropbox/data/cin/beta_HPVp_CIN3_tr.Rds")
+pheno <- readRDS("~/Dropbox/ucl-iwh/CIN/2-data-load/6-files/CIN_pheno.Rds")
+
+ind <- match(colnames(beta_HPVp_CIN3_tr), rownames(pheno))
+type_cin <- pheno$type[ind]
+type_cin <- factor(type_cin, levels=c('CIN3+','Control'))
+ic_cin <- pheno$ic[ind]
+
+
+#==============================================================================#
+# Plot versus tumour fraction
+
+load("~/Dropbox/ucl-iwh/3C/2-EC/7-analysis/3-output/pdat.Rdata")
+pdat <- pdat[pdat$dataset=='Validation',]
+#identical(rownames(pdat), colnames(beta_CO_EC_val)) #TRUE
+
+
+# #==============================================================================#
+# # plot
+# 
+# load("~/Dropbox/ucl-iwh/3C/2-EC/7-analysis/1-output/index_comp.Rdata")
+
+#==============================================================================#
+# plot
+
+setwd("~/Dropbox/ucl-iwh/3C/2-EC/10-PCR-panel/1-output")
+RANGE <- 500
+
+ord <- order(abs(db[,3]),decreasing = FALSE)
+pdf(file="top50-pval.pdf", width=20,height=200)
+
+# ord <- order(abs(db[,1]),decreasing = TRUE)
+# pdf(file="top50-db.pdf", width=14,height=200)
+
+layout(matrix(1:250,50,5,byrow=TRUE))
+
+for (i in 1:50){
+
+        
+        #-----------------------------------#
+        # Pull up annotation
+        ind0 <- match(rownames(beta)[ord[i]],anno$Name)
+        gene_name <- strsplit(anno$UCSC_RefGene_Name[ind0],split=';')[[1]][1]
+        gene_anno <- strsplit(anno$UCSC_RefGene_Group[ind0],split=';')[[1]][1]
+        
+        #-----------------------------------#
+        # Plot beta versus ic in training set
+        ic.control <- ic[which(type=='Control')]
+        beta.control <- as.numeric(beta[ord[i],which(type=='Control')])
+        ic.case <- ic[which(type!='Control')]
+        beta.case <- as.numeric(beta[ord[i],which(type!='Control')])
+        
+        dat.control <- data.frame(beta=beta.control, ic=ic.control)
+        dat.case <- data.frame(beta=beta.case, ic=ic.case)
+        
+        fit.control <- lm(beta ~ ic, data=dat.control)
+        fit.case <- lm(beta ~ ic, data=dat.case)
+        
+        delta_beta <- round(abs(fit.case$coefficients[1]-fit.control$coefficients[1]),digits=3)
+        auc <- round(as.numeric(roc(type, beta[ord[i],],quiet=T)$auc),digits=2)
+        
+        plot(ic.control,beta.control,ylim=c(0,1),
+             xlab='IC fraction',
+             ylab='beta-value',
+             main=paste(i,'. ',rownames(beta)[ord[i]],
+                        ' (db= ', delta_beta,' auc=',auc,') TR',sep=''))
+        points(ic.case,beta.case,col='red')
+        points(x=c(0,1),
+               y=c(fit.control$coefficients[1],fit.control$coefficients[1] + fit.control$coefficients[2]),
+               type='l')
+        points(x=c(0,1),
+               y=c(fit.case$coefficients[1],fit.case$coefficients[1] + fit.case$coefficients[2]),
+               type='l', col='red')
+        text(x=0.0,y=0.95,paste('Gene_name=',gene_name,sep=''),adj=0)
+        text(x=0.0,y=0.9,paste('Gene_region=',gene_anno,sep=''),adj=0)
+        grid()
+        
+        #-----------------------------------#
+        # Plot beta versus ic in internal validation set
+        ic.control <- ic_val[which(type_val=='Control')]
+        beta.control <- as.numeric(beta_CO_EC_val[ord[i],which(type_val=='Control')])
+        ic.case <- ic_val[which(type_val!='Control')]
+        beta.case <- as.numeric(beta_CO_EC_val[ord[i],which(type_val!='Control')])
+        
+        dat.control <- data.frame(beta=beta.control, ic=ic.control)
+        dat.case <- data.frame(beta=beta.case, ic=ic.case)
+        
+        fit.control <- lm(beta ~ ic, data=dat.control)
+        fit.case <- lm(beta ~ ic, data=dat.case)
+        
+        delta_beta <- round(abs(fit.case$coefficients[1]-fit.control$coefficients[1]),digits=3)
+        auc <- round(as.numeric(roc(type_val, beta_CO_EC_val[ord[i],],quiet=T)$auc),digits=2)
+        
+        plot(ic.control,beta.control,ylim=c(0,1),
+             xlab='IC fraction',
+             ylab='beta-value',
+             main=paste(i,'. ',rownames(beta_CO_EC_val)[ord[i]],
+                        ' (db= ', delta_beta,' auc=',auc,') VAL',sep=''))
+        points(ic.case,beta.case,col='red')
+        points(x=c(0,1),
+               y=c(fit.control$coefficients[1],fit.control$coefficients[1] + fit.control$coefficients[2]),
+               type='l')
+        points(x=c(0,1),
+               y=c(fit.case$coefficients[1],fit.case$coefficients[1] + fit.case$coefficients[2]),
+               type='l', col='red')
+        # text(x=0.0,y=0.95,paste('Gene_name=',gene_name,sep=''),adj=0)
+        # text(x=0.0,y=0.9,paste('Gene_region=',gene_anno,sep=''),adj=0)
+        grid()
+        
+        #-----------------------------------#
+        # Plot beta versus tumour fraction in internal validation set
+        ic.control <- pdat$tc_adj[which(type_val=='Control')]
+        beta.control <- as.numeric(beta_CO_EC_val[ord[i],which(type_val=='Control')])
+        ic.case <- pdat$tc_adj[which(type_val!='Control')]
+        beta.case <- as.numeric(beta_CO_EC_val[ord[i],which(type_val!='Control')])
+        
+        dat.control <- data.frame(beta=beta.control, ic=ic.control)
+        dat.case <- data.frame(beta=beta.case, ic=ic.case)
+        
+        fit.control <- lm(beta ~ ic, data=dat.control)
+        fit.case <- lm(beta ~ ic, data=dat.case)
+        
+        delta_beta <- round(abs(fit.case$coefficients[1]-fit.control$coefficients[1]),digits=3)
+        auc <- round(as.numeric(roc(type_val, beta_CO_EC_val[ord[i],],quiet=T)$auc),digits=2)
+        
+        plot(ic.control,beta.control,ylim=c(0,1),xlim=c(0,1),
+             xlab='tDNA fraction',
+             ylab='beta-value',
+             main=paste(i,'. ',rownames(beta_CO_EC_val)[ord[i]],
+                        ' (db= ', delta_beta,' auc=',auc,') VAL',sep=''))
+        points(ic.case,beta.case,col='red')
+        points(x=c(0,1),
+               y=c(fit.control$coefficients[1],fit.control$coefficients[1] + fit.control$coefficients[2]),
+               type='l')
+        points(x=c(0,1),
+               y=c(fit.case$coefficients[1],fit.case$coefficients[1] + fit.case$coefficients[2]),
+               type='l', col='red')
+        # text(x=0.0,y=0.95,paste('Gene_name=',gene_name,sep=''),adj=0)
+        # text(x=0.0,y=0.9,paste('Gene_region=',gene_anno,sep=''),adj=0)
+        grid()
+        
+        
+        #-----------------------------------#
+        # Plot contiguous CpGs
+        
+        ind1 <- which(anno$Name==rownames(db)[ord[i]])
+        
+        chr <- anno$chr[ind1]
+        pos <- anno$pos[ind1]
+        
+        # search for any CpGs within 500 bp
+        ind2 <- which(anno$chr==chr & (anno$pos < (pos + RANGE) & anno$pos > (pos - RANGE)))
+        cg_names <- anno$Name[ind2]
+        cg_pos <- anno$pos[ind2]
+        ind3 <- match(cg_names, rownames(beta_CO_EC_tr))
+        
+        cg_pos <- cg_pos[!is.na(ind3)] - pos
+        ind3 <- ind3[!is.na(ind3)]
+        
+        mean.case <- apply(beta_CO_EC_tr[ind3,type!='Control',drop=FALSE], MARGIN = 1, FUN='mean')
+        mean.control <- apply(beta_CO_EC_tr[ind3,type=='Control',drop=FALSE], MARGIN = 1, FUN='mean')
+        
+        ord1 <- order(cg_pos, decreasing = FALSE)
+        
+        plot(cg_pos[ord1], mean.control[ord1],
+             ylim=c(0,1),
+             xlim=c(-RANGE,RANGE),
+             type='b',
+             xlab='',
+             ylab='Mean beta',
+             main=paste(i,'. ',rownames(db)[ord[i]], " (",chr,":",pos,") TR",sep=""))
+        points(cg_pos[ord1], mean.case[ord1],ylim=c(0,1),type='b',col='red')
+        grid()
+        
+        #-----------------------------------#
+        # Plot contiguous CpGs in CIN
+        
+        ind3 <- match(cg_names, rownames(beta_HPVp_CIN3_tr))
+        
+        cg_pos <- anno$pos[ind2]
+        cg_pos <- cg_pos[!is.na(ind3)] - pos
+        ind3 <- ind3[!is.na(ind3)]
+        
+        mean.case <- apply(beta_HPVp_CIN3_tr[ind3,type_cin!='Control',drop=FALSE], MARGIN = 1, FUN='mean')
+        mean.control <- apply(beta_HPVp_CIN3_tr[ind3,type_cin=='Control',drop=FALSE], MARGIN = 1, FUN='mean')
+        
+        ord1 <- order(cg_pos, decreasing = FALSE)
+        
+        plot(cg_pos[ord1], mean.control[ord1],
+             ylim=c(0,1),
+             xlim=c(-RANGE,RANGE),
+             type='b',
+             xlab='',
+             ylab='Mean beta',
+             main=paste(i,'. 202 CO +  170 CIN3+',sep=''))
+        points(cg_pos[ord1], mean.case[ord1],ylim=c(0,1),type='b',col='red')
+        grid()
+        
+}
+
+dev.off()
+

@@ -1,0 +1,138 @@
+library(knitr)
+library(dplyr)
+library(tidyverse)
+library(ggplot2)
+library(tidyverse)
+library(patchwork)
+library(ggsci)
+library(pROC)
+library(broom)
+library(gtsummary)
+library(gt)
+library(epiR)
+library(gridExtra)
+library(grid)
+library(tidyheatmap)
+
+knitr::opts_chunk$set(message = F,
+                      warning = F,
+                      echo = F,
+                      dev = "cairo_pdf")
+
+# Colour palette
+cols <- pal_jama(alpha = 0.8)(7)
+
+# Functions
+source("~/Dropbox/src/plot/plot_3_rocs.R")
+source("~/Dropbox/src/plot/plot_roc_slim.R")
+
+# Themes
+theme_gtsummary_journal(journal = "jama")
+theme_gtsummary_compact()
+
+font <- theme_set(
+  theme(text = element_text(family = "Guardian Sans")
+  )
+)
+
+
+load("~/Dropbox/index-dev/3C/2-EC/10-PCR-panel/5-manuscript/10-output/mldat_unique.Rdata")
+
+mldat <- mldat %>%
+  filter(!set %in% c("Barcelona Set 1", "CC", "CIN")) %>%
+  mutate(type = case_when(type == "Control"  ~ "Control",
+                          type == "Endometrial cancer" ~ "EC")) 
+pilot <- mldat %>%
+  filter(set == "Pilot") %>% 
+  droplevels()
+
+pilot2 <- pilot %>%
+  pivot_longer(c(`ZSCAN12\n(cg25060829 [ii])`, `GYPC\n(cg15768103 [ii])`, `GYPC\n(cg15975865 [i])`), names_to = "locus", values_to = "pmr") 
+
+p1 <- pilot2 %>%
+  ggplot(aes(x = type,
+             y = log(pmr+0.00001),
+             colour = type)) +
+  geom_violin(width = 0.2) +
+  geom_jitter(size = 0.5,
+              aes(colour = type)) +
+  facet_wrap(~locus) +
+  xlab("") +
+  ylab(expression(paste("log (PMR)", sep = ""))) + 
+  scale_colour_manual(values = cols[c(1,2)],
+                      name = "") +
+  theme(axis.text.x = element_text(angle = 60,
+                                   hjust = 1),
+        panel.grid = element_blank(),
+        legend.position = "none"
+  ) 
+
+p2 <- pilot %>%
+  ggplot(aes(x = type,
+             y = log(sum+0.00001),
+             colour = type)) +
+  geom_violin(width = 0.2) +
+  geom_jitter(size = 0.5,
+              aes(colour = type)) +
+  xlab("") +
+  ylab(expression(paste(atop(bold("WID™-qEC"), "log ("~Sigma~" PMR)")))) + 
+  scale_colour_manual(values = cols[c(1,2)],
+                      name = "") +
+  theme(axis.text.x = element_text(angle = 60,
+                                   hjust = 1),
+        panel.grid = element_blank(),
+        legend.position = "none")
+
+p3 <- plot_roc(as.factor(pilot$type), pilot$sum, "sum(PMR)", style = "lancet") +
+  theme(panel.grid = element_blank())
+
+design <- "
+AAAAA
+BBCCD
+"
+
+y <- roc(pilot$type, pilot$sum)
+cut <- cutoffs <- coords(y, "best", best.method = "youden")
+
+cut_round <- round(cut, 2)
+colnames(cut_round) <- c("Threshold", "Specificity (%)", "Sensitivity (%)")
+cut_round$`Specificity (%)` <- cut_round$`Specificity (%)`*100
+cut_round$`Sensitivity (%)` <- cut_round$`Sensitivity (%)`*100
+cut_round <- t(cut_round)
+colnames(cut_round) <- c("# 1", "# 2")
+
+library(ggrepel)
+p3 <- p3 +
+  geom_point(aes(x = 1-cut$specificity[2],
+                 y = cut$sensitivity[2]),
+             shape = 21,
+             size = 3,
+             fill = cols[3]) +
+  annotate("text",
+           label = "Threshold 2",
+           x = 1-cut$specificity[2]+0.17,
+           y = cut$sensitivity[2]-0.07,
+           colour = cols[3],
+           size = 2.95) +
+  geom_point(aes(x = 1-cut$specificity[1],
+                 y = cut$sensitivity[1]),
+             shape = 24,
+             size = 3,
+             fill = cols[6]) +
+  annotate("text",
+           label = "Threshold 1",
+           x = 1-cut$specificity[1]+0.17,
+           y = cut$sensitivity[1]+0.05,
+           colour = cols[6], size = 2.95)
+
+x <- p1 + p2 + p3 +
+  gridExtra::tableGrob(cut_round,
+                       theme = ttheme_default(base_size = 8)) +
+  plot_layout(design = design) + plot_annotation(tag_levels = "A")
+
+
+
+ggsave(x, filename = "~/Dropbox/index-dev/3C/2-EC/10-PCR-panel/5-manuscript/figures/fig_s10.pdf",
+       width = 8,
+       height = 5.5,
+       device = cairo_pdf)

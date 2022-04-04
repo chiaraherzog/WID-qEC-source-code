@@ -1,0 +1,227 @@
+load("~/Dropbox/index-dev/3C/2-EC/10-PCR-panel/5-manuscript/4-output/mldat_merge.Rdata")
+library(gt)
+library(dplyr)
+library(tidyverse)
+library(epiR)
+
+# DNAmut
+dat <- mldat %>%
+  filter(dnamut_analysis == "Yes" & !is.na(dnamut_analysis) & !is.na(type)) %>%
+  mutate(sum_cutoff = case_when(sum >= 0.03 ~ "positive",
+                                sum < 0.03 ~ "negative")) %>%
+  mutate(sum_cutoff2 = case_when(sum >= 0.63 ~ "positive",
+                                 sum < 0.63 ~ "negative")) %>%
+  mutate(type = factor(type, levels = c("Endometrial cancer", "Control"))) %>%
+  mutate(sum_cutoff = factor(sum_cutoff, levels = c("positive", "negative")),
+         sum_cutoff2 = factor(sum_cutoff2, levels = c("positive", "negative")),
+         dnamut_result = factor(dnamut_result, levels = c("Positive", "Negative"))) %>% 
+  droplevels()
+
+
+
+dat1 <- data.frame(matrix(nrow = 8, ncol = 3))
+colnames(dat1) <- c("Set", "Type", "Data")
+dat1$Type <- c("Controls", "Endometrial cancers", "DNAmut Sensitivity – % (95% CI)", "DNAmut Specificity – % (95% CI)",
+               "qWID-EC Threshold I Sensitivity – % (95% CI)", "qWID-EC Threshold I Specificity – % (95% CI)",
+               "qWID-EC Threshold II Sensitivity – % (95% CI)", "qWID-EC Threshold II Specificity – % (95% CI)")
+dat1$Set <- "DNA mutation analysis *"
+
+dat1[1,3] <- nrow(dat[dat$type=="Control",])
+dat1[2,3] <- nrow(dat[dat$type=="Endometrial cancer",])
+
+tmp <- dat %>%
+  pivot_longer(c(sum_cutoff, sum_cutoff2, dnamut_result),
+               names_to = "analysis",
+               values_to = "value") %>%
+  mutate(analysis = factor(analysis, levels = c("sum_cutoff", "sum_cutoff2", "dnamut_result")))
+
+for (i in 1:length(levels(tmp$analysis))){
+  name <- levels(tmp$analysis)[i]
+  tmp2 <- tmp %>%
+    filter(analysis == name) %>%
+    droplevels()
+  
+  tab <- table(tmp2$value, tmp2$type)
+  rval <- summary(epi.tests(tab))
+  
+  x <- ifelse(name == "sum_cutoff", 4, ifelse(name == "sum_cutoff2", 5, 0))
+  j <- i + x
+  
+  l <- j + 1
+  
+  dat1[j, 3] <- paste0(round(rval[3,1],2)*100, " (", round(rval[3,2],2)*100, "-", round(rval[3,3],2)*100, ")")
+  dat1[l, 3] <- paste0(round(rval[4,1],2)*100, " (", round(rval[4,2],2)*100, "-", round(rval[4,3],2)*100, ")")
+  
+}
+
+dat_dnamut <- dat1
+
+
+# US qualitative
+dat <- mldat %>%
+  filter(!is.na(us_cat) & !is.na(type)) %>%
+  mutate(sum_cutoff = case_when(sum >= 0.03 ~ "positive",
+                                sum < 0.03 ~ "negative")) %>%
+  mutate(sum_cutoff2 = case_when(sum >= 0.63 ~ "positive",
+                                 sum < 0.63 ~ "negative")) %>%
+  mutate(type = factor(type, levels = c("Endometrial cancer", "Control"))) %>%
+  mutate(sum_cutoff = factor(sum_cutoff, levels = c("positive", "negative")),
+         sum_cutoff2 = factor(sum_cutoff2, levels = c("positive", "negative")),
+         us_cat = factor(us_cat, levels = c("Abnormal", "Normal"))) %>% 
+  droplevels()
+
+dat1 <- data.frame(matrix(nrow = 8, ncol = 3))
+colnames(dat1) <- c("Set", "Type", "Data")
+dat1$Type <- c("Controls", "Endometrial cancers", "US Sensitivity – % (95% CI)", "US Specificity – % (95% CI)",
+               "qWID-EC Threshold I Sensitivity – % (95% CI)", "qWID-EC Threshold I Specificity – % (95% CI)",
+               "qWID-EC Threshold II Sensitivity – % (95% CI)", "qWID-EC Threshold II Specificity – % (95% CI)")
+dat1$Set <- "Ultrasound"
+
+dat1[1,3] <- nrow(dat[dat$type=="Control",])
+dat1[2,3] <- nrow(dat[dat$type=="Endometrial cancer",])
+
+tmp <- dat %>%
+  pivot_longer(c(sum_cutoff, sum_cutoff2, us_cat),
+               names_to = "analysis",
+               values_to = "value") %>%
+  mutate(analysis = factor(analysis, levels = c("sum_cutoff", "sum_cutoff2", "us_cat")))
+
+for (i in 1:length(levels(tmp$analysis))){
+  name <- levels(tmp$analysis)[i]
+  tmp2 <- tmp %>%
+    filter(analysis == name) %>%
+    droplevels()
+  
+  tab <- table(tmp2$value, tmp2$type)
+  rval <- summary(epi.tests(tab))
+  
+  x <- ifelse(name == "sum_cutoff", 4, ifelse(name == "sum_cutoff2", 5, 0))
+  j <- i + x
+  
+  l <- j + 1
+  
+  dat1[j, 3] <- paste0(round(rval[3,1],2)*100, " (", round(rval[3,2],2)*100, "-", round(rval[3,3],2)*100, ")")
+  dat1[l, 3] <- paste0(round(rval[4,1],2)*100, " (", round(rval[4,2],2)*100, "-", round(rval[4,3],2)*100, ")")
+  
+}
+
+dat_uscat <- dat1
+
+# 
+# 
+# # US quantitative
+# # get opt coords
+# dat <- mldat %>%
+#   filter(!is.na(us_thickness) & !is.na(type))
+# 
+# roc <- roc(dat$type, dat$us_thickness)
+# threshold <- coords(roc, "best", best.method = "youden")$threshold
+# 
+# 
+# dat <- dat %>%
+#   mutate(sum_cutoff = case_when(sum >= 0.03 ~ "positive",
+#                                 sum < 0.03 ~ "negative")) %>%
+#   mutate(us_thickness_cat = case_when(us_thickness >= 7.5 ~ "positive",
+#                                       us_thickness < 7.5 ~ "negative")) %>%
+#   mutate(type = factor(type, levels = c("Endometrial cancer", "Control"))) %>%
+#   mutate(sum_cutoff = factor(sum_cutoff, levels = c("positive", "negative")),
+#          us_thickness_cat = factor(us_thickness_cat, levels = c("positive", "negative"))) %>% 
+#   droplevels()
+# 
+# dat1 <- data.frame(matrix(nrow = 6, ncol = 3))
+# colnames(dat1) <- c("Set", "Type", "Data")
+# dat1$Type <- c("Controls", "Endometrial cancers", "US Sensitivity – % (95% CI)", "US Specificity – % (95% CI)",
+#                "qWID-EC Sensitivity – % (95% CI)", "qWID-EC Specificity – % (95% CI)")
+# dat1$Set <- "Ultrasound (quantitative) †"
+# 
+# dat1[1,3] <- nrow(dat[dat$type=="Control",])
+# dat1[2,3] <- nrow(dat[dat$type=="Endometrial cancer",])
+# 
+# tmp <- dat %>%
+#   pivot_longer(c(sum_cutoff, us_thickness_cat),
+#                names_to = "analysis",
+#                values_to = "value") %>%
+#   mutate(analysis = factor(analysis, levels = c("sum_cutoff", "us_thickness_cat")))
+# 
+# for (i in 1:length(levels(tmp$analysis))){
+#   name <- levels(tmp$analysis)[i]
+#   tmp2 <- tmp %>%
+#     filter(analysis == name) %>%
+#     droplevels()
+#   
+#   tab <- table(tmp2$value, tmp2$type)
+#   rval <- summary(epi.tests(tab))
+#   
+#   x <- ifelse(name == "sum_cutoff", 4, 1)
+#   j <- i + x
+#   
+#   l <- j + 1
+#   
+#   dat1[j, 3] <- paste0(round(rval[3,1],2)*100, " (", round(rval[3,2],2)*100, "-", round(rval[3,3],2)*100, ")")
+#   dat1[l, 3] <- paste0(round(rval[4,1],2)*100, " (", round(rval[4,2],2)*100, "-", round(rval[4,3],2)*100, ")")
+#   
+# }
+# 
+# dat_usthickness_cat <- dat1
+
+
+# Reformating
+
+dat_dnamut[1,3] <- "76 cancer cases,\n19 cancer-free controls"
+dat_dnamut[1,2] <- "n"
+dat_dnamut <- dat_dnamut[-2,]
+dat_dnamut$type <- c("n", rep(c("Sensitivity – % (95% CI)", "Specificity – % (95%)"), 3))
+dat_dnamut$test <- c("",
+                     rep("Comparison test", 2),
+                     rep("WID™-qEC Threshold 1", 2),
+                     rep("WID™-qEC Threshold 2", 2))
+dat_dnamut <- dat_dnamut[,-2]
+dat_dnamut <- dat_dnamut[,-1]
+colnames(dat_dnamut) <- c("DNA mutation analysis *", "type", "test")
+
+
+dat_uscat[1,3] <- "122 cancer cases,\n98 cancer-free controls"
+dat_uscat[1,2] <- "n"
+dat_uscat <- dat_uscat[-2,]
+
+dat_uscat$type <- c("n", rep(c("Sensitivity – % (95% CI)", "Specificity – % (95%)"), 3))
+dat_uscat$test <- c("",
+                     rep("Comparison test", 2),
+                     rep("WID™-qEC Threshold 1", 2),
+                     rep("WID™-qEC Threshold 2", 2))
+dat_uscat <- dat_uscat[,-2]
+dat_uscat <- dat_uscat[,-1]
+colnames(dat_uscat) <- c("Ultrasound analysis", "type", "test")
+
+dat <- cbind(dat_dnamut, dat_uscat$`Ultrasound analysis`)
+
+colnames(dat) <- c("DNA mutation analysis *",
+                   "type",
+                   "test", 
+                   "Ultrasound analysis")
+
+tbl <- dat %>%
+  gt(groupname_col = "test",
+     rowname_col = "type") %>%
+  tab_options(table.font.names = "Guardian Sans",
+              column_labels.font.weight = "bold",
+              row_group.font.weight = "bold",
+              data_row.padding = 2,
+              column_labels.font.size = 12,
+              table.font.size = 11,
+              row_group.padding = 2,
+              row_group.border.right.width = px(10),
+              summary_row.padding = 2,
+              table.width = px(700),
+              table.border.top.color = "white",
+              row_group.border.top.width = px(1),
+              row_group.border.bottom.width = px(1),
+              stub.border.width = px(0),
+              heading.title.font.size = 14) %>%
+  gt::tab_source_note(source_note = html("* Cutoff >= 1 mutation."))
+
+
+
+gtsave(tbl, file = "~/Dropbox/index-dev/3C/2-EC/10-PCR-panel/5-manuscript/tables/s6-comparison.html")
+
+pagedown::chrome_print("~/Dropbox/index-dev/3C/2-EC/10-PCR-panel/5-manuscript/tables/s6-comparison.html", output = "~/Dropbox/index-dev/3C/2-EC/10-PCR-panel/5-manuscript/tables/s6-comparison.pdf")
