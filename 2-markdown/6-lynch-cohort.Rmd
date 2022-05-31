@@ -1,7 +1,7 @@
 ---
 title: "6. Lynch Cohort"
 author: "Chiara Herzog"
-date: April 4, 2022
+date: May 31, 2022
 output:
   rmarkdown::html_document:
     theme: cosmo
@@ -30,7 +30,7 @@ load("../0-data/cutoff.Rdata")
 ```
 
 
-## Time to diagnosis (Figure S14)
+## Time to diagnosis (Figure S15)
 
 ```{r}
 mldat %>%
@@ -58,12 +58,6 @@ mldat %>%
            x = 2.3,
            y = log(0.03)-0.3,
            label = "Threshold 1",
-           size = 3,
-           colour = cols[1]) +
-  annotate("text",
-           x = 2.3,
-           y = log(0.63)-0.3,
-           label = "Threshold 2",
            size = 3,
            colour = cols[1])
 ```

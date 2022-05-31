@@ -11,11 +11,11 @@
 
 <meta name="author" content="Chiara Herzog" />
 
-<meta name="date" content="2022-04-04" />
+<meta name="date" content="2022-05-31" />
 
 <title>7. Karolinska Cohort</title>
 
-<script src="site_libs/header-attrs-2.11/header-attrs.js"></script>
+<script src="site_libs/header-attrs-2.14/header-attrs.js"></script>
 <script src="site_libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <link href="site_libs/bootstrap-3.3.5/css/cosmo.min.css" rel="stylesheet" />
@@ -63,6 +63,7 @@ if (window.hljs) {
 
 
 
+
 <style type = "text/css">
 .main-container {
   max-width: 940px;
@@ -83,6 +84,9 @@ button.code-folding-btn:focus {
 }
 summary {
   display: list-item;
+}
+details > summary > p:only-child {
+  display: inline;
 }
 pre code {
   padding: 0;
@@ -238,7 +242,7 @@ $(document).ready(function () {
 <div class="navbar navbar-default  navbar-fixed-top" role="navigation">
   <div class="container">
     <div class="navbar-header">
-      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-bs-toggle="collapse" data-target="#navbar" data-bs-target="#navbar">
         <span class="icon-bar"></span>
         <span class="icon-bar"></span>
         <span class="icon-bar"></span>
@@ -248,7 +252,7 @@ $(document).ready(function () {
     <div id="navbar" class="navbar-collapse collapse">
       <ul class="nav navbar-nav">
         <li class="dropdown">
-  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
     WID-qEC source code
      
     <span class="caret"></span>
@@ -294,7 +298,7 @@ $(document).ready(function () {
 <div id="header">
 
 <div class="btn-group pull-right float-right">
-<button type="button" class="btn btn-default btn-xs btn-secondary btn-sm dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><span>Code</span> <span class="caret"></span></button>
+<button type="button" class="btn btn-default btn-xs btn-secondary btn-sm dropdown-toggle" data-toggle="dropdown" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><span>Code</span> <span class="caret"></span></button>
 <ul class="dropdown-menu dropdown-menu-right" style="min-width: 50px;">
 <li><a id="rmd-show-all-code" href="#">Show All Code</a></li>
 <li><a id="rmd-hide-all-code" href="#">Hide All Code</a></li>
@@ -305,7 +309,7 @@ $(document).ready(function () {
 
 <h1 class="title toc-ignore">7. Karolinska Cohort</h1>
 <h4 class="author">Chiara Herzog</h4>
-<h4 class="date">April 4, 2022</h4>
+<h4 class="date">May 31, 2022</h4>
 
 </div>
 
@@ -313,72 +317,94 @@ $(document).ready(function () {
 <div id="sensitivity-and-specificity-depending-on-time-to-diagnosis-table-s7" class="section level2">
 <h2>Sensitivity and specificity depending on time to diagnosis (Table S7)</h2>
 <pre class="r"><code>tmp &lt;- mldat %&gt;%
-  filter(set == &quot;Karolinska Cohort&quot;) %&gt;%
-  mutate(thresh1 = case_when(sum &gt;= cut$threshold[1] ~ &quot;Endometrial cancer&quot;,
-                             sum &lt; cut$threshold[1] ~ &quot;Control&quot;)) %&gt;%
-  mutate(type = factor(type, levels = c(&quot;Endometrial cancer&quot;, &quot;Control&quot;))) %&gt;%
-  mutate(thresh1 = factor(thresh1, levels = c(&quot;Endometrial cancer&quot;, &quot;Control&quot;))) %&gt;%
-  droplevels() %&gt;%
+  filter(set == &quot;Karolinska Cohort&quot; &amp; !is.na(time_to_diagnosis)) %&gt;%
   mutate(y = case_when(time_to_diagnosis&lt;365 ~ &quot;&lt;1y&quot;,
                        time_to_diagnosis&gt;=365 ~ &quot;&gt;=1y&quot;)) %&gt;%
   mutate(y = factor(y, levels = c(&quot;&lt;1y&quot;, &quot;&gt;=1y&quot;))) %&gt;%
-  mutate(sum_cutoff = case_when(sum &gt;= 0.03 ~ &quot;positive&quot;,
-                                sum &lt; 0.03 ~ &quot;negative&quot;)) %&gt;%
-  mutate(sum_cutoff2 = case_when(sum &gt;= 0.63 ~ &quot;positive&quot;,
-                                 sum &lt; 0.63 ~ &quot;negative&quot;)) %&gt;%
+  mutate(sum_cutoff = case_when(sum &gt;= cut$threshold[2] ~ &quot;positive&quot;,
+                                 sum &lt; cut$threshold[2] ~ &quot;negative&quot;)) %&gt;%
   mutate(type = factor(type, levels = c(&quot;Endometrial cancer&quot;, &quot;Control&quot;)),
-         sum_cutoff = factor(sum_cutoff, levels = c(&quot;positive&quot;, &quot;negative&quot;)),
-         sum_cutoff2 = factor(sum_cutoff2, levels = c(&quot;positive&quot;, &quot;negative&quot;))) %&gt;%
+         sum_cutoff = factor(sum_cutoff, levels = c(&quot;positive&quot;, &quot;negative&quot;))) %&gt;%
+  mutate(disease = case_when(type==&quot;Endometrial cancer&quot; ~ 1,
+                           type == &quot;Control&quot; ~ 0),
+       score = case_when(sum_cutoff == &quot;positive&quot; ~ 1,
+                         sum_cutoff == &quot;negative&quot; ~ 0)) %&gt;%
   droplevels()
 
-dat &lt;- data.frame(matrix(nrow = 10, ncol = 4))
-colnames(dat) &lt;- c(&quot;threshold&quot;, &quot;type&quot;, &quot;&lt;1y&quot;, &quot;&gt;=1y&quot;)
-dat$threshold &lt;- rep(c(&quot;Threshold 1&quot;, &quot;Threshold 2&quot;), each = 5)
-dat$type &lt;- c(rep(c(&quot;Cancer cases, n&quot;,
-                    &quot;Controls, n&quot;,
+dat &lt;- data.frame(matrix(nrow = 5, ncol = 3))
+colnames(dat) &lt;- c(&quot;type&quot;, &quot;&lt;1y&quot;, &quot;≥1y&quot;)
+dat$type &lt;- c(&quot;Endometrial cancers – n&quot;,
+                    &quot;Cancer-free controls – n&quot;,
                     &quot;Time to event, median (IQR)&quot;, 
                     &quot;Sensitivity – % (95% CI)&quot;,
-                    &quot;Specificity – % (95% CI)&quot;),2))
+                    &quot;Specificity – % (95% CI)&quot;)
 
 for (i in 1:length(levels(tmp$y))){
   time &lt;- levels(tmp$y)[i]
+  pop_prev = 0.0009
   
   tmp2 &lt;- tmp %&gt;%
     filter(y == time) %&gt;%
     droplevels()
   
-  # Threshold 1
   tab &lt;- table(tmp2$sum_cutoff, tmp2$type)
-  rval &lt;- summary(epi.tests(tab))
+  # rval &lt;- summary(epi.tests(tab))
+  tab &lt;- matrix(c(tab[1,1], tab[2,1], tab[1,2], tab[2,2]), ncol = 2)
+  colnames(tab) &lt;- c(&quot;Case&quot;, &quot;Control&quot;)
+  rownames(tab) &lt;- c(&quot;Case&quot;, &quot;Control&quot;)
+  rval2 &lt;- BDtest(xmat=as.matrix(tab), pr=pop_prev, conf.level = 0.95)
+  
   x &lt;- summary(tmp2$time_to_diagnosis)
   
-  dat[1,i+2] &lt;- nrow(tmp2[tmp2$type==&quot;Endometrial cancer&quot;,])
-  dat[2,i+2] &lt;- nrow(tmp2[tmp2$type==&quot;Control&quot;,])
-  dat[3,i+2] &lt;- paste0(round(median(tmp2$time_to_diagnosis),0), &quot; (&quot;, 
+  dat[1,i+1] &lt;- nrow(tmp2[tmp2$type==&quot;Endometrial cancer&quot;,])
+  dat[2,i+1] &lt;- nrow(tmp2[tmp2$type==&quot;Control&quot;,])
+  dat[3,i+1] &lt;- paste0(round(median(tmp2$time_to_diagnosis),0), &quot; (&quot;, 
                        round(x[2],0), &quot;-&quot;,
                        round(x[5],0), &quot;)&quot;)
-  dat[4,i+2] &lt;- paste0(round(rval[3,1],2)*100, &quot; (&quot;, round(rval[3,2],2)*100, &quot;-&quot;, round(rval[3,3],2)*100, &quot;)&quot;)
-  dat[5,i+2] &lt;- paste0(round(rval[4,1],2)*100, &quot; (&quot;, round(rval[4,2],2)*100, &quot;-&quot;, round(rval[4,3],2)*100, &quot;)&quot;)
-  
-  # Threshold 2
-  tab &lt;- table(tmp2$sum_cutoff2, tmp2$type)
-  rval &lt;- summary(epi.tests(tab))
-  
-  dat[6,i+2] &lt;- nrow(tmp2[tmp2$type==&quot;Endometrial cancer&quot;,])
-  dat[7,i+2] &lt;- nrow(tmp2[tmp2$type==&quot;Control&quot;,])
-  dat[8, i+2] &lt;- paste0(round(median(tmp2$time_to_diagnosis),0), &quot; (&quot;, 
-                        round(x[2],0), &quot;-&quot;,
-                        round(x[5],0), &quot;)&quot;)
-  dat[9,i+2] &lt;- paste0(round(rval[3,1],2)*100, &quot; (&quot;, round(rval[3,2],2)*100, &quot;-&quot;, round(rval[3,3],2)*100, &quot;)&quot;)
-  dat[10,i+2] &lt;- paste0(round(rval[4,1],2)*100, &quot; (&quot;, round(rval[4,2],2)*100, &quot;-&quot;, round(rval[4,3],2)*100, &quot;)&quot;)
+  dat[4,i+1] &lt;- paste0(round(rval2$SESPDAT$Estimate[1]*100,1), &quot; (&quot;,
+                       round(rval2$SESPDAT$`Lower 97.5% limit`[1]*100, 1), &quot;-&quot;,
+                       round(rval2$SESPDAT$`Upper 97.5% limit`[1]*100,1), &quot;)&quot;)
+  dat[5,i+1] &lt;- paste0(round(rval2$SESPDAT$Estimate[2]*100,1), &quot; (&quot;,
+                       round(rval2$SESPDAT$`Lower 95% limit`[2]*100, 1), &quot;-&quot;,
+                       round(rval2$SESPDAT$`Upper 97.5% limit`[2]*100,1), &quot;)&quot;)
   
 }
 
+tmp &lt;- tmp %&gt;%
+  mutate(y = factor(y, levels = c(&quot;&gt;=1y&quot;, &quot;&lt;1y&quot;)))
+
+x &lt;- compute_ci_diff(tmp$disease, tmp$score, tmp$y, t  = 1.989)</code></pre>
+<pre><code>## Group 1 is &lt;1y, group 2 is &gt;=1y</code></pre>
+<pre class="r"><code>dat$d &lt;- &#39;&#39;
+dat$d[4] &lt;- paste0(round(x$diff[1]*100, 1), &quot; (&quot;,
+                                             ifelse(round(x$cil[1]*100, 1)&lt;(-100), &quot;-100&quot;, round(x$cil[1]*100, 1)), &quot;–&quot;,
+                                             round(x$ciu[1]*100, 1), &quot;)&quot;)
+dat$d[5] &lt;- paste0(round(x$diff[2]*100, 1), &quot; (&quot;,
+                                             round(x$cil[2]*100, 1), &quot;–&quot;,
+                                             round(x$ciu[2]*100, 1), &quot;)&quot;) 
 
 tbl &lt;- dat %&gt;%
   gt(rowname_col = &quot;type&quot;, groupname_col = &quot;threshold&quot;) %&gt;%
-  cols_label(&quot;&lt;1y&quot; = &quot;&lt;1 y to diagnosis&quot;,
-             &quot;&gt;=1y&quot; = &quot;&gt;=1 y to diagnosis&quot;) %&gt;%
+  cols_label(&quot;&lt;1y&quot; = &quot;&lt;1 y to follow-up&quot;,
+             &quot;≥1y&quot; = &quot;≥1 y to follow-up&quot;,
+             &quot;d&quot; = html(&quot;&lt;i&gt;Difference *&lt;/i&gt;&quot;)) %&gt;%
+  tab_style(
+    style = list(
+      cell_text(align = &quot;left&quot;)
+    ),
+    locations = cells_stub(rows = TRUE)
+  ) %&gt;%
+  text_transform(locations = cells_body(),
+                 fn = function(x){
+                   paste0(ifelse(x == &quot;-70.9 (-100–-38)&quot;, html(&quot;&lt;b&gt;-70.9 (-100–-38)&lt;/b&quot;), x))}) %&gt;%
+  tab_style(
+    style = cell_text(color = &quot;#707173&quot;),
+    locations = list(cells_body(
+      columns = &quot;d&quot;,
+      rows = everything()
+    ),
+    cells_column_labels(columns = &quot;d&quot;)
+    )) %&gt;%
   tab_options(table.font.names = &quot;Guardian Sans&quot;,
               column_labels.font.weight = &quot;bold&quot;,
               row_group.font.weight = &quot;bold&quot;,
@@ -394,14 +420,13 @@ tbl &lt;- dat %&gt;%
               row_group.border.bottom.width = px(1),
               stub.border.width = px(0),
               heading.title.font.size = 14)
-
 tbl</code></pre>
-<div id="rbhzqkyhsp" style="overflow-x:auto;overflow-y:auto;width:auto;height:auto;">
+<div id="frfvdvsqmz" style="overflow-x:auto;overflow-y:auto;width:auto;height:auto;">
 <style>html {
   font-family: 'Guardian Sans';
 }
 
-#rbhzqkyhsp .gt_table {
+#frfvdvsqmz .gt_table {
   display: table;
   border-collapse: collapse;
   margin-left: auto;
@@ -426,7 +451,7 @@ tbl</code></pre>
   border-left-color: #D3D3D3;
 }
 
-#rbhzqkyhsp .gt_heading {
+#frfvdvsqmz .gt_heading {
   background-color: #FFFFFF;
   text-align: center;
   border-bottom-color: #FFFFFF;
@@ -438,33 +463,37 @@ tbl</code></pre>
   border-right-color: #D3D3D3;
 }
 
-#rbhzqkyhsp .gt_title {
+#frfvdvsqmz .gt_title {
   color: #333333;
   font-size: 14px;
   font-weight: initial;
   padding-top: 4px;
   padding-bottom: 4px;
+  padding-left: 5px;
+  padding-right: 5px;
   border-bottom-color: #FFFFFF;
   border-bottom-width: 0;
 }
 
-#rbhzqkyhsp .gt_subtitle {
+#frfvdvsqmz .gt_subtitle {
   color: #333333;
   font-size: 85%;
   font-weight: initial;
   padding-top: 0;
   padding-bottom: 6px;
+  padding-left: 5px;
+  padding-right: 5px;
   border-top-color: #FFFFFF;
   border-top-width: 0;
 }
 
-#rbhzqkyhsp .gt_bottom_border {
+#frfvdvsqmz .gt_bottom_border {
   border-bottom-style: solid;
   border-bottom-width: 2px;
   border-bottom-color: #D3D3D3;
 }
 
-#rbhzqkyhsp .gt_col_headings {
+#frfvdvsqmz .gt_col_headings {
   border-top-style: solid;
   border-top-width: 2px;
   border-top-color: #D3D3D3;
@@ -479,7 +508,7 @@ tbl</code></pre>
   border-right-color: #D3D3D3;
 }
 
-#rbhzqkyhsp .gt_col_heading {
+#frfvdvsqmz .gt_col_heading {
   color: #333333;
   background-color: #FFFFFF;
   font-size: 12px;
@@ -499,7 +528,7 @@ tbl</code></pre>
   overflow-x: hidden;
 }
 
-#rbhzqkyhsp .gt_column_spanner_outer {
+#frfvdvsqmz .gt_column_spanner_outer {
   color: #333333;
   background-color: #FFFFFF;
   font-size: 12px;
@@ -511,15 +540,15 @@ tbl</code></pre>
   padding-right: 4px;
 }
 
-#rbhzqkyhsp .gt_column_spanner_outer:first-child {
+#frfvdvsqmz .gt_column_spanner_outer:first-child {
   padding-left: 0;
 }
 
-#rbhzqkyhsp .gt_column_spanner_outer:last-child {
+#frfvdvsqmz .gt_column_spanner_outer:last-child {
   padding-right: 0;
 }
 
-#rbhzqkyhsp .gt_column_spanner {
+#frfvdvsqmz .gt_column_spanner {
   border-bottom-style: solid;
   border-bottom-width: 2px;
   border-bottom-color: #D3D3D3;
@@ -531,8 +560,11 @@ tbl</code></pre>
   width: 100%;
 }
 
-#rbhzqkyhsp .gt_group_heading {
-  padding: 2px;
+#frfvdvsqmz .gt_group_heading {
+  padding-top: 2px;
+  padding-bottom: 2px;
+  padding-left: 5px;
+  padding-right: 5px;
   color: #333333;
   background-color: #FFFFFF;
   font-size: 100%;
@@ -553,7 +585,7 @@ tbl</code></pre>
   vertical-align: middle;
 }
 
-#rbhzqkyhsp .gt_empty_group_heading {
+#frfvdvsqmz .gt_empty_group_heading {
   padding: 0.5px;
   color: #333333;
   background-color: #FFFFFF;
@@ -568,15 +600,15 @@ tbl</code></pre>
   vertical-align: middle;
 }
 
-#rbhzqkyhsp .gt_from_md > :first-child {
+#frfvdvsqmz .gt_from_md > :first-child {
   margin-top: 0;
 }
 
-#rbhzqkyhsp .gt_from_md > :last-child {
+#frfvdvsqmz .gt_from_md > :last-child {
   margin-bottom: 0;
 }
 
-#rbhzqkyhsp .gt_row {
+#frfvdvsqmz .gt_row {
   padding-top: 2px;
   padding-bottom: 2px;
   padding-left: 5px;
@@ -595,7 +627,7 @@ tbl</code></pre>
   overflow-x: hidden;
 }
 
-#rbhzqkyhsp .gt_stub {
+#frfvdvsqmz .gt_stub {
   color: #333333;
   background-color: #FFFFFF;
   font-size: 100%;
@@ -604,10 +636,29 @@ tbl</code></pre>
   border-right-style: solid;
   border-right-width: 0px;
   border-right-color: #D3D3D3;
-  padding-left: 12px;
+  padding-left: 5px;
+  padding-right: 5px;
 }
 
-#rbhzqkyhsp .gt_summary_row {
+#frfvdvsqmz .gt_stub_row_group {
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: initial;
+  text-transform: inherit;
+  border-right-style: solid;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+  padding-left: 5px;
+  padding-right: 5px;
+  vertical-align: top;
+}
+
+#frfvdvsqmz .gt_row_group_first td {
+  border-top-width: 1px;
+}
+
+#frfvdvsqmz .gt_summary_row {
   color: #333333;
   background-color: #FFFFFF;
   text-transform: inherit;
@@ -617,17 +668,26 @@ tbl</code></pre>
   padding-right: 5px;
 }
 
-#rbhzqkyhsp .gt_first_summary_row {
+#frfvdvsqmz .gt_first_summary_row {
+  border-top-style: solid;
+  border-top-color: #D3D3D3;
+}
+
+#frfvdvsqmz .gt_first_summary_row.thick {
+  border-top-width: 2px;
+}
+
+#frfvdvsqmz .gt_last_summary_row {
   padding-top: 2px;
   padding-bottom: 2px;
   padding-left: 5px;
   padding-right: 5px;
-  border-top-style: solid;
-  border-top-width: 2px;
-  border-top-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
 }
 
-#rbhzqkyhsp .gt_grand_summary_row {
+#frfvdvsqmz .gt_grand_summary_row {
   color: #333333;
   background-color: #FFFFFF;
   text-transform: inherit;
@@ -637,7 +697,7 @@ tbl</code></pre>
   padding-right: 5px;
 }
 
-#rbhzqkyhsp .gt_first_grand_summary_row {
+#frfvdvsqmz .gt_first_grand_summary_row {
   padding-top: 8px;
   padding-bottom: 8px;
   padding-left: 5px;
@@ -647,11 +707,11 @@ tbl</code></pre>
   border-top-color: #D3D3D3;
 }
 
-#rbhzqkyhsp .gt_striped {
+#frfvdvsqmz .gt_striped {
   background-color: rgba(128, 128, 128, 0.05);
 }
 
-#rbhzqkyhsp .gt_table_body {
+#frfvdvsqmz .gt_table_body {
   border-top-style: solid;
   border-top-width: 2px;
   border-top-color: #D3D3D3;
@@ -660,7 +720,7 @@ tbl</code></pre>
   border-bottom-color: #D3D3D3;
 }
 
-#rbhzqkyhsp .gt_footnotes {
+#frfvdvsqmz .gt_footnotes {
   color: #333333;
   background-color: #FFFFFF;
   border-bottom-style: none;
@@ -674,13 +734,16 @@ tbl</code></pre>
   border-right-color: #D3D3D3;
 }
 
-#rbhzqkyhsp .gt_footnote {
+#frfvdvsqmz .gt_footnote {
   margin: 0px;
   font-size: 90%;
-  padding: 4px;
+  padding-left: 4px;
+  padding-right: 4px;
+  padding-left: 5px;
+  padding-right: 5px;
 }
 
-#rbhzqkyhsp .gt_sourcenotes {
+#frfvdvsqmz .gt_sourcenotes {
   color: #333333;
   background-color: #FFFFFF;
   border-bottom-style: none;
@@ -694,44 +757,80 @@ tbl</code></pre>
   border-right-color: #D3D3D3;
 }
 
-#rbhzqkyhsp .gt_sourcenote {
+#frfvdvsqmz .gt_sourcenote {
   font-size: 90%;
-  padding: 4px;
+  padding-top: 4px;
+  padding-bottom: 4px;
+  padding-left: 5px;
+  padding-right: 5px;
 }
 
-#rbhzqkyhsp .gt_left {
+#frfvdvsqmz .gt_left {
   text-align: left;
 }
 
-#rbhzqkyhsp .gt_center {
+#frfvdvsqmz .gt_center {
   text-align: center;
 }
 
-#rbhzqkyhsp .gt_right {
+#frfvdvsqmz .gt_right {
   text-align: right;
   font-variant-numeric: tabular-nums;
 }
 
-#rbhzqkyhsp .gt_font_normal {
+#frfvdvsqmz .gt_font_normal {
   font-weight: normal;
 }
 
-#rbhzqkyhsp .gt_font_bold {
+#frfvdvsqmz .gt_font_bold {
   font-weight: bold;
 }
 
-#rbhzqkyhsp .gt_font_italic {
+#frfvdvsqmz .gt_font_italic {
   font-style: italic;
 }
 
-#rbhzqkyhsp .gt_super {
+#frfvdvsqmz .gt_super {
   font-size: 65%;
 }
 
-#rbhzqkyhsp .gt_footnote_marks {
+#frfvdvsqmz .gt_two_val_uncert {
+  display: inline-block;
+  line-height: 1em;
+  text-align: right;
+  font-size: 60%;
+  vertical-align: -0.25em;
+  margin-left: 0.1em;
+}
+
+#frfvdvsqmz .gt_footnote_marks {
   font-style: italic;
   font-weight: normal;
-  font-size: 65%;
+  font-size: 75%;
+  vertical-align: 0.4em;
+}
+
+#frfvdvsqmz .gt_asterisk {
+  font-size: 100%;
+  vertical-align: 0;
+}
+
+#frfvdvsqmz .gt_slash_mark {
+  font-size: 0.7em;
+  line-height: 0.7em;
+  vertical-align: 0.15em;
+}
+
+#frfvdvsqmz .gt_fraction_numerator {
+  font-size: 0.6em;
+  line-height: 0.6em;
+  vertical-align: 0.45em;
+}
+
+#frfvdvsqmz .gt_fraction_denominator {
+  font-size: 0.6em;
+  line-height: 0.6em;
+  vertical-align: -0.05em;
 }
 </style>
 <table class="gt_table">
@@ -739,47 +838,32 @@ tbl</code></pre>
   <thead class="gt_col_headings">
     <tr>
       <th class="gt_col_heading gt_columns_bottom_border gt_left" rowspan="1" colspan="1"></th>
-      <th class="gt_col_heading gt_columns_bottom_border gt_left" rowspan="1" colspan="1">&lt;1 y to diagnosis</th>
-      <th class="gt_col_heading gt_columns_bottom_border gt_left" rowspan="1" colspan="1">&gt;=1 y to diagnosis</th>
+      <th class="gt_col_heading gt_columns_bottom_border gt_left" rowspan="1" colspan="1">&lt;1 y to follow-up</th>
+      <th class="gt_col_heading gt_columns_bottom_border gt_left" rowspan="1" colspan="1">≥1 y to follow-up</th>
+      <th class="gt_col_heading gt_columns_bottom_border gt_left" rowspan="1" colspan="1" style="color: #707173;"><i>Difference *</i></th>
     </tr>
   </thead>
   <tbody class="gt_table_body">
-    <tr class="gt_group_heading_row">
-      <td colspan="3" class="gt_group_heading">Threshold 1</td>
-    </tr>
-    <tr><td class="gt_row gt_left gt_stub">Cancer cases, n</td>
+    <tr><td class="gt_row gt_right gt_stub" style="text-align: left;">Endometrial cancers – n</td>
 <td class="gt_row gt_left">22</td>
-<td class="gt_row gt_left">10</td></tr>
-    <tr><td class="gt_row gt_left gt_stub">Controls, n</td>
+<td class="gt_row gt_left">10</td>
+<td class="gt_row gt_left" style="color: #707173;"></td></tr>
+    <tr><td class="gt_row gt_right gt_stub" style="text-align: left;">Cancer-free controls – n</td>
 <td class="gt_row gt_left">15</td>
-<td class="gt_row gt_left">39</td></tr>
-    <tr><td class="gt_row gt_left gt_stub">Time to event, median (IQR)</td>
+<td class="gt_row gt_left">39</td>
+<td class="gt_row gt_left" style="color: #707173;"></td></tr>
+    <tr><td class="gt_row gt_right gt_stub" style="text-align: left;">Time to event, median (IQR)</td>
 <td class="gt_row gt_left">180 (47-252)</td>
-<td class="gt_row gt_left">932 (606-1108)</td></tr>
-    <tr><td class="gt_row gt_left gt_stub">Sensitivity – % (95% CI)</td>
-<td class="gt_row gt_left">95 (77-100)</td>
-<td class="gt_row gt_left">60 (26-88)</td></tr>
-    <tr><td class="gt_row gt_left gt_stub">Specificity – % (95% CI)</td>
-<td class="gt_row gt_left">67 (38-88)</td>
-<td class="gt_row gt_left">85 (69-94)</td></tr>
-    <tr class="gt_group_heading_row">
-      <td colspan="3" class="gt_group_heading">Threshold 2</td>
-    </tr>
-    <tr><td class="gt_row gt_left gt_stub">Cancer cases, n</td>
-<td class="gt_row gt_left">22</td>
-<td class="gt_row gt_left">10</td></tr>
-    <tr><td class="gt_row gt_left gt_stub">Controls, n</td>
-<td class="gt_row gt_left">15</td>
-<td class="gt_row gt_left">39</td></tr>
-    <tr><td class="gt_row gt_left gt_stub">Time to event, median (IQR)</td>
-<td class="gt_row gt_left">180 (47-252)</td>
-<td class="gt_row gt_left">932 (606-1108)</td></tr>
-    <tr><td class="gt_row gt_left gt_stub">Sensitivity – % (95% CI)</td>
-<td class="gt_row gt_left">91 (71-99)</td>
-<td class="gt_row gt_left">20 (3-56)</td></tr>
-    <tr><td class="gt_row gt_left gt_stub">Specificity – % (95% CI)</td>
-<td class="gt_row gt_left">100 (78-100)</td>
-<td class="gt_row gt_left">97 (87-100)</td></tr>
+<td class="gt_row gt_left">932 (606-1108)</td>
+<td class="gt_row gt_left" style="color: #707173;"></td></tr>
+    <tr><td class="gt_row gt_right gt_stub" style="text-align: left;">Sensitivity – % (95% CI)</td>
+<td class="gt_row gt_left">90.9 (70.8-98.9)</td>
+<td class="gt_row gt_left">20 (2.5-55.6)</td>
+<td class="gt_row gt_left" style="color: #707173;"><b>-70.9 (-100–-38)</b</td></tr>
+    <tr><td class="gt_row gt_right gt_stub" style="text-align: left;">Specificity – % (95% CI)</td>
+<td class="gt_row gt_left">100 (81.9-100)</td>
+<td class="gt_row gt_left">97.4 (88.4-99.9)</td>
+<td class="gt_row gt_left" style="color: #707173;">-2.6 (-14.8–9.6)</td></tr>
   </tbody>
   
   

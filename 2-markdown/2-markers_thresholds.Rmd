@@ -1,7 +1,7 @@
 ---
 title: "2. MethyLight marker and threshold selection"
 author: "Chiara Herzog"
-date: April 4, 2022
+date: May 31, 2022
 output:
   rmarkdown::html_document:
     theme: cosmo
@@ -79,7 +79,7 @@ rocs %>%
                       name = "") +
   scale_size_manual(values = c(1, 2.5),
                     name = "") +
-  xlim(c(0.7,1)) +
+  xlim(c(0.5,1)) +
   theme(legend.position = "top",
         panel.grid.major = element_blank(),
         axis.text.y = element_text(size = 8,
@@ -162,7 +162,7 @@ tcga %>%
 
 * Showing the individual log PMR values for the three top regions above, as well as the sum of their values.
 * The thresholds are calculated using Youden's index on the receiver operating characteristic.
-* The two thresholds (0.03 and 0.63) are then consistently used throughout the manuscript.
+* The two thresholds (0.03 and 0.63) are then used throughout the manuscript (high sensitivity and high specificity threshold, respectively).
 
 ```{r fig.align = "center", fig.width = 9, fig.height = 8}
 

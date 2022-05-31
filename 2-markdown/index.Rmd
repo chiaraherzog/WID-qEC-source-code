@@ -2,7 +2,10 @@
 title: "WID-qEC manuscript - source code"
 author: "Chiara Herzog"
 date: ""
-output: html_document
+output:
+  rmarkdown::html_document:
+    theme: cosmo
+    code_folding: show
 ---
 
 ```{r setup, include=FALSE}
@@ -13,7 +16,7 @@ knitr::opts_chunk$set(echo = FALSE,
 
 ## Overview
 
-This RMarkdown site contains the source code to reproduce the findings to ``A simple cervico-vaginal epigenetic test for early endometrial cancer detection – validation in several cohort and case/control sets'' (WID-qEC), structured as follows:
+This RMarkdown site contains the source code to reproduce the findings to ``A simple cervico-vaginal epigenetic test for screening and rapid triage of women with suspected endometrial cancer – validation in several cohort and case/control sets'' (WID-qEC), structured as follows:
 
 1. Plots for top 50 DMPs in the epigenome-wide discovery set
   * Figure 1
@@ -29,11 +32,12 @@ This RMarkdown site contains the source code to reproduce the findings to ``A si
 5. Barcelona Validation
   * Figure S13
   * Tables S4-S6
-6. Lynch Cohort
   * Figure S14
+6. Lynch Cohort
+  * Figure S15
 7. Karolinska Cohort
   * Table S7
 8. PPV/NPV
-  * Figure S15
+  * Figure S16
   
 The "mldat" file (WID-qEC_manuscript_data) contains all relevant data.

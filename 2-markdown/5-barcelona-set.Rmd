@@ -1,7 +1,7 @@
 ---
 title: "5. Detailed analysis of the Barcelona Validation set"
 author: "Chiara Herzog"
-date: April 4, 2022
+date: May 31, 2022
 output:
   rmarkdown::html_document:
     theme: cosmo
@@ -20,11 +20,16 @@ library(ROCnReg)
 library(gt)
 library(epiR)
 library(ggsci)
+library(gtExtras)
 cols <- pal_jama(alpha = 0.8)(7)
 
 # Read in data
 load("../0-data/WID-qEC_manuscript_data.Rdata")
 load("../0-data/cutoff.Rdata")
+
+# Scripts
+source("../1-source-codes/compute_ci_diff.R")
+source("../1-source-codes/plot_2_rocs.R")
 ```
 
 ## Comparison of self-sampling versus healthcare professional-assisted collection (AROC) (Figure S13)
@@ -39,29 +44,11 @@ dat <- mldat %>%
   droplevels()
 
 AROC_bnp_all <- AROC.bnp(formula.h = sum ~ age, 
-                     group = "type",
-                     tag.h = "Control",
-                     data = dat,
-                     standardise = TRUE,
-                     p = seq(0, 1, l = 101),
-                     ci.level = 0.05, 
-                     compute.lpml = TRUE,
-                     compute.WAIC = TRUE,
-                     compute.DIC = TRUE,
-                     pauc = pauccontrol(compute = FALSE),
-                     prior = priorcontrol.bnp(L = 10),
-                     density = densitycontrol.aroc(compute = FALSE),
-                     mcmc = mcmccontrol(nsave = 8000, nburn = 2000, nskip = 1),
-                     parallel = "multicore",
-                     ncpus = 4)
-
-AROC_bnp_self <- AROC.bnp(formula.h = sum ~ age, 
                          group = "type",
                          tag.h = "Control",
-                         data = dat[dat$selfsampling=="Self-collected",],
+                         data = dat,
                          standardise = TRUE,
                          p = seq(0, 1, l = 101),
-                         ci.level = 0.05, 
                          compute.lpml = TRUE,
                          compute.WAIC = TRUE,
                          compute.DIC = TRUE,
@@ -72,13 +59,12 @@ AROC_bnp_self <- AROC.bnp(formula.h = sum ~ age,
                          parallel = "multicore",
                          ncpus = 4)
 
-AROC_bnp_hcp<- AROC.bnp(formula.h = sum ~ age, 
+AROC_bnp_self <- AROC.bnp(formula.h = sum ~ age, 
                           group = "type",
                           tag.h = "Control",
-                          data = dat[dat$selfsampling=="HCP-assisted collection",],
+                          data = dat[dat$selfsampling=="Self-collected",],
                           standardise = TRUE,
                           p = seq(0, 1, l = 101),
-                          ci.level = 0.05, 
                           compute.lpml = TRUE,
                           compute.WAIC = TRUE,
                           compute.DIC = TRUE,
@@ -89,12 +75,28 @@ AROC_bnp_hcp<- AROC.bnp(formula.h = sum ~ age,
                           parallel = "multicore",
                           ncpus = 4)
 
+AROC_bnp_hcp<- AROC.bnp(formula.h = sum ~ age, 
+                        group = "type",
+                        tag.h = "Control",
+                        data = dat[dat$selfsampling=="HCP-assisted collection",],
+                        standardise = TRUE,
+                        p = seq(0, 1, l = 101),
+                        compute.lpml = TRUE,
+                        compute.WAIC = TRUE,
+                        compute.DIC = TRUE,
+                        pauc = pauccontrol(compute = FALSE),
+                        prior = priorcontrol.bnp(L = 10),
+                        density = densitycontrol.aroc(compute = FALSE),
+                        mcmc = mcmccontrol(nsave = 8000, nburn = 2000, nskip = 1),
+                        parallel = "multicore",
+                        ncpus = 4)
+
 
 df1 <- data.frame(p = AROC_bnp_all$p,
-                 lower = AROC_bnp_all$ROC[,1],
-                 roc = AROC_bnp_all$ROC[,2],
-                 upper = AROC_bnp_all$ROC[,3],
-                 set = "all")
+                  lower = AROC_bnp_all$ROC[,1],
+                  roc = AROC_bnp_all$ROC[,2],
+                  upper = AROC_bnp_all$ROC[,3],
+                  set = "all")
 df1 <- rbind(df1, 
              c(-0.000001,0,0,0, "all"))
 df2 <- data.frame(p = AROC_bnp_self$p,
@@ -113,11 +115,11 @@ df3 <- rbind(df3,
              c(-0.000001,0,0,0, "HCP-assisted"))
 
 df = rbind(df1, df2, df3)
-anno1 <- paste0("AUC (all) =", round(AROC_bnp_all$AUC[1],2), "\n(95% CI: ", round(AROC_bnp_all$AUC[2], 2), "-", round(AROC_bnp_all$AUC[3], 2))
-anno2 <- paste0("AUC (self) =", round(AROC_bnp_self$AUC[1],2), "\n(95% CI: ", round(AROC_bnp_self$AUC[2], 2), "-", round(AROC_bnp_self$AUC[3], 2))
-anno3 <- paste0("AUC (HCP) =", round(AROC_bnp_hcp$AUC[1],2), "\n(95% CI: ", round(AROC_bnp_hcp$AUC[2], 2), "-", round(AROC_bnp_hcp$AUC[3], 2))
+anno1 <- paste0("AUC (all) = ", round(AROC_bnp_all$AUC[1],2), "\n(95% CI: ", round(AROC_bnp_all$AUC[2], 2), "-", round(AROC_bnp_all$AUC[3], 2), ")")
+anno2 <- paste0("AUC (self) = ", round(AROC_bnp_self$AUC[1],2), "\n(95% CI: ", round(AROC_bnp_self$AUC[2], 2), "-", round(AROC_bnp_self$AUC[3], 2), ")")
+anno3 <- paste0("AUC (HCP) = ", round(AROC_bnp_hcp$AUC[1],2), "\n(95% CI: ", round(AROC_bnp_hcp$AUC[2], 2), "-", round(AROC_bnp_hcp$AUC[3], 2), ")")
 
-df %>%
+plot <- df %>%
   mutate(set = factor(set, levels = c("all", "self-collected", "HCP-assisted"))) %>%
   ggplot() +
   geom_line(aes(x = as.numeric(p), 
@@ -151,6 +153,8 @@ df %>%
            size = 3.5,
            fill = cols[5],
            colour = "white")
+
+plot 
 ```
 
 
@@ -160,22 +164,24 @@ df %>%
 mldat_tmp <- mldat %>%
   filter(!is.na(type) & (type == "Endometrial cancer" & mmr != "N/A") | (type == "Control" & mmr == "N/A")) %>%
   droplevels() %>%
-  mutate(sum = `ZSCAN12\n(cg25060829 [ii])` + `GYPC\n(cg15768103 [ii])` + `GYPC\n(cg15975865 [i])`) %>%
   mutate(thresh1 = case_when(sum >= cut$threshold[1] ~ "Endometrial cancer",
                              sum < cut$threshold[1] ~ "Control")) %>%
-  mutate(thresh2 = case_when(sum >= cut$threshold[2] ~ "Endometrial cancer",
-                             sum < cut$threshold[2] ~ "Control")) %>%
   mutate(type = factor(type, levels = c("Endometrial cancer", "Control"))) %>%
   mutate(thresh1 = factor(thresh1, levels = c("Endometrial cancer", "Control"))) %>%
-  mutate(thresh2 = factor(thresh2, levels = c("Endometrial cancer", "Control"))) 
+  mutate(disease = case_when(type=="Endometrial cancer" ~ 1,
+                             type == "Control" ~ 0),
+         score = case_when(thresh1 == "Endometrial cancer" ~ 1,
+                           thresh1 == "Control" ~ 0)) %>%
+  droplevels()
 
-dat <- data.frame(matrix(nrow = 3, ncol = 4))
-colnames(dat) <- c("threshold", "type", "MMR proficient", "MMR deficient")
-dat$threshold <- c("", "Threshold 1", "Threshold 2")
-dat$type <- c( "n", rep("Sensitivity – % (95% CI)", 2))
+dat <- data.frame(matrix(nrow = 2, ncol = 3))
+colnames(dat) <- c("type", "MMR proficient", "MMR deficient")
+dat$type <- c( "Endometrial cancers – n",
+               "Sensitivity – % (95% CI)")
 
 
 for(i in  2:length(levels(mldat_tmp$mmr))){
+  pop_prev = 0.09
   name <- levels(mldat_tmp$mmr)[i]
   tmp <- mldat_tmp %>%
     filter(mmr %in% c(name, "N/A")) %>%
@@ -183,27 +189,46 @@ for(i in  2:length(levels(mldat_tmp$mmr))){
   set <- unique(tmp$set)
   
   tab <- table(tmp$thresh1, tmp$type)
-  rval <- summary(epi.tests(tab))
+  # rval <- summary(epi.tests(tab))
+  tab <- matrix(c(tab[1,1], tab[2,1], tab[1,2], tab[2,2]), ncol = 2)
+  colnames(tab) <- c("Case", "Control")
+  rownames(tab) <- c("Case", "Control")
+  rval2 <- BDtest(xmat=as.matrix(tab), pr=pop_prev, conf.level = 0.95)
   
-  dat[1,i+1] <- paste0(sum(tmp$type == "Endometrial cancer"), " endometrial cancers")
-  dat[2,i+1] <- paste0(round(rval[3,1],2)*100, " (",
-                       round(rval[3,2],2)*100, "–",
-                       round(rval[3,3],2)*100, ")")
+  dat[1,i] <- sum(tmp$mmr==name)
+  dat[2,i] <- paste0(round(rval2$SESPDAT$Estimate[1]*100,1), " (",
+                       round(rval2$SESPDAT$`Lower 97.5% limit`[1]*100,1), "–",
+                       round(rval2$SESPDAT$`Upper 97.5% limit`[1]*100,1), ")")
   
-  tab <- table(tmp$thresh2, tmp$type)
-  rval <- summary(epi.tests(tab))
-  
-  dat[3,i+1] <- paste0(round(rval[3,1],2)*100, " (",
-                       round(rval[3,2],2)*100, "–",
-                       round(rval[3,3],2)*100, ")")
 }
 
+
+x <- compute_ci_diff(mldat_tmp$disease, mldat_tmp$score, mldat_tmp$mmr, t  = 1.96)
+dat$`∆` <- ""
+
+dat$`∆`[2] <- paste0(round(x$diff[1]*100, 1), " (",
+                     round(x$cil[1]*100, 1), "–",
+                     round(x$ciu[1]*100, 1), ")")                  
+
+
 tbl <- dat %>%
-  gt(rowname_col = "type", groupname_col = "threshold") %>%
-  text_transform(locations = cells_body(),
-                 fn = function(x){
-                   gsub("[.]", "·", x)
-                 }
+  gt(rowname_col = "type") %>%
+  cols_label(
+    "∆"=html("<i>Difference *</i>")
+  ) %>%
+  tab_style(
+    style = cell_text(color = "#707173"),
+    locations = list(cells_body(
+      columns = "∆",
+      rows = everything()
+    ),
+    cells_column_labels(columns = "∆")
+    )) %>%
+  tab_style(
+    style = list(
+      cell_text(align = "left")
+    ),
+    locations = cells_stub(rows = TRUE)
   ) %>%
   tab_options(table.font.names = "Guardian Sans",
               column_labels.font.weight = "bold",
@@ -219,8 +244,8 @@ tbl <- dat %>%
               row_group.border.top.width = px(1),
               row_group.border.bottom.width = px(1),
               stub.border.width = px(0),
-              heading.title.font.size = 14)
-
+              heading.title.font.size = 14) %>%
+  gt::tab_source_note(gt::html("* Difference in sensitivity (and confidence interval of the difference) between MMR deficient and MMR proficient cancers."))
 
 tbl
 ```
@@ -230,31 +255,38 @@ tbl
 ```{r}
 dat <- mldat %>%
   filter(dnamut_analysis == "Yes" & !is.na(dnamut_analysis) & !is.na(type)) %>%
-  mutate(sum_cutoff = case_when(sum >= 0.03 ~ "positive",
-                                sum < 0.03 ~ "negative")) %>%
-  mutate(sum_cutoff2 = case_when(sum >= 0.63 ~ "positive",
-                                 sum < 0.63 ~ "negative")) %>%
+  mutate(sum_cutoff = case_when(sum >= cut$threshold[1] ~ "positive",
+                                sum < cut$threshold[1] ~ "negative")) %>%
   mutate(type = factor(type, levels = c("Endometrial cancer", "Control"))) %>%
   mutate(sum_cutoff = factor(sum_cutoff, levels = c("positive", "negative")),
-         sum_cutoff2 = factor(sum_cutoff2, levels = c("positive", "negative")),
-         dnamut_result = factor(dnamut_result, levels = c("Positive", "Negative"))) %>% 
+         dnamut_result = factor(dnamut_result, levels = c("Positive", "Negative"))) %>%
+  mutate(disease = case_when(type == "Endometrial cancer" ~ 1,
+                             type == "Control" ~ 0),
+         ec_score = case_when(sum_cutoff == "positive" ~ 1,
+                              sum_cutoff == "negative" ~ 0),
+         dnamut_score = case_when(dnamut_result == "Positive" ~ 1,
+                                  dnamut_result == "Negative"~ 0)) %>%
   droplevels()
 
-dat1 <- data.frame(matrix(nrow = 8, ncol = 3))
-colnames(dat1) <- c("Set", "Type", "Data")
-dat1$Type <- c("Controls", "Endometrial cancers", "DNAmut Sensitivity – % (95% CI)", "DNAmut Specificity – % (95% CI)",
-               "qWID-EC Threshold I Sensitivity – % (95% CI)", "qWID-EC Threshold I Specificity – % (95% CI)",
-               "qWID-EC Threshold II Sensitivity – % (95% CI)", "qWID-EC Threshold II Specificity – % (95% CI)")
-dat1$Set <- "DNA mutation analysis *"
+dat1 <- data.frame(matrix(nrow = 2, ncol = 5))
+colnames(dat1) <- c("Info",
+                    "Type",
+                    "Comparison Test",
+                    "WID™-qEC",
+                    "Difference")
 
-dat1[1,3] <- nrow(dat[dat$type=="Control",])
-dat1[2,3] <- nrow(dat[dat$type=="Endometrial cancer",])
+dat1$Info <- c("DNA mutation analysis *")
+dat1$Type <- c("Sensitivity – % (95% CI)",
+               "Specificity – % (95% CI)")
 
 tmp <- dat %>%
-  pivot_longer(c(sum_cutoff, sum_cutoff2, dnamut_result),
+  pivot_longer(c(sum_cutoff, dnamut_result),
                names_to = "analysis",
                values_to = "value") %>%
-  mutate(analysis = factor(analysis, levels = c("sum_cutoff", "sum_cutoff2", "dnamut_result")))
+  mutate(analysis = factor(analysis, levels = c("dnamut_result", "sum_cutoff")))
+
+tmp_diff <- dat %>%
+  select(disease, ec_score, dnamut_score)
 
 for (i in 1:length(levels(tmp$analysis))){
   name <- levels(tmp$analysis)[i]
@@ -262,20 +294,41 @@ for (i in 1:length(levels(tmp$analysis))){
     filter(analysis == name) %>%
     droplevels()
   
+  pop_prev <- 0.09
+  
   tab <- table(tmp2$value, tmp2$type)
-  rval <- summary(epi.tests(tab))
+  tab <- matrix(c(tab[1,1], tab[2,1], tab[1,2], tab[2,2]), ncol = 2)
+  colnames(tab) <- c("Case", "Control")
+  rownames(tab) <- c("Case", "Control")
+  rval2 <- BDtest(xmat=as.matrix(tab), pr = pop_prev, conf.level = 0.95)
   
-  x <- ifelse(name == "sum_cutoff", 4, ifelse(name == "sum_cutoff2", 5, 0))
-  j <- i + x
-  
-  l <- j + 1
-  
-  dat1[j, 3] <- paste0(round(rval[3,1],2)*100, " (", round(rval[3,2],2)*100, "-", round(rval[3,3],2)*100, ")")
-  dat1[l, 3] <- paste0(round(rval[4,1],2)*100, " (", round(rval[4,2],2)*100, "-", round(rval[4,3],2)*100, ")")
+  dat1[1, i+2] <- paste0(round(rval2$SESPDAT$Estimate[1],2)*100, " (",
+                         round(rval2$SESPDAT$`Lower 97.5% limit`[1], 2)*100, "–",
+                         round(rval2$SESPDAT$`Upper 97.5% limit`[1], 2)*100, ")")
+  dat1[2, i+2] <- paste0(round(rval2$SESPDAT$Estimate[2],2)*100, " (",
+                        round(rval2$SESPDAT$`Lower 97.5% limit`[2], 2)*100, "–",
+                        round(rval2$SESPDAT$`Upper 97.5% limit`[2], 2)*100, ")")
   
 }
 
+# Compare specs and sensitivites
+tmp_diff <- dat %>%
+  select(disease, ec_score, dnamut_score)
+
+tab <- tab.paired(tmp_diff$disease, tmp_diff$dnamut_score, tmp_diff$ec_score,
+                  testnames = c("DNAmut analysis", "WID-qEC"))
+sesp <- sesp.diff.ci(tab, "wald", cont.corr = TRUE)
+
+
+dat1[1,5] <- paste0(round(sesp$sensitivity[3], 2)*100, " (", 
+                    round(sesp$sensitivity[5], 2)*100, "–",
+                    round(sesp$sensitivity[6], 2)*100, ")")
+dat1[2,5] <- paste0(round(sesp$specificity[3], 2)*100, " (", 
+                    round(sesp$specificity[5], 2)*100, "–",
+                    round(sesp$specificity[6], 2)*100, ")")
+  
 dat_dnamut <- dat1
+
 
 # US qualitative
 dat <- mldat %>%
@@ -287,24 +340,34 @@ dat <- mldat %>%
   mutate(type = factor(type, levels = c("Endometrial cancer", "Control"))) %>%
   mutate(sum_cutoff = factor(sum_cutoff, levels = c("positive", "negative")),
          sum_cutoff2 = factor(sum_cutoff2, levels = c("positive", "negative")),
-         us_cat = factor(us_cat, levels = c("Abnormal", "Normal"))) %>% 
+         us_cat = factor(us_cat, levels = c("Abnormal", "Normal"))) %>%
+  mutate(disease = case_when(type == "Endometrial cancer" ~ 1,
+                             type == "Control" ~ 0),
+         ec_score = case_when(sum_cutoff == "positive" ~ 1,
+                              sum_cutoff == "negative" ~ 0),
+         us_score = case_when(us_cat == "Abnormal" ~ 1,
+                                  us_cat == "Normal"~ 0)) %>%
   droplevels()
 
-dat1 <- data.frame(matrix(nrow = 8, ncol = 3))
-colnames(dat1) <- c("Set", "Type", "Data")
-dat1$Type <- c("Controls", "Endometrial cancers", "US Sensitivity – % (95% CI)", "US Specificity – % (95% CI)",
-               "qWID-EC Threshold I Sensitivity – % (95% CI)", "qWID-EC Threshold I Specificity – % (95% CI)",
-               "qWID-EC Threshold II Sensitivity – % (95% CI)", "qWID-EC Threshold II Specificity – % (95% CI)")
-dat1$Set <- "Ultrasound"
+dat1 <- data.frame(matrix(nrow = 2, ncol = 5))
+colnames(dat1) <- c("Info",
+                    "Type",
+                    "Comparison Test",
+                    "WID™-qEC",
+                    "Difference")
 
-dat1[1,3] <- nrow(dat[dat$type=="Control",])
-dat1[2,3] <- nrow(dat[dat$type=="Endometrial cancer",])
+dat1$Info <- c("Ultrasound evaluation †")
+dat1$Type <- c("Sensitivity – % (95% CI)",
+               "Specificity – % (95% CI)")
 
 tmp <- dat %>%
-  pivot_longer(c(sum_cutoff, sum_cutoff2, us_cat),
+  pivot_longer(c(sum_cutoff, us_cat),
                names_to = "analysis",
                values_to = "value") %>%
-  mutate(analysis = factor(analysis, levels = c("sum_cutoff", "sum_cutoff2", "us_cat")))
+  mutate(analysis = factor(analysis, levels = c("us_cat", "sum_cutoff")))
+
+tmp_diff <- dat %>%
+  select(disease, ec_score, us_score)
 
 for (i in 1:length(levels(tmp$analysis))){
   name <- levels(tmp$analysis)[i]
@@ -312,58 +375,68 @@ for (i in 1:length(levels(tmp$analysis))){
     filter(analysis == name) %>%
     droplevels()
   
+  pop_prev <- 0.09
+  
   tab <- table(tmp2$value, tmp2$type)
-  rval <- summary(epi.tests(tab))
+  tab <- matrix(c(tab[1,1], tab[2,1], tab[1,2], tab[2,2]), ncol = 2)
+  colnames(tab) <- c("Case", "Control")
+  rownames(tab) <- c("Case", "Control")
+  rval2 <- BDtest(xmat=as.matrix(tab), pr = pop_prev, conf.level = 0.95)
   
-  x <- ifelse(name == "sum_cutoff", 4, ifelse(name == "sum_cutoff2", 5, 0))
-  j <- i + x
-  
-  l <- j + 1
-  
-  dat1[j, 3] <- paste0(round(rval[3,1],2)*100, " (", round(rval[3,2],2)*100, "-", round(rval[3,3],2)*100, ")")
-  dat1[l, 3] <- paste0(round(rval[4,1],2)*100, " (", round(rval[4,2],2)*100, "-", round(rval[4,3],2)*100, ")")
+  dat1[1, i+2] <- paste0(round(rval2$SESPDAT$Estimate[1],2)*100, " (",
+                         round(rval2$SESPDAT$`Lower 97.5% limit`[1], 2)*100, "–",
+                         round(rval2$SESPDAT$`Upper 97.5% limit`[1], 2)*100, ")")
+  dat1[2, i+2] <- paste0(round(rval2$SESPDAT$Estimate[2],2)*100, " (",
+                         round(rval2$SESPDAT$`Lower 97.5% limit`[2], 2)*100, "–",
+                         round(rval2$SESPDAT$`Upper 97.5% limit`[2], 2)*100, ")")
   
 }
 
-dat_uscat <- dat1
+# Compare specs and sensitivites
+tmp_diff <- dat %>%
+  select(disease, ec_score, us_score)
+
+tab <- tab.paired(tmp_diff$disease, tmp_diff$us_score, tmp_diff$ec_score,
+                  testnames = c("US", "WID-qEC"))
+sesp <- sesp.diff.ci(tab, "wald", cont.corr = TRUE)
 
 
-dat_dnamut[1,3] <- "76 cancer cases,\n19 cancer-free controls"
-dat_dnamut[1,2] <- "n"
-dat_dnamut <- dat_dnamut[-2,]
-dat_dnamut$type <- c("n", rep(c("Sensitivity – % (95% CI)", "Specificity – % (95%)"), 3))
-dat_dnamut$test <- c("",
-                     rep("Comparison test", 2),
-                     rep("WID™-qEC Threshold 1", 2),
-                     rep("WID™-qEC Threshold 2", 2))
-dat_dnamut <- dat_dnamut[,-2]
-dat_dnamut <- dat_dnamut[,-1]
-colnames(dat_dnamut) <- c("DNA mutation analysis *", "type", "test")
+dat1[1,5] <- paste0(round(sesp$sensitivity[3], 2)*100, " (", 
+                    round(sesp$sensitivity[5], 2)*100, "–",
+                    round(sesp$sensitivity[6], 2)*100, ")")
+dat1[2,5] <- paste0(round(sesp$specificity[3], 2)*100, " (", 
+                    round(sesp$specificity[5], 2)*100, "–",
+                    round(sesp$specificity[6], 2)*100, ")")
+
+dat_us <- dat1
 
 
-dat_uscat[1,3] <- "122 cancer cases,\n98 cancer-free controls"
-dat_uscat[1,2] <- "n"
-dat_uscat <- dat_uscat[-2,]
+# - combine -------------------
+data <- rbind(dat_dnamut, dat_us)
 
-dat_uscat$type <- c("n", rep(c("Sensitivity – % (95% CI)", "Specificity – % (95%)"), 3))
-dat_uscat$test <- c("",
-                     rep("Comparison test", 2),
-                     rep("WID™-qEC Threshold 1", 2),
-                     rep("WID™-qEC Threshold 2", 2))
-dat_uscat <- dat_uscat[,-2]
-dat_uscat <- dat_uscat[,-1]
-colnames(dat_uscat) <- c("Ultrasound analysis", "type", "test")
-
-dat <- cbind(dat_dnamut, dat_uscat$`Ultrasound analysis`)
-
-colnames(dat) <- c("DNA mutation analysis *",
-                   "type",
-                   "test", 
-                   "Ultrasound analysis")
-
-tbl <- dat %>%
-  gt(groupname_col = "test",
-     rowname_col = "type") %>%
+tbl <- data %>%
+  gt(groupname_col = "Info",
+     rowname_col = "Type") %>%
+  text_transform(locations = cells_body(),
+                 fn = function(x){
+                   paste0(ifelse(x=="30 (17–44)", html("<b>30 (17–44)</b>"),
+                                 ifelse(x=="36 (22–49)", html("<b>36 (22–49)</b>"),
+                                                              x)))}
+                 ) %>%
+  cols_label(
+    `Comparison Test` =  "Comparator"
+  ) %>%
+  tab_style(
+    style = cell_text(color = "#707173"),
+    locations = list(cells_body(
+      columns = "Difference",
+      rows = everything()
+    ),
+    cells_column_labels(columns = "Difference")
+    )) %>%
+  cols_label(
+    "Difference" = html("<i>Difference *</i>")
+  ) %>%
   tab_options(table.font.names = "Guardian Sans",
               column_labels.font.weight = "bold",
               row_group.font.weight = "bold",
@@ -373,13 +446,15 @@ tbl <- dat %>%
               row_group.padding = 2,
               row_group.border.right.width = px(10),
               summary_row.padding = 2,
-              table.width = px(700),
+              table.width = px(600),
               table.border.top.color = "white",
               row_group.border.top.width = px(1),
               row_group.border.bottom.width = px(1),
               stub.border.width = px(0),
               heading.title.font.size = 14) %>%
-  gt::tab_source_note(source_note = html("* Cutoff >= 1 mutation."))
+  gt::tab_source_note(source_note = html("Significant differences, as evaluated by assessment of the confidence interval of the differences, are shown in <b>bold</b>.<br>
+  * Cutoff ≥ 1 mutation. Endometrial cancers – 76, Cancer-free controls – 19.<br>
+                                         † Qualitative evaluation by expert assessor (normal or abnormal endometrial thickness). Endometrial cancers – 122, Cancer-free controls – 98."))
 
 tbl
 ```
@@ -389,53 +464,65 @@ tbl
 ```{r}
 tmp <- mldat %>%
   filter(set == "Barcelona Validation" & !is.na(type) & dnamut_analysis == "Yes" & !is.na(dnamut_analysis) & !is.na(us_cat)) %>%
-  mutate(sum_cutoff = case_when(sum >= 0.03 ~ "positive",
-                                sum < 0.03 ~ "negative")) %>%
-  mutate(sum_cutoff2 = case_when(sum >= 0.63 ~ "positive",
-                                 sum < 0.63 ~ "negative")) %>%
+  mutate(sum_cutoff = case_when(sum >= cut$threshold[1] ~ "positive",
+                                sum < cut$threshold[1] ~ "negative")) %>%
   mutate(type = factor(type, levels = c("Endometrial cancer", "Control")),
          sum_cutoff = factor(sum_cutoff, levels = c("positive", "negative")),
-         sum_cutoff2 = factor(sum_cutoff2, levels = c("positive", "negative")),
          dnamut_result = factor(dnamut_result, levels = c("Positive", "Negative")),
          us = factor(us_cat, levels = c("Abnormal", "Normal"))) %>%
+  mutate(disease = case_when(type=="Endometrial cancer" ~ 1,
+                             type == "Control" ~ 0),
+         score = case_when(sum_cutoff == "positive" ~ 1,
+                           sum_cutoff == "negative" ~ 0),
+         us_score = case_when(us=="Abnormal" ~ 1,
+                              us=="Normal" ~ 0),
+         dnamut_score = case_when(dnamut_result == "Positive" ~ 1,
+                                  dnamut_result == "Negative" ~ 0)) %>%
   droplevels()
 
 tmp2 <- tmp %>%
-  pivot_longer(c(sum_cutoff, sum_cutoff2, dnamut_result, us),
+  pivot_longer(c(sum_cutoff, dnamut_result, us),
                names_to = "analysis",
                values_to = "value") %>%
-  mutate(analysis = factor(analysis, levels = c("sum_cutoff", "sum_cutoff2", "us", "dnamut_result")))
+  mutate(analysis = factor(analysis, levels = c("sum_cutoff", "us", "dnamut_result")))
 
 tmp_stage1 <- tmp %>%
   filter(stage %in% c("I", "N/A")) %>%
-  mutate(sum_cutoff = case_when(sum >= 0.03 ~ "positive",
-                                sum < 0.03 ~ "negative"),
-         sum_cutoff2 = case_when(sum >= 0.63 ~ "positive",
-                                 sum < 0.63 ~ "negative")) %>%
+  mutate(sum_cutoff = case_when(sum >= cut$threshold[1] ~ "positive",
+                                sum < cut$threshold[1] ~ "negative")) %>%
   mutate(type = factor(type, levels = c("Endometrial cancer", "Control"))) %>%
   mutate(sum_cutoff = factor(sum_cutoff, levels = c("positive", "negative")),
          dnamut_result = factor(dnamut_result, levels = c("Positive", "Negative")),
-         sum_cutoff2 = factor(sum_cutoff2, levels = c("positive", "negative")),
-         us = factor(us_cat, levels = c("Abnormal", "Normal"))) 
+         us = factor(us_cat, levels = c("Abnormal", "Normal"))) %>%
+  mutate(disease = case_when(type=="Endometrial cancer" ~ 1,
+                             type == "Control" ~ 0),
+         score = case_when(sum_cutoff == "positive" ~ 1,
+                           sum_cutoff == "negative" ~ 0),
+         us_score = case_when(us=="Abnormal" ~ 1,
+                              us=="Normal" ~ 0),
+         dnamut_score = case_when(dnamut_result == "Positive" ~ 1,
+                                  dnamut_result == "Negative" ~ 0)) %>%
+  droplevels()
 
 tmp2_stage1 <- tmp_stage1 %>%
-  pivot_longer(c(sum_cutoff, sum_cutoff2, dnamut_result, us),
+  pivot_longer(c(sum_cutoff, dnamut_result, us),
                names_to = "analysis",
                values_to = "value") %>%
-  mutate(analysis = factor(analysis, levels = c("sum_cutoff", "sum_cutoff2", "us", "dnamut_result")))
+  mutate(analysis = factor(analysis, levels = c("sum_cutoff", "us", "dnamut_result")))
 
-dat <- data.frame(matrix(nrow = 4, ncol = 6))
-colnames(dat) <- c("WID™-qEC (Threshold 1)",
-                   "WID™-qEC (Threshold 2)",
+dat <- data.frame(matrix(nrow = 4, ncol = 7))
+colnames(dat) <- c("WID™-qEC",
                    "Ultrasound",
                    "DNAmut analysis",
+                   "∆ qEC-US",
+                   "∆ qEC-DNAmut",
                    "type",
                    "set")
 dat$set <- rep(c("all stages (n = 88)", "stage I only (n = 64)"), 2)
 dat$type <- c(rep("Sensitivity – % (95% CI)", 2), rep("Specificity – % (95% CI)", 2))
 
 for (i in 1:length(levels(tmp2$analysis))){
-
+  pop_prev = 0.09
   name <- levels(tmp2$analysis)[i]
   tmp_all <- tmp2 %>%
     filter(analysis == name) %>%
@@ -446,37 +533,123 @@ for (i in 1:length(levels(tmp2$analysis))){
     droplevels()
   
   tab <- table(tmp_all$value, tmp_all$type)
-  rval <- summary(epi.tests(tab))
+  # rval <- summary(epi.tests(tab))
+  tab <- matrix(c(tab[1,1], tab[2,1], tab[1,2], tab[2,2]), ncol = 2)
+  colnames(tab) <- c("Case", "Control")
+  rownames(tab) <- c("Case", "Control")
+  rval2 <- BDtest(xmat=as.matrix(tab), pr=pop_prev, conf.level = 0.95)
   
 
-  dat[1,i] <- paste0(round(rval[3,1],2)*100, " (", round(rval[3,2],2)*100, "-", round(rval[3,3],2)*100, ")")
-  dat[3,i] <- paste0(round(rval[4,1],2)*100, " (", round(rval[4,2],2)*100, "-", round(rval[4,3],2)*100, ")")
+  dat[1,i] <- paste0(round(rval2$SESPDAT$Estimate[1]*100,1), " (",
+                     round(rval2$SESPDAT$`Lower 97.5% limit`[1]*100,1), "–",
+                     round(rval2$SESPDAT$`Upper 97.5% limit`[1]*100,1), ")")
+  
+  dat[3,i] <- paste0(round(rval2$SESPDAT$Estimate[2]*100,1), " (",
+                     round(rval2$SESPDAT$`Lower 97.5% limit`[2]*100,1), "–",
+                     round(rval2$SESPDAT$`Upper 97.5% limit`[2]*100,1), ")")
   
   tab <- table(tmp_stage1_calc$value, tmp_stage1_calc$type)
-  rval <- summary(epi.tests(tab))
+  # rval <- summary(epi.tests(tab))
+  tab <- matrix(c(tab[1,1], tab[2,1], tab[1,2], tab[2,2]), ncol = 2)
+  colnames(tab) <- c("Case", "Control")
+  rownames(tab) <- c("Case", "Control")
+  rval2 <- BDtest(xmat=as.matrix(tab), pr=pop_prev, conf.level = 0.95)
   
-  dat[2,i] <- paste0(round(rval[3,1],2)*100, " (", round(rval[3,2],2)*100, "-", round(rval[3,3],2)*100, ")")
-  dat[4,i] <- paste0(round(rval[4,1],2)*100, " (", round(rval[4,2],2)*100, "-", round(rval[4,3],2)*100, ")")
+  dat[2,i] <- paste0(round(rval2$SESPDAT$Estimate[1]*100,1), " (",
+                     round(rval2$SESPDAT$`Lower 97.5% limit`[1]*100,1), "–",
+                     round(rval2$SESPDAT$`Upper 97.5% limit`[1]*100,1), ")")
+  
+  dat[4,i] <- paste0(round(rval2$SESPDAT$Estimate[2]*100,1), " (",
+                     round(rval2$SESPDAT$`Lower 97.5% limit`[2]*100,1), "–",
+                     round(rval2$SESPDAT$`Upper 97.5% limit`[2]*100,1), ")")
   
 }
+
+# US-EC all --------
+tmp_diff <- tmp %>%
+  select(disease, score, us_score)
+
+tab <- tab.paired(tmp_diff$disease, tmp_diff$us_score, tmp_diff$score,
+                  testnames = c("qEC", "US"))
+sesp <- sesp.diff.ci(tab, "wald", cont.corr = TRUE)
+
+dat[1,4] <- paste0(round(sesp$sensitivity[3]*100, 1), " (", 
+                    round(sesp$sensitivity[5]*100, 1), "–",
+                    round(sesp$sensitivity[6]*100, 1), ")")
+dat[3,4] <- paste0(round(sesp$specificity[3]*100, 1), " (", 
+                    round(sesp$specificity[5]*100, 1), "–",
+                    round(sesp$specificity[6]*100, 1), ")")
+
+# US-EC stage 1----------------
+tmp_diff <- tmp_stage1 %>%
+  select(disease, score, us_score)
+
+tab <- tab.paired(tmp_diff$disease, tmp_diff$us_score, tmp_diff$score,
+                  testnames = c("qEC", "US"))
+sesp <- sesp.diff.ci(tab, "wald", cont.corr = TRUE)
+
+dat[2,4] <- paste0(round(sesp$sensitivity[3]*100, 1), " (", 
+                   round(sesp$sensitivity[5]*100, 1), "–",
+                   round(sesp$sensitivity[6]*100, 1), ")")
+dat[4,4] <- paste0(round(sesp$specificity[3]*100, 1), " (", 
+                   round(sesp$specificity[5]*100, 1), "–",
+                   round(sesp$specificity[6]*100, 1), ")")
+
+
+# Mut-EC all --------
+tmp_diff <- tmp %>%
+  select(disease, score, dnamut_score)
+
+tab <- tab.paired(tmp_diff$disease, tmp_diff$dnamut_score, tmp_diff$score,
+                  testnames = c("DNAmut", "US"))
+sesp <- sesp.diff.ci(tab, "wald", cont.corr = TRUE)
+
+dat[1,5] <- paste0(round(sesp$sensitivity[3]*100, 1), " (", 
+                   round(sesp$sensitivity[5]*100, 1), "–",
+                   round(sesp$sensitivity[6]*100, 1), ")")
+dat[3,5] <- paste0(round(sesp$specificity[3]*100, 1), " (", 
+                   round(sesp$specificity[5]*100, 1), "–",
+                   round(sesp$specificity[6]*100, 1), ")")
+
+# Mut-EC stage 1----------------
+tmp_diff <- tmp_stage1 %>%
+  select(disease, score, dnamut_score)
+
+tab <- tab.paired(tmp_diff$disease, tmp_diff$dnamut_score, tmp_diff$score,
+                  testnames = c("DNAmut", "US"))
+sesp <- sesp.diff.ci(tab, "wald", cont.corr = TRUE)
+
+dat[2,5] <- paste0(round(sesp$sensitivity[3]*100, 1), " (", 
+                   round(sesp$sensitivity[5]*100, 1), "–",
+                   round(sesp$sensitivity[6]*100, 1), ")")
+dat[4,5] <- paste0(round(sesp$specificity[3]*100, 1), " (", 
+                   round(sesp$specificity[5]*100, 1), "–",
+                   round(sesp$specificity[6]*100, 1), ")")
 
 
 tbl <- dat %>%
   gt(rowname_col = "type",
      groupname_col = "set") %>%
-  tab_spanner(
-    columns = c("WID™-qEC (Threshold 1)", "WID™-qEC (Threshold 2)"),
-    label = "WID™-qEC"
-  ) %>%
   cols_label(
-    "WID™-qEC (Threshold 1)" = "Threshold 1",
-    "WID™-qEC (Threshold 2)" = "Threshold 2"
+    "∆ qEC-US" = html('<i>Difference<br>WID™-qEC–<br> Ultrasound</i>'),
+    "∆ qEC-DNAmut" = html('<i>Difference<br>WID™-qEC–<br>DNAmut analysis</i>'),
+    "DNAmut analysis" = "DNAmut analysis *",
   ) %>%
+  tab_style(
+    style = cell_text(color = "#707173"),
+    locations = list(cells_body(
+      columns = c("∆ qEC-US",
+                  "∆ qEC-DNAmut"),
+      rows = everything()
+    ),
+    cells_column_labels(columns = c("∆ qEC-US",
+                                    "∆ qEC-DNAmut"))
+    )) %>%
   text_transform(locations = cells_body(),
                  fn = function(x){
-                   gsub("[.]", "·", x)
-                 }
-  ) %>%
+                   paste0(ifelse(x == "63.2 (31.2–95.2)", html("<b>63.2 (31.2–95.2)</b"),
+                                 ifelse(x == "31.9 (17.3–46.4)", html("<b>31.9 (17.3–46.4)</b>"),
+                                        ifelse(x == "33.3 (13.9–52.8)", html("<b>33.3 (13.9–52.8)</b>"), x))))}) %>%
   tab_options(table.font.names = "Guardian Sans",
               column_labels.font.weight = "bold",
               row_group.font.weight = "bold",
@@ -491,9 +664,28 @@ tbl <- dat %>%
               row_group.border.bottom.width = px(1),
               stub.border.width = px(0),
               heading.title.font.size = 14,
-              table.width = px(600))
-
-
+              table.width = px(700)) %>%
+  tab_source_note(gt::html("Significant differences, as evaluated by assessment of the confidence interval of the differences, are shown in <b>bold</b>.<br>
+  * Cutoff ≥ 1 mutation. "))
 
 tbl
 ```
+
+
+## Comparison of WID-qEC and ultrasound alone (Figure S14)
+
+
+```{r fig.width = 4.25, fig.height = 4.25, fig.align = "center"}
+mldat_us <- mldat %>%
+  filter(!is.na(us_thickness) & !is.na(type)) %>%
+  droplevels()
+
+p1 <- plot_2_rocs(mldat_us$type,
+                  mldat_us$sum, mldat_us$us_thickness,
+                  "black", cols[7],
+                  "WID™-qEC", "US", "<")
+
+p1
+
+```
+

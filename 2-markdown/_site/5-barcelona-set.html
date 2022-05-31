@@ -11,11 +11,11 @@
 
 <meta name="author" content="Chiara Herzog" />
 
-<meta name="date" content="2022-04-04" />
+<meta name="date" content="2022-05-31" />
 
 <title>5. Detailed analysis of the Barcelona Validation set</title>
 
-<script src="site_libs/header-attrs-2.11/header-attrs.js"></script>
+<script src="site_libs/header-attrs-2.14/header-attrs.js"></script>
 <script src="site_libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <link href="site_libs/bootstrap-3.3.5/css/cosmo.min.css" rel="stylesheet" />
@@ -63,6 +63,7 @@ if (window.hljs) {
 
 
 
+
 <style type = "text/css">
 .main-container {
   max-width: 940px;
@@ -83,6 +84,9 @@ button.code-folding-btn:focus {
 }
 summary {
   display: list-item;
+}
+details > summary > p:only-child {
+  display: inline;
 }
 pre code {
   padding: 0;
@@ -238,7 +242,7 @@ $(document).ready(function () {
 <div class="navbar navbar-default  navbar-fixed-top" role="navigation">
   <div class="container">
     <div class="navbar-header">
-      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-bs-toggle="collapse" data-target="#navbar" data-bs-target="#navbar">
         <span class="icon-bar"></span>
         <span class="icon-bar"></span>
         <span class="icon-bar"></span>
@@ -248,7 +252,7 @@ $(document).ready(function () {
     <div id="navbar" class="navbar-collapse collapse">
       <ul class="nav navbar-nav">
         <li class="dropdown">
-  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
     WID-qEC source code
      
     <span class="caret"></span>
@@ -294,7 +298,7 @@ $(document).ready(function () {
 <div id="header">
 
 <div class="btn-group pull-right float-right">
-<button type="button" class="btn btn-default btn-xs btn-secondary btn-sm dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><span>Code</span> <span class="caret"></span></button>
+<button type="button" class="btn btn-default btn-xs btn-secondary btn-sm dropdown-toggle" data-toggle="dropdown" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><span>Code</span> <span class="caret"></span></button>
 <ul class="dropdown-menu dropdown-menu-right" style="min-width: 50px;">
 <li><a id="rmd-show-all-code" href="#">Show All Code</a></li>
 <li><a id="rmd-hide-all-code" href="#">Hide All Code</a></li>
@@ -305,7 +309,7 @@ $(document).ready(function () {
 
 <h1 class="title toc-ignore">5. Detailed analysis of the Barcelona Validation set</h1>
 <h4 class="author">Chiara Herzog</h4>
-<h4 class="date">April 4, 2022</h4>
+<h4 class="date">May 31, 2022</h4>
 
 </div>
 
@@ -321,29 +325,11 @@ $(document).ready(function () {
   droplevels()
 
 AROC_bnp_all &lt;- AROC.bnp(formula.h = sum ~ age, 
-                     group = &quot;type&quot;,
-                     tag.h = &quot;Control&quot;,
-                     data = dat,
-                     standardise = TRUE,
-                     p = seq(0, 1, l = 101),
-                     ci.level = 0.05, 
-                     compute.lpml = TRUE,
-                     compute.WAIC = TRUE,
-                     compute.DIC = TRUE,
-                     pauc = pauccontrol(compute = FALSE),
-                     prior = priorcontrol.bnp(L = 10),
-                     density = densitycontrol.aroc(compute = FALSE),
-                     mcmc = mcmccontrol(nsave = 8000, nburn = 2000, nskip = 1),
-                     parallel = &quot;multicore&quot;,
-                     ncpus = 4)
-
-AROC_bnp_self &lt;- AROC.bnp(formula.h = sum ~ age, 
                          group = &quot;type&quot;,
                          tag.h = &quot;Control&quot;,
-                         data = dat[dat$selfsampling==&quot;Self-collected&quot;,],
+                         data = dat,
                          standardise = TRUE,
                          p = seq(0, 1, l = 101),
-                         ci.level = 0.05, 
                          compute.lpml = TRUE,
                          compute.WAIC = TRUE,
                          compute.DIC = TRUE,
@@ -354,13 +340,12 @@ AROC_bnp_self &lt;- AROC.bnp(formula.h = sum ~ age,
                          parallel = &quot;multicore&quot;,
                          ncpus = 4)
 
-AROC_bnp_hcp&lt;- AROC.bnp(formula.h = sum ~ age, 
+AROC_bnp_self &lt;- AROC.bnp(formula.h = sum ~ age, 
                           group = &quot;type&quot;,
                           tag.h = &quot;Control&quot;,
-                          data = dat[dat$selfsampling==&quot;HCP-assisted collection&quot;,],
+                          data = dat[dat$selfsampling==&quot;Self-collected&quot;,],
                           standardise = TRUE,
                           p = seq(0, 1, l = 101),
-                          ci.level = 0.05, 
                           compute.lpml = TRUE,
                           compute.WAIC = TRUE,
                           compute.DIC = TRUE,
@@ -371,12 +356,28 @@ AROC_bnp_hcp&lt;- AROC.bnp(formula.h = sum ~ age,
                           parallel = &quot;multicore&quot;,
                           ncpus = 4)
 
+AROC_bnp_hcp&lt;- AROC.bnp(formula.h = sum ~ age, 
+                        group = &quot;type&quot;,
+                        tag.h = &quot;Control&quot;,
+                        data = dat[dat$selfsampling==&quot;HCP-assisted collection&quot;,],
+                        standardise = TRUE,
+                        p = seq(0, 1, l = 101),
+                        compute.lpml = TRUE,
+                        compute.WAIC = TRUE,
+                        compute.DIC = TRUE,
+                        pauc = pauccontrol(compute = FALSE),
+                        prior = priorcontrol.bnp(L = 10),
+                        density = densitycontrol.aroc(compute = FALSE),
+                        mcmc = mcmccontrol(nsave = 8000, nburn = 2000, nskip = 1),
+                        parallel = &quot;multicore&quot;,
+                        ncpus = 4)
+
 
 df1 &lt;- data.frame(p = AROC_bnp_all$p,
-                 lower = AROC_bnp_all$ROC[,1],
-                 roc = AROC_bnp_all$ROC[,2],
-                 upper = AROC_bnp_all$ROC[,3],
-                 set = &quot;all&quot;)
+                  lower = AROC_bnp_all$ROC[,1],
+                  roc = AROC_bnp_all$ROC[,2],
+                  upper = AROC_bnp_all$ROC[,3],
+                  set = &quot;all&quot;)
 df1 &lt;- rbind(df1, 
              c(-0.000001,0,0,0, &quot;all&quot;))
 df2 &lt;- data.frame(p = AROC_bnp_self$p,
@@ -395,11 +396,11 @@ df3 &lt;- rbind(df3,
              c(-0.000001,0,0,0, &quot;HCP-assisted&quot;))
 
 df = rbind(df1, df2, df3)
-anno1 &lt;- paste0(&quot;AUC (all) =&quot;, round(AROC_bnp_all$AUC[1],2), &quot;\n(95% CI: &quot;, round(AROC_bnp_all$AUC[2], 2), &quot;-&quot;, round(AROC_bnp_all$AUC[3], 2))
-anno2 &lt;- paste0(&quot;AUC (self) =&quot;, round(AROC_bnp_self$AUC[1],2), &quot;\n(95% CI: &quot;, round(AROC_bnp_self$AUC[2], 2), &quot;-&quot;, round(AROC_bnp_self$AUC[3], 2))
-anno3 &lt;- paste0(&quot;AUC (HCP) =&quot;, round(AROC_bnp_hcp$AUC[1],2), &quot;\n(95% CI: &quot;, round(AROC_bnp_hcp$AUC[2], 2), &quot;-&quot;, round(AROC_bnp_hcp$AUC[3], 2))
+anno1 &lt;- paste0(&quot;AUC (all) = &quot;, round(AROC_bnp_all$AUC[1],2), &quot;\n(95% CI: &quot;, round(AROC_bnp_all$AUC[2], 2), &quot;-&quot;, round(AROC_bnp_all$AUC[3], 2), &quot;)&quot;)
+anno2 &lt;- paste0(&quot;AUC (self) = &quot;, round(AROC_bnp_self$AUC[1],2), &quot;\n(95% CI: &quot;, round(AROC_bnp_self$AUC[2], 2), &quot;-&quot;, round(AROC_bnp_self$AUC[3], 2), &quot;)&quot;)
+anno3 &lt;- paste0(&quot;AUC (HCP) = &quot;, round(AROC_bnp_hcp$AUC[1],2), &quot;\n(95% CI: &quot;, round(AROC_bnp_hcp$AUC[2], 2), &quot;-&quot;, round(AROC_bnp_hcp$AUC[3], 2), &quot;)&quot;)
 
-df %&gt;%
+plot &lt;- df %&gt;%
   mutate(set = factor(set, levels = c(&quot;all&quot;, &quot;self-collected&quot;, &quot;HCP-assisted&quot;))) %&gt;%
   ggplot() +
   geom_line(aes(x = as.numeric(p), 
@@ -432,7 +433,9 @@ df %&gt;%
            x = 0.5, y = 0.35,
            size = 3.5,
            fill = cols[5],
-           colour = &quot;white&quot;)</code></pre>
+           colour = &quot;white&quot;)
+
+plot </code></pre>
 <p><img src="5-barcelona-set_files/figure-html/unnamed-chunk-1-1.png" width="480" style="display: block; margin: auto;" /></p>
 </div>
 <div id="dependence-on-mmr-status-table-s4" class="section level2">
@@ -440,22 +443,24 @@ df %&gt;%
 <pre class="r"><code>mldat_tmp &lt;- mldat %&gt;%
   filter(!is.na(type) &amp; (type == &quot;Endometrial cancer&quot; &amp; mmr != &quot;N/A&quot;) | (type == &quot;Control&quot; &amp; mmr == &quot;N/A&quot;)) %&gt;%
   droplevels() %&gt;%
-  mutate(sum = `ZSCAN12\n(cg25060829 [ii])` + `GYPC\n(cg15768103 [ii])` + `GYPC\n(cg15975865 [i])`) %&gt;%
   mutate(thresh1 = case_when(sum &gt;= cut$threshold[1] ~ &quot;Endometrial cancer&quot;,
                              sum &lt; cut$threshold[1] ~ &quot;Control&quot;)) %&gt;%
-  mutate(thresh2 = case_when(sum &gt;= cut$threshold[2] ~ &quot;Endometrial cancer&quot;,
-                             sum &lt; cut$threshold[2] ~ &quot;Control&quot;)) %&gt;%
   mutate(type = factor(type, levels = c(&quot;Endometrial cancer&quot;, &quot;Control&quot;))) %&gt;%
   mutate(thresh1 = factor(thresh1, levels = c(&quot;Endometrial cancer&quot;, &quot;Control&quot;))) %&gt;%
-  mutate(thresh2 = factor(thresh2, levels = c(&quot;Endometrial cancer&quot;, &quot;Control&quot;))) 
+  mutate(disease = case_when(type==&quot;Endometrial cancer&quot; ~ 1,
+                             type == &quot;Control&quot; ~ 0),
+         score = case_when(thresh1 == &quot;Endometrial cancer&quot; ~ 1,
+                           thresh1 == &quot;Control&quot; ~ 0)) %&gt;%
+  droplevels()
 
-dat &lt;- data.frame(matrix(nrow = 3, ncol = 4))
-colnames(dat) &lt;- c(&quot;threshold&quot;, &quot;type&quot;, &quot;MMR proficient&quot;, &quot;MMR deficient&quot;)
-dat$threshold &lt;- c(&quot;&quot;, &quot;Threshold 1&quot;, &quot;Threshold 2&quot;)
-dat$type &lt;- c( &quot;n&quot;, rep(&quot;Sensitivity – % (95% CI)&quot;, 2))
+dat &lt;- data.frame(matrix(nrow = 2, ncol = 3))
+colnames(dat) &lt;- c(&quot;type&quot;, &quot;MMR proficient&quot;, &quot;MMR deficient&quot;)
+dat$type &lt;- c( &quot;Endometrial cancers – n&quot;,
+               &quot;Sensitivity – % (95% CI)&quot;)
 
 
 for(i in  2:length(levels(mldat_tmp$mmr))){
+  pop_prev = 0.09
   name &lt;- levels(mldat_tmp$mmr)[i]
   tmp &lt;- mldat_tmp %&gt;%
     filter(mmr %in% c(name, &quot;N/A&quot;)) %&gt;%
@@ -463,27 +468,47 @@ for(i in  2:length(levels(mldat_tmp$mmr))){
   set &lt;- unique(tmp$set)
   
   tab &lt;- table(tmp$thresh1, tmp$type)
-  rval &lt;- summary(epi.tests(tab))
+  # rval &lt;- summary(epi.tests(tab))
+  tab &lt;- matrix(c(tab[1,1], tab[2,1], tab[1,2], tab[2,2]), ncol = 2)
+  colnames(tab) &lt;- c(&quot;Case&quot;, &quot;Control&quot;)
+  rownames(tab) &lt;- c(&quot;Case&quot;, &quot;Control&quot;)
+  rval2 &lt;- BDtest(xmat=as.matrix(tab), pr=pop_prev, conf.level = 0.95)
   
-  dat[1,i+1] &lt;- paste0(sum(tmp$type == &quot;Endometrial cancer&quot;), &quot; endometrial cancers&quot;)
-  dat[2,i+1] &lt;- paste0(round(rval[3,1],2)*100, &quot; (&quot;,
-                       round(rval[3,2],2)*100, &quot;–&quot;,
-                       round(rval[3,3],2)*100, &quot;)&quot;)
+  dat[1,i] &lt;- sum(tmp$mmr==name)
+  dat[2,i] &lt;- paste0(round(rval2$SESPDAT$Estimate[1]*100,1), &quot; (&quot;,
+                       round(rval2$SESPDAT$`Lower 97.5% limit`[1]*100,1), &quot;–&quot;,
+                       round(rval2$SESPDAT$`Upper 97.5% limit`[1]*100,1), &quot;)&quot;)
   
-  tab &lt;- table(tmp$thresh2, tmp$type)
-  rval &lt;- summary(epi.tests(tab))
-  
-  dat[3,i+1] &lt;- paste0(round(rval[3,1],2)*100, &quot; (&quot;,
-                       round(rval[3,2],2)*100, &quot;–&quot;,
-                       round(rval[3,3],2)*100, &quot;)&quot;)
 }
 
+
+x &lt;- compute_ci_diff(mldat_tmp$disease, mldat_tmp$score, mldat_tmp$mmr, t  = 1.96)</code></pre>
+<pre><code>## Group 1 is MMR proficient, group 2 is MMR deficient</code></pre>
+<pre class="r"><code>dat$`∆` &lt;- &quot;&quot;
+
+dat$`∆`[2] &lt;- paste0(round(x$diff[1]*100, 1), &quot; (&quot;,
+                     round(x$cil[1]*100, 1), &quot;–&quot;,
+                     round(x$ciu[1]*100, 1), &quot;)&quot;)                  
+
+
 tbl &lt;- dat %&gt;%
-  gt(rowname_col = &quot;type&quot;, groupname_col = &quot;threshold&quot;) %&gt;%
-  text_transform(locations = cells_body(),
-                 fn = function(x){
-                   gsub(&quot;[.]&quot;, &quot;·&quot;, x)
-                 }
+  gt(rowname_col = &quot;type&quot;) %&gt;%
+  cols_label(
+    &quot;∆&quot;=html(&quot;&lt;i&gt;Difference *&lt;/i&gt;&quot;)
+  ) %&gt;%
+  tab_style(
+    style = cell_text(color = &quot;#707173&quot;),
+    locations = list(cells_body(
+      columns = &quot;∆&quot;,
+      rows = everything()
+    ),
+    cells_column_labels(columns = &quot;∆&quot;)
+    )) %&gt;%
+  tab_style(
+    style = list(
+      cell_text(align = &quot;left&quot;)
+    ),
+    locations = cells_stub(rows = TRUE)
   ) %&gt;%
   tab_options(table.font.names = &quot;Guardian Sans&quot;,
               column_labels.font.weight = &quot;bold&quot;,
@@ -499,16 +524,16 @@ tbl &lt;- dat %&gt;%
               row_group.border.top.width = px(1),
               row_group.border.bottom.width = px(1),
               stub.border.width = px(0),
-              heading.title.font.size = 14)
-
+              heading.title.font.size = 14) %&gt;%
+  gt::tab_source_note(gt::html(&quot;* Difference in sensitivity (and confidence interval of the difference) between MMR deficient and MMR proficient cancers.&quot;))
 
 tbl</code></pre>
-<div id="iasulrmgtc" style="overflow-x:auto;overflow-y:auto;width:auto;height:auto;">
+<div id="ekkjgqrjeh" style="overflow-x:auto;overflow-y:auto;width:auto;height:auto;">
 <style>html {
   font-family: 'Guardian Sans';
 }
 
-#iasulrmgtc .gt_table {
+#ekkjgqrjeh .gt_table {
   display: table;
   border-collapse: collapse;
   margin-left: auto;
@@ -533,7 +558,7 @@ tbl</code></pre>
   border-left-color: #D3D3D3;
 }
 
-#iasulrmgtc .gt_heading {
+#ekkjgqrjeh .gt_heading {
   background-color: #FFFFFF;
   text-align: center;
   border-bottom-color: #FFFFFF;
@@ -545,33 +570,37 @@ tbl</code></pre>
   border-right-color: #D3D3D3;
 }
 
-#iasulrmgtc .gt_title {
+#ekkjgqrjeh .gt_title {
   color: #333333;
   font-size: 14px;
   font-weight: initial;
   padding-top: 4px;
   padding-bottom: 4px;
+  padding-left: 5px;
+  padding-right: 5px;
   border-bottom-color: #FFFFFF;
   border-bottom-width: 0;
 }
 
-#iasulrmgtc .gt_subtitle {
+#ekkjgqrjeh .gt_subtitle {
   color: #333333;
   font-size: 85%;
   font-weight: initial;
   padding-top: 0;
   padding-bottom: 6px;
+  padding-left: 5px;
+  padding-right: 5px;
   border-top-color: #FFFFFF;
   border-top-width: 0;
 }
 
-#iasulrmgtc .gt_bottom_border {
+#ekkjgqrjeh .gt_bottom_border {
   border-bottom-style: solid;
   border-bottom-width: 2px;
   border-bottom-color: #D3D3D3;
 }
 
-#iasulrmgtc .gt_col_headings {
+#ekkjgqrjeh .gt_col_headings {
   border-top-style: solid;
   border-top-width: 2px;
   border-top-color: #D3D3D3;
@@ -586,7 +615,7 @@ tbl</code></pre>
   border-right-color: #D3D3D3;
 }
 
-#iasulrmgtc .gt_col_heading {
+#ekkjgqrjeh .gt_col_heading {
   color: #333333;
   background-color: #FFFFFF;
   font-size: 12px;
@@ -606,7 +635,7 @@ tbl</code></pre>
   overflow-x: hidden;
 }
 
-#iasulrmgtc .gt_column_spanner_outer {
+#ekkjgqrjeh .gt_column_spanner_outer {
   color: #333333;
   background-color: #FFFFFF;
   font-size: 12px;
@@ -618,15 +647,15 @@ tbl</code></pre>
   padding-right: 4px;
 }
 
-#iasulrmgtc .gt_column_spanner_outer:first-child {
+#ekkjgqrjeh .gt_column_spanner_outer:first-child {
   padding-left: 0;
 }
 
-#iasulrmgtc .gt_column_spanner_outer:last-child {
+#ekkjgqrjeh .gt_column_spanner_outer:last-child {
   padding-right: 0;
 }
 
-#iasulrmgtc .gt_column_spanner {
+#ekkjgqrjeh .gt_column_spanner {
   border-bottom-style: solid;
   border-bottom-width: 2px;
   border-bottom-color: #D3D3D3;
@@ -638,8 +667,11 @@ tbl</code></pre>
   width: 100%;
 }
 
-#iasulrmgtc .gt_group_heading {
-  padding: 2px;
+#ekkjgqrjeh .gt_group_heading {
+  padding-top: 2px;
+  padding-bottom: 2px;
+  padding-left: 5px;
+  padding-right: 5px;
   color: #333333;
   background-color: #FFFFFF;
   font-size: 100%;
@@ -660,7 +692,7 @@ tbl</code></pre>
   vertical-align: middle;
 }
 
-#iasulrmgtc .gt_empty_group_heading {
+#ekkjgqrjeh .gt_empty_group_heading {
   padding: 0.5px;
   color: #333333;
   background-color: #FFFFFF;
@@ -675,15 +707,15 @@ tbl</code></pre>
   vertical-align: middle;
 }
 
-#iasulrmgtc .gt_from_md > :first-child {
+#ekkjgqrjeh .gt_from_md > :first-child {
   margin-top: 0;
 }
 
-#iasulrmgtc .gt_from_md > :last-child {
+#ekkjgqrjeh .gt_from_md > :last-child {
   margin-bottom: 0;
 }
 
-#iasulrmgtc .gt_row {
+#ekkjgqrjeh .gt_row {
   padding-top: 2px;
   padding-bottom: 2px;
   padding-left: 5px;
@@ -702,7 +734,7 @@ tbl</code></pre>
   overflow-x: hidden;
 }
 
-#iasulrmgtc .gt_stub {
+#ekkjgqrjeh .gt_stub {
   color: #333333;
   background-color: #FFFFFF;
   font-size: 100%;
@@ -711,10 +743,29 @@ tbl</code></pre>
   border-right-style: solid;
   border-right-width: 0px;
   border-right-color: #D3D3D3;
-  padding-left: 12px;
+  padding-left: 5px;
+  padding-right: 5px;
 }
 
-#iasulrmgtc .gt_summary_row {
+#ekkjgqrjeh .gt_stub_row_group {
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: initial;
+  text-transform: inherit;
+  border-right-style: solid;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+  padding-left: 5px;
+  padding-right: 5px;
+  vertical-align: top;
+}
+
+#ekkjgqrjeh .gt_row_group_first td {
+  border-top-width: 1px;
+}
+
+#ekkjgqrjeh .gt_summary_row {
   color: #333333;
   background-color: #FFFFFF;
   text-transform: inherit;
@@ -724,17 +775,26 @@ tbl</code></pre>
   padding-right: 5px;
 }
 
-#iasulrmgtc .gt_first_summary_row {
+#ekkjgqrjeh .gt_first_summary_row {
+  border-top-style: solid;
+  border-top-color: #D3D3D3;
+}
+
+#ekkjgqrjeh .gt_first_summary_row.thick {
+  border-top-width: 2px;
+}
+
+#ekkjgqrjeh .gt_last_summary_row {
   padding-top: 2px;
   padding-bottom: 2px;
   padding-left: 5px;
   padding-right: 5px;
-  border-top-style: solid;
-  border-top-width: 2px;
-  border-top-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
 }
 
-#iasulrmgtc .gt_grand_summary_row {
+#ekkjgqrjeh .gt_grand_summary_row {
   color: #333333;
   background-color: #FFFFFF;
   text-transform: inherit;
@@ -744,7 +804,7 @@ tbl</code></pre>
   padding-right: 5px;
 }
 
-#iasulrmgtc .gt_first_grand_summary_row {
+#ekkjgqrjeh .gt_first_grand_summary_row {
   padding-top: 8px;
   padding-bottom: 8px;
   padding-left: 5px;
@@ -754,11 +814,11 @@ tbl</code></pre>
   border-top-color: #D3D3D3;
 }
 
-#iasulrmgtc .gt_striped {
+#ekkjgqrjeh .gt_striped {
   background-color: rgba(128, 128, 128, 0.05);
 }
 
-#iasulrmgtc .gt_table_body {
+#ekkjgqrjeh .gt_table_body {
   border-top-style: solid;
   border-top-width: 2px;
   border-top-color: #D3D3D3;
@@ -767,7 +827,7 @@ tbl</code></pre>
   border-bottom-color: #D3D3D3;
 }
 
-#iasulrmgtc .gt_footnotes {
+#ekkjgqrjeh .gt_footnotes {
   color: #333333;
   background-color: #FFFFFF;
   border-bottom-style: none;
@@ -781,13 +841,16 @@ tbl</code></pre>
   border-right-color: #D3D3D3;
 }
 
-#iasulrmgtc .gt_footnote {
+#ekkjgqrjeh .gt_footnote {
   margin: 0px;
   font-size: 90%;
-  padding: 4px;
+  padding-left: 4px;
+  padding-right: 4px;
+  padding-left: 5px;
+  padding-right: 5px;
 }
 
-#iasulrmgtc .gt_sourcenotes {
+#ekkjgqrjeh .gt_sourcenotes {
   color: #333333;
   background-color: #FFFFFF;
   border-bottom-style: none;
@@ -801,44 +864,80 @@ tbl</code></pre>
   border-right-color: #D3D3D3;
 }
 
-#iasulrmgtc .gt_sourcenote {
+#ekkjgqrjeh .gt_sourcenote {
   font-size: 90%;
-  padding: 4px;
+  padding-top: 4px;
+  padding-bottom: 4px;
+  padding-left: 5px;
+  padding-right: 5px;
 }
 
-#iasulrmgtc .gt_left {
+#ekkjgqrjeh .gt_left {
   text-align: left;
 }
 
-#iasulrmgtc .gt_center {
+#ekkjgqrjeh .gt_center {
   text-align: center;
 }
 
-#iasulrmgtc .gt_right {
+#ekkjgqrjeh .gt_right {
   text-align: right;
   font-variant-numeric: tabular-nums;
 }
 
-#iasulrmgtc .gt_font_normal {
+#ekkjgqrjeh .gt_font_normal {
   font-weight: normal;
 }
 
-#iasulrmgtc .gt_font_bold {
+#ekkjgqrjeh .gt_font_bold {
   font-weight: bold;
 }
 
-#iasulrmgtc .gt_font_italic {
+#ekkjgqrjeh .gt_font_italic {
   font-style: italic;
 }
 
-#iasulrmgtc .gt_super {
+#ekkjgqrjeh .gt_super {
   font-size: 65%;
 }
 
-#iasulrmgtc .gt_footnote_marks {
+#ekkjgqrjeh .gt_two_val_uncert {
+  display: inline-block;
+  line-height: 1em;
+  text-align: right;
+  font-size: 60%;
+  vertical-align: -0.25em;
+  margin-left: 0.1em;
+}
+
+#ekkjgqrjeh .gt_footnote_marks {
   font-style: italic;
   font-weight: normal;
-  font-size: 65%;
+  font-size: 75%;
+  vertical-align: 0.4em;
+}
+
+#ekkjgqrjeh .gt_asterisk {
+  font-size: 100%;
+  vertical-align: 0;
+}
+
+#ekkjgqrjeh .gt_slash_mark {
+  font-size: 0.7em;
+  line-height: 0.7em;
+  vertical-align: 0.15em;
+}
+
+#ekkjgqrjeh .gt_fraction_numerator {
+  font-size: 0.6em;
+  line-height: 0.6em;
+  vertical-align: 0.45em;
+}
+
+#ekkjgqrjeh .gt_fraction_denominator {
+  font-size: 0.6em;
+  line-height: 0.6em;
+  vertical-align: -0.05em;
 }
 </style>
 <table class="gt_table">
@@ -848,29 +947,24 @@ tbl</code></pre>
       <th class="gt_col_heading gt_columns_bottom_border gt_left" rowspan="1" colspan="1"></th>
       <th class="gt_col_heading gt_columns_bottom_border gt_left" rowspan="1" colspan="1">MMR proficient</th>
       <th class="gt_col_heading gt_columns_bottom_border gt_left" rowspan="1" colspan="1">MMR deficient</th>
+      <th class="gt_col_heading gt_columns_bottom_border gt_left" rowspan="1" colspan="1" style="color: #707173;"><i>Difference *</i></th>
     </tr>
   </thead>
   <tbody class="gt_table_body">
-    <tr class="gt_group_heading_row">
-      <td colspan="3" class="gt_empty_group_heading"></td>
-    </tr>
-    <tr><td class="gt_row gt_left gt_stub">n</td>
-<td class="gt_row gt_left">84 endometrial cancers</td>
-<td class="gt_row gt_left">25 endometrial cancers</td></tr>
-    <tr class="gt_group_heading_row">
-      <td colspan="3" class="gt_group_heading">Threshold 1</td>
-    </tr>
-    <tr><td class="gt_row gt_left gt_stub">Sensitivity – % (95% CI)</td>
-<td class="gt_row gt_left">90 (82–96)</td>
-<td class="gt_row gt_left">92 (74–99)</td></tr>
-    <tr class="gt_group_heading_row">
-      <td colspan="3" class="gt_group_heading">Threshold 2</td>
-    </tr>
-    <tr><td class="gt_row gt_left gt_stub">Sensitivity – % (95% CI)</td>
-<td class="gt_row gt_left">76 (66–85)</td>
-<td class="gt_row gt_left">88 (69–97)</td></tr>
+    <tr><td class="gt_row gt_right gt_stub" style="text-align: left;">Endometrial cancers – n</td>
+<td class="gt_row gt_left">84</td>
+<td class="gt_row gt_left">25</td>
+<td class="gt_row gt_left" style="color: #707173;"></td></tr>
+    <tr><td class="gt_row gt_right gt_stub" style="text-align: left;">Sensitivity – % (95% CI)</td>
+<td class="gt_row gt_left">90.5 (82.1–95.8)</td>
+<td class="gt_row gt_left">92 (74–99)</td>
+<td class="gt_row gt_left" style="color: #707173;">1.5 (-15.7–18.8)</td></tr>
   </tbody>
-  
+  <tfoot class="gt_sourcenotes">
+    <tr>
+      <td class="gt_sourcenote" colspan="4">* Difference in sensitivity (and confidence interval of the difference) between MMR deficient and MMR proficient cancers.</td>
+    </tr>
+  </tfoot>
   
 </table>
 </div>
@@ -879,31 +973,38 @@ tbl</code></pre>
 <h2>Comparison with DNAmut and ultrasound (Table S5)</h2>
 <pre class="r"><code>dat &lt;- mldat %&gt;%
   filter(dnamut_analysis == &quot;Yes&quot; &amp; !is.na(dnamut_analysis) &amp; !is.na(type)) %&gt;%
-  mutate(sum_cutoff = case_when(sum &gt;= 0.03 ~ &quot;positive&quot;,
-                                sum &lt; 0.03 ~ &quot;negative&quot;)) %&gt;%
-  mutate(sum_cutoff2 = case_when(sum &gt;= 0.63 ~ &quot;positive&quot;,
-                                 sum &lt; 0.63 ~ &quot;negative&quot;)) %&gt;%
+  mutate(sum_cutoff = case_when(sum &gt;= cut$threshold[1] ~ &quot;positive&quot;,
+                                sum &lt; cut$threshold[1] ~ &quot;negative&quot;)) %&gt;%
   mutate(type = factor(type, levels = c(&quot;Endometrial cancer&quot;, &quot;Control&quot;))) %&gt;%
   mutate(sum_cutoff = factor(sum_cutoff, levels = c(&quot;positive&quot;, &quot;negative&quot;)),
-         sum_cutoff2 = factor(sum_cutoff2, levels = c(&quot;positive&quot;, &quot;negative&quot;)),
-         dnamut_result = factor(dnamut_result, levels = c(&quot;Positive&quot;, &quot;Negative&quot;))) %&gt;% 
+         dnamut_result = factor(dnamut_result, levels = c(&quot;Positive&quot;, &quot;Negative&quot;))) %&gt;%
+  mutate(disease = case_when(type == &quot;Endometrial cancer&quot; ~ 1,
+                             type == &quot;Control&quot; ~ 0),
+         ec_score = case_when(sum_cutoff == &quot;positive&quot; ~ 1,
+                              sum_cutoff == &quot;negative&quot; ~ 0),
+         dnamut_score = case_when(dnamut_result == &quot;Positive&quot; ~ 1,
+                                  dnamut_result == &quot;Negative&quot;~ 0)) %&gt;%
   droplevels()
 
-dat1 &lt;- data.frame(matrix(nrow = 8, ncol = 3))
-colnames(dat1) &lt;- c(&quot;Set&quot;, &quot;Type&quot;, &quot;Data&quot;)
-dat1$Type &lt;- c(&quot;Controls&quot;, &quot;Endometrial cancers&quot;, &quot;DNAmut Sensitivity – % (95% CI)&quot;, &quot;DNAmut Specificity – % (95% CI)&quot;,
-               &quot;qWID-EC Threshold I Sensitivity – % (95% CI)&quot;, &quot;qWID-EC Threshold I Specificity – % (95% CI)&quot;,
-               &quot;qWID-EC Threshold II Sensitivity – % (95% CI)&quot;, &quot;qWID-EC Threshold II Specificity – % (95% CI)&quot;)
-dat1$Set &lt;- &quot;DNA mutation analysis *&quot;
+dat1 &lt;- data.frame(matrix(nrow = 2, ncol = 5))
+colnames(dat1) &lt;- c(&quot;Info&quot;,
+                    &quot;Type&quot;,
+                    &quot;Comparison Test&quot;,
+                    &quot;WID™-qEC&quot;,
+                    &quot;Difference&quot;)
 
-dat1[1,3] &lt;- nrow(dat[dat$type==&quot;Control&quot;,])
-dat1[2,3] &lt;- nrow(dat[dat$type==&quot;Endometrial cancer&quot;,])
+dat1$Info &lt;- c(&quot;DNA mutation analysis *&quot;)
+dat1$Type &lt;- c(&quot;Sensitivity – % (95% CI)&quot;,
+               &quot;Specificity – % (95% CI)&quot;)
 
 tmp &lt;- dat %&gt;%
-  pivot_longer(c(sum_cutoff, sum_cutoff2, dnamut_result),
+  pivot_longer(c(sum_cutoff, dnamut_result),
                names_to = &quot;analysis&quot;,
                values_to = &quot;value&quot;) %&gt;%
-  mutate(analysis = factor(analysis, levels = c(&quot;sum_cutoff&quot;, &quot;sum_cutoff2&quot;, &quot;dnamut_result&quot;)))
+  mutate(analysis = factor(analysis, levels = c(&quot;dnamut_result&quot;, &quot;sum_cutoff&quot;)))
+
+tmp_diff &lt;- dat %&gt;%
+  select(disease, ec_score, dnamut_score)
 
 for (i in 1:length(levels(tmp$analysis))){
   name &lt;- levels(tmp$analysis)[i]
@@ -911,20 +1012,41 @@ for (i in 1:length(levels(tmp$analysis))){
     filter(analysis == name) %&gt;%
     droplevels()
   
+  pop_prev &lt;- 0.09
+  
   tab &lt;- table(tmp2$value, tmp2$type)
-  rval &lt;- summary(epi.tests(tab))
+  tab &lt;- matrix(c(tab[1,1], tab[2,1], tab[1,2], tab[2,2]), ncol = 2)
+  colnames(tab) &lt;- c(&quot;Case&quot;, &quot;Control&quot;)
+  rownames(tab) &lt;- c(&quot;Case&quot;, &quot;Control&quot;)
+  rval2 &lt;- BDtest(xmat=as.matrix(tab), pr = pop_prev, conf.level = 0.95)
   
-  x &lt;- ifelse(name == &quot;sum_cutoff&quot;, 4, ifelse(name == &quot;sum_cutoff2&quot;, 5, 0))
-  j &lt;- i + x
-  
-  l &lt;- j + 1
-  
-  dat1[j, 3] &lt;- paste0(round(rval[3,1],2)*100, &quot; (&quot;, round(rval[3,2],2)*100, &quot;-&quot;, round(rval[3,3],2)*100, &quot;)&quot;)
-  dat1[l, 3] &lt;- paste0(round(rval[4,1],2)*100, &quot; (&quot;, round(rval[4,2],2)*100, &quot;-&quot;, round(rval[4,3],2)*100, &quot;)&quot;)
+  dat1[1, i+2] &lt;- paste0(round(rval2$SESPDAT$Estimate[1],2)*100, &quot; (&quot;,
+                         round(rval2$SESPDAT$`Lower 97.5% limit`[1], 2)*100, &quot;–&quot;,
+                         round(rval2$SESPDAT$`Upper 97.5% limit`[1], 2)*100, &quot;)&quot;)
+  dat1[2, i+2] &lt;- paste0(round(rval2$SESPDAT$Estimate[2],2)*100, &quot; (&quot;,
+                        round(rval2$SESPDAT$`Lower 97.5% limit`[2], 2)*100, &quot;–&quot;,
+                        round(rval2$SESPDAT$`Upper 97.5% limit`[2], 2)*100, &quot;)&quot;)
   
 }
 
+# Compare specs and sensitivites
+tmp_diff &lt;- dat %&gt;%
+  select(disease, ec_score, dnamut_score)
+
+tab &lt;- tab.paired(tmp_diff$disease, tmp_diff$dnamut_score, tmp_diff$ec_score,
+                  testnames = c(&quot;DNAmut analysis&quot;, &quot;WID-qEC&quot;))
+sesp &lt;- sesp.diff.ci(tab, &quot;wald&quot;, cont.corr = TRUE)
+
+
+dat1[1,5] &lt;- paste0(round(sesp$sensitivity[3], 2)*100, &quot; (&quot;, 
+                    round(sesp$sensitivity[5], 2)*100, &quot;–&quot;,
+                    round(sesp$sensitivity[6], 2)*100, &quot;)&quot;)
+dat1[2,5] &lt;- paste0(round(sesp$specificity[3], 2)*100, &quot; (&quot;, 
+                    round(sesp$specificity[5], 2)*100, &quot;–&quot;,
+                    round(sesp$specificity[6], 2)*100, &quot;)&quot;)
+  
 dat_dnamut &lt;- dat1
+
 
 # US qualitative
 dat &lt;- mldat %&gt;%
@@ -936,24 +1058,34 @@ dat &lt;- mldat %&gt;%
   mutate(type = factor(type, levels = c(&quot;Endometrial cancer&quot;, &quot;Control&quot;))) %&gt;%
   mutate(sum_cutoff = factor(sum_cutoff, levels = c(&quot;positive&quot;, &quot;negative&quot;)),
          sum_cutoff2 = factor(sum_cutoff2, levels = c(&quot;positive&quot;, &quot;negative&quot;)),
-         us_cat = factor(us_cat, levels = c(&quot;Abnormal&quot;, &quot;Normal&quot;))) %&gt;% 
+         us_cat = factor(us_cat, levels = c(&quot;Abnormal&quot;, &quot;Normal&quot;))) %&gt;%
+  mutate(disease = case_when(type == &quot;Endometrial cancer&quot; ~ 1,
+                             type == &quot;Control&quot; ~ 0),
+         ec_score = case_when(sum_cutoff == &quot;positive&quot; ~ 1,
+                              sum_cutoff == &quot;negative&quot; ~ 0),
+         us_score = case_when(us_cat == &quot;Abnormal&quot; ~ 1,
+                                  us_cat == &quot;Normal&quot;~ 0)) %&gt;%
   droplevels()
 
-dat1 &lt;- data.frame(matrix(nrow = 8, ncol = 3))
-colnames(dat1) &lt;- c(&quot;Set&quot;, &quot;Type&quot;, &quot;Data&quot;)
-dat1$Type &lt;- c(&quot;Controls&quot;, &quot;Endometrial cancers&quot;, &quot;US Sensitivity – % (95% CI)&quot;, &quot;US Specificity – % (95% CI)&quot;,
-               &quot;qWID-EC Threshold I Sensitivity – % (95% CI)&quot;, &quot;qWID-EC Threshold I Specificity – % (95% CI)&quot;,
-               &quot;qWID-EC Threshold II Sensitivity – % (95% CI)&quot;, &quot;qWID-EC Threshold II Specificity – % (95% CI)&quot;)
-dat1$Set &lt;- &quot;Ultrasound&quot;
+dat1 &lt;- data.frame(matrix(nrow = 2, ncol = 5))
+colnames(dat1) &lt;- c(&quot;Info&quot;,
+                    &quot;Type&quot;,
+                    &quot;Comparison Test&quot;,
+                    &quot;WID™-qEC&quot;,
+                    &quot;Difference&quot;)
 
-dat1[1,3] &lt;- nrow(dat[dat$type==&quot;Control&quot;,])
-dat1[2,3] &lt;- nrow(dat[dat$type==&quot;Endometrial cancer&quot;,])
+dat1$Info &lt;- c(&quot;Ultrasound evaluation †&quot;)
+dat1$Type &lt;- c(&quot;Sensitivity – % (95% CI)&quot;,
+               &quot;Specificity – % (95% CI)&quot;)
 
 tmp &lt;- dat %&gt;%
-  pivot_longer(c(sum_cutoff, sum_cutoff2, us_cat),
+  pivot_longer(c(sum_cutoff, us_cat),
                names_to = &quot;analysis&quot;,
                values_to = &quot;value&quot;) %&gt;%
-  mutate(analysis = factor(analysis, levels = c(&quot;sum_cutoff&quot;, &quot;sum_cutoff2&quot;, &quot;us_cat&quot;)))
+  mutate(analysis = factor(analysis, levels = c(&quot;us_cat&quot;, &quot;sum_cutoff&quot;)))
+
+tmp_diff &lt;- dat %&gt;%
+  select(disease, ec_score, us_score)
 
 for (i in 1:length(levels(tmp$analysis))){
   name &lt;- levels(tmp$analysis)[i]
@@ -961,58 +1093,68 @@ for (i in 1:length(levels(tmp$analysis))){
     filter(analysis == name) %&gt;%
     droplevels()
   
+  pop_prev &lt;- 0.09
+  
   tab &lt;- table(tmp2$value, tmp2$type)
-  rval &lt;- summary(epi.tests(tab))
+  tab &lt;- matrix(c(tab[1,1], tab[2,1], tab[1,2], tab[2,2]), ncol = 2)
+  colnames(tab) &lt;- c(&quot;Case&quot;, &quot;Control&quot;)
+  rownames(tab) &lt;- c(&quot;Case&quot;, &quot;Control&quot;)
+  rval2 &lt;- BDtest(xmat=as.matrix(tab), pr = pop_prev, conf.level = 0.95)
   
-  x &lt;- ifelse(name == &quot;sum_cutoff&quot;, 4, ifelse(name == &quot;sum_cutoff2&quot;, 5, 0))
-  j &lt;- i + x
-  
-  l &lt;- j + 1
-  
-  dat1[j, 3] &lt;- paste0(round(rval[3,1],2)*100, &quot; (&quot;, round(rval[3,2],2)*100, &quot;-&quot;, round(rval[3,3],2)*100, &quot;)&quot;)
-  dat1[l, 3] &lt;- paste0(round(rval[4,1],2)*100, &quot; (&quot;, round(rval[4,2],2)*100, &quot;-&quot;, round(rval[4,3],2)*100, &quot;)&quot;)
+  dat1[1, i+2] &lt;- paste0(round(rval2$SESPDAT$Estimate[1],2)*100, &quot; (&quot;,
+                         round(rval2$SESPDAT$`Lower 97.5% limit`[1], 2)*100, &quot;–&quot;,
+                         round(rval2$SESPDAT$`Upper 97.5% limit`[1], 2)*100, &quot;)&quot;)
+  dat1[2, i+2] &lt;- paste0(round(rval2$SESPDAT$Estimate[2],2)*100, &quot; (&quot;,
+                         round(rval2$SESPDAT$`Lower 97.5% limit`[2], 2)*100, &quot;–&quot;,
+                         round(rval2$SESPDAT$`Upper 97.5% limit`[2], 2)*100, &quot;)&quot;)
   
 }
 
-dat_uscat &lt;- dat1
+# Compare specs and sensitivites
+tmp_diff &lt;- dat %&gt;%
+  select(disease, ec_score, us_score)
+
+tab &lt;- tab.paired(tmp_diff$disease, tmp_diff$us_score, tmp_diff$ec_score,
+                  testnames = c(&quot;US&quot;, &quot;WID-qEC&quot;))
+sesp &lt;- sesp.diff.ci(tab, &quot;wald&quot;, cont.corr = TRUE)
 
 
-dat_dnamut[1,3] &lt;- &quot;76 cancer cases,\n19 cancer-free controls&quot;
-dat_dnamut[1,2] &lt;- &quot;n&quot;
-dat_dnamut &lt;- dat_dnamut[-2,]
-dat_dnamut$type &lt;- c(&quot;n&quot;, rep(c(&quot;Sensitivity – % (95% CI)&quot;, &quot;Specificity – % (95%)&quot;), 3))
-dat_dnamut$test &lt;- c(&quot;&quot;,
-                     rep(&quot;Comparison test&quot;, 2),
-                     rep(&quot;WID™-qEC Threshold 1&quot;, 2),
-                     rep(&quot;WID™-qEC Threshold 2&quot;, 2))
-dat_dnamut &lt;- dat_dnamut[,-2]
-dat_dnamut &lt;- dat_dnamut[,-1]
-colnames(dat_dnamut) &lt;- c(&quot;DNA mutation analysis *&quot;, &quot;type&quot;, &quot;test&quot;)
+dat1[1,5] &lt;- paste0(round(sesp$sensitivity[3], 2)*100, &quot; (&quot;, 
+                    round(sesp$sensitivity[5], 2)*100, &quot;–&quot;,
+                    round(sesp$sensitivity[6], 2)*100, &quot;)&quot;)
+dat1[2,5] &lt;- paste0(round(sesp$specificity[3], 2)*100, &quot; (&quot;, 
+                    round(sesp$specificity[5], 2)*100, &quot;–&quot;,
+                    round(sesp$specificity[6], 2)*100, &quot;)&quot;)
+
+dat_us &lt;- dat1
 
 
-dat_uscat[1,3] &lt;- &quot;122 cancer cases,\n98 cancer-free controls&quot;
-dat_uscat[1,2] &lt;- &quot;n&quot;
-dat_uscat &lt;- dat_uscat[-2,]
+# - combine -------------------
+data &lt;- rbind(dat_dnamut, dat_us)
 
-dat_uscat$type &lt;- c(&quot;n&quot;, rep(c(&quot;Sensitivity – % (95% CI)&quot;, &quot;Specificity – % (95%)&quot;), 3))
-dat_uscat$test &lt;- c(&quot;&quot;,
-                     rep(&quot;Comparison test&quot;, 2),
-                     rep(&quot;WID™-qEC Threshold 1&quot;, 2),
-                     rep(&quot;WID™-qEC Threshold 2&quot;, 2))
-dat_uscat &lt;- dat_uscat[,-2]
-dat_uscat &lt;- dat_uscat[,-1]
-colnames(dat_uscat) &lt;- c(&quot;Ultrasound analysis&quot;, &quot;type&quot;, &quot;test&quot;)
-
-dat &lt;- cbind(dat_dnamut, dat_uscat$`Ultrasound analysis`)
-
-colnames(dat) &lt;- c(&quot;DNA mutation analysis *&quot;,
-                   &quot;type&quot;,
-                   &quot;test&quot;, 
-                   &quot;Ultrasound analysis&quot;)
-
-tbl &lt;- dat %&gt;%
-  gt(groupname_col = &quot;test&quot;,
-     rowname_col = &quot;type&quot;) %&gt;%
+tbl &lt;- data %&gt;%
+  gt(groupname_col = &quot;Info&quot;,
+     rowname_col = &quot;Type&quot;) %&gt;%
+  text_transform(locations = cells_body(),
+                 fn = function(x){
+                   paste0(ifelse(x==&quot;30 (17–44)&quot;, html(&quot;&lt;b&gt;30 (17–44)&lt;/b&gt;&quot;),
+                                 ifelse(x==&quot;36 (22–49)&quot;, html(&quot;&lt;b&gt;36 (22–49)&lt;/b&gt;&quot;),
+                                                              x)))}
+                 ) %&gt;%
+  cols_label(
+    `Comparison Test` =  &quot;Comparator&quot;
+  ) %&gt;%
+  tab_style(
+    style = cell_text(color = &quot;#707173&quot;),
+    locations = list(cells_body(
+      columns = &quot;Difference&quot;,
+      rows = everything()
+    ),
+    cells_column_labels(columns = &quot;Difference&quot;)
+    )) %&gt;%
+  cols_label(
+    &quot;Difference&quot; = html(&quot;&lt;i&gt;Difference *&lt;/i&gt;&quot;)
+  ) %&gt;%
   tab_options(table.font.names = &quot;Guardian Sans&quot;,
               column_labels.font.weight = &quot;bold&quot;,
               row_group.font.weight = &quot;bold&quot;,
@@ -1022,27 +1164,695 @@ tbl &lt;- dat %&gt;%
               row_group.padding = 2,
               row_group.border.right.width = px(10),
               summary_row.padding = 2,
-              table.width = px(700),
+              table.width = px(600),
               table.border.top.color = &quot;white&quot;,
               row_group.border.top.width = px(1),
               row_group.border.bottom.width = px(1),
               stub.border.width = px(0),
               heading.title.font.size = 14) %&gt;%
-  gt::tab_source_note(source_note = html(&quot;* Cutoff &gt;= 1 mutation.&quot;))
+  gt::tab_source_note(source_note = html(&quot;Significant differences, as evaluated by assessment of the confidence interval of the differences, are shown in &lt;b&gt;bold&lt;/b&gt;.&lt;br&gt;
+  * Cutoff ≥ 1 mutation. Endometrial cancers – 76, Cancer-free controls – 19.&lt;br&gt;
+                                         † Qualitative evaluation by expert assessor (normal or abnormal endometrial thickness). Endometrial cancers – 122, Cancer-free controls – 98.&quot;))
 
 tbl</code></pre>
-<div id="gtvartogis" style="overflow-x:auto;overflow-y:auto;width:auto;height:auto;">
+<div id="lwrxkinhpu" style="overflow-x:auto;overflow-y:auto;width:auto;height:auto;">
 <style>html {
   font-family: 'Guardian Sans';
 }
 
-#gtvartogis .gt_table {
+#lwrxkinhpu .gt_table {
   display: table;
   border-collapse: collapse;
   margin-left: auto;
   margin-right: auto;
   color: #333333;
   font-size: 11px;
+  font-weight: normal;
+  font-style: normal;
+  background-color: #FFFFFF;
+  width: 600px;
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #FFFFFF;
+  border-right-style: none;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #A8A8A8;
+  border-left-style: none;
+  border-left-width: 2px;
+  border-left-color: #D3D3D3;
+}
+
+#lwrxkinhpu .gt_heading {
+  background-color: #FFFFFF;
+  text-align: center;
+  border-bottom-color: #FFFFFF;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+}
+
+#lwrxkinhpu .gt_title {
+  color: #333333;
+  font-size: 14px;
+  font-weight: initial;
+  padding-top: 4px;
+  padding-bottom: 4px;
+  padding-left: 5px;
+  padding-right: 5px;
+  border-bottom-color: #FFFFFF;
+  border-bottom-width: 0;
+}
+
+#lwrxkinhpu .gt_subtitle {
+  color: #333333;
+  font-size: 85%;
+  font-weight: initial;
+  padding-top: 0;
+  padding-bottom: 6px;
+  padding-left: 5px;
+  padding-right: 5px;
+  border-top-color: #FFFFFF;
+  border-top-width: 0;
+}
+
+#lwrxkinhpu .gt_bottom_border {
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+}
+
+#lwrxkinhpu .gt_col_headings {
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+}
+
+#lwrxkinhpu .gt_col_heading {
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 12px;
+  font-weight: bold;
+  text-transform: inherit;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+  vertical-align: bottom;
+  padding-top: 5px;
+  padding-bottom: 6px;
+  padding-left: 5px;
+  padding-right: 5px;
+  overflow-x: hidden;
+}
+
+#lwrxkinhpu .gt_column_spanner_outer {
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 12px;
+  font-weight: bold;
+  text-transform: inherit;
+  padding-top: 0;
+  padding-bottom: 0;
+  padding-left: 4px;
+  padding-right: 4px;
+}
+
+#lwrxkinhpu .gt_column_spanner_outer:first-child {
+  padding-left: 0;
+}
+
+#lwrxkinhpu .gt_column_spanner_outer:last-child {
+  padding-right: 0;
+}
+
+#lwrxkinhpu .gt_column_spanner {
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  vertical-align: bottom;
+  padding-top: 5px;
+  padding-bottom: 5px;
+  overflow-x: hidden;
+  display: inline-block;
+  width: 100%;
+}
+
+#lwrxkinhpu .gt_group_heading {
+  padding-top: 2px;
+  padding-bottom: 2px;
+  padding-left: 5px;
+  padding-right: 5px;
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: bold;
+  text-transform: inherit;
+  border-top-style: solid;
+  border-top-width: 1px;
+  border-top-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 1px;
+  border-bottom-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 10px;
+  border-right-color: #D3D3D3;
+  vertical-align: middle;
+}
+
+#lwrxkinhpu .gt_empty_group_heading {
+  padding: 0.5px;
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: bold;
+  border-top-style: solid;
+  border-top-width: 1px;
+  border-top-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 1px;
+  border-bottom-color: #D3D3D3;
+  vertical-align: middle;
+}
+
+#lwrxkinhpu .gt_from_md > :first-child {
+  margin-top: 0;
+}
+
+#lwrxkinhpu .gt_from_md > :last-child {
+  margin-bottom: 0;
+}
+
+#lwrxkinhpu .gt_row {
+  padding-top: 2px;
+  padding-bottom: 2px;
+  padding-left: 5px;
+  padding-right: 5px;
+  margin: 10px;
+  border-top-style: solid;
+  border-top-width: 1px;
+  border-top-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+  vertical-align: middle;
+  overflow-x: hidden;
+}
+
+#lwrxkinhpu .gt_stub {
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: initial;
+  text-transform: inherit;
+  border-right-style: solid;
+  border-right-width: 0px;
+  border-right-color: #D3D3D3;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+#lwrxkinhpu .gt_stub_row_group {
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: initial;
+  text-transform: inherit;
+  border-right-style: solid;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+  padding-left: 5px;
+  padding-right: 5px;
+  vertical-align: top;
+}
+
+#lwrxkinhpu .gt_row_group_first td {
+  border-top-width: 1px;
+}
+
+#lwrxkinhpu .gt_summary_row {
+  color: #333333;
+  background-color: #FFFFFF;
+  text-transform: inherit;
+  padding-top: 2px;
+  padding-bottom: 2px;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+#lwrxkinhpu .gt_first_summary_row {
+  border-top-style: solid;
+  border-top-color: #D3D3D3;
+}
+
+#lwrxkinhpu .gt_first_summary_row.thick {
+  border-top-width: 2px;
+}
+
+#lwrxkinhpu .gt_last_summary_row {
+  padding-top: 2px;
+  padding-bottom: 2px;
+  padding-left: 5px;
+  padding-right: 5px;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+}
+
+#lwrxkinhpu .gt_grand_summary_row {
+  color: #333333;
+  background-color: #FFFFFF;
+  text-transform: inherit;
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+#lwrxkinhpu .gt_first_grand_summary_row {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+  border-top-style: double;
+  border-top-width: 6px;
+  border-top-color: #D3D3D3;
+}
+
+#lwrxkinhpu .gt_striped {
+  background-color: rgba(128, 128, 128, 0.05);
+}
+
+#lwrxkinhpu .gt_table_body {
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+}
+
+#lwrxkinhpu .gt_footnotes {
+  color: #333333;
+  background-color: #FFFFFF;
+  border-bottom-style: none;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 2px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+}
+
+#lwrxkinhpu .gt_footnote {
+  margin: 0px;
+  font-size: 90%;
+  padding-left: 4px;
+  padding-right: 4px;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+#lwrxkinhpu .gt_sourcenotes {
+  color: #333333;
+  background-color: #FFFFFF;
+  border-bottom-style: none;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 2px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+}
+
+#lwrxkinhpu .gt_sourcenote {
+  font-size: 90%;
+  padding-top: 4px;
+  padding-bottom: 4px;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+#lwrxkinhpu .gt_left {
+  text-align: left;
+}
+
+#lwrxkinhpu .gt_center {
+  text-align: center;
+}
+
+#lwrxkinhpu .gt_right {
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+
+#lwrxkinhpu .gt_font_normal {
+  font-weight: normal;
+}
+
+#lwrxkinhpu .gt_font_bold {
+  font-weight: bold;
+}
+
+#lwrxkinhpu .gt_font_italic {
+  font-style: italic;
+}
+
+#lwrxkinhpu .gt_super {
+  font-size: 65%;
+}
+
+#lwrxkinhpu .gt_two_val_uncert {
+  display: inline-block;
+  line-height: 1em;
+  text-align: right;
+  font-size: 60%;
+  vertical-align: -0.25em;
+  margin-left: 0.1em;
+}
+
+#lwrxkinhpu .gt_footnote_marks {
+  font-style: italic;
+  font-weight: normal;
+  font-size: 75%;
+  vertical-align: 0.4em;
+}
+
+#lwrxkinhpu .gt_asterisk {
+  font-size: 100%;
+  vertical-align: 0;
+}
+
+#lwrxkinhpu .gt_slash_mark {
+  font-size: 0.7em;
+  line-height: 0.7em;
+  vertical-align: 0.15em;
+}
+
+#lwrxkinhpu .gt_fraction_numerator {
+  font-size: 0.6em;
+  line-height: 0.6em;
+  vertical-align: 0.45em;
+}
+
+#lwrxkinhpu .gt_fraction_denominator {
+  font-size: 0.6em;
+  line-height: 0.6em;
+  vertical-align: -0.05em;
+}
+</style>
+<table class="gt_table">
+  
+  <thead class="gt_col_headings">
+    <tr>
+      <th class="gt_col_heading gt_columns_bottom_border gt_left" rowspan="1" colspan="1"></th>
+      <th class="gt_col_heading gt_columns_bottom_border gt_left" rowspan="1" colspan="1">Comparator</th>
+      <th class="gt_col_heading gt_columns_bottom_border gt_left" rowspan="1" colspan="1">WID™-qEC</th>
+      <th class="gt_col_heading gt_columns_bottom_border gt_left" rowspan="1" colspan="1" style="color: #707173;"><i>Difference *</i></th>
+    </tr>
+  </thead>
+  <tbody class="gt_table_body">
+    <tr class="gt_group_heading_row">
+      <td colspan="4" class="gt_group_heading">DNA mutation analysis *</td>
+    </tr>
+    <tr class="gt_row_group_first"><td class="gt_row gt_right gt_stub">Sensitivity – % (95% CI)</td>
+<td class="gt_row gt_left">63 (51–74)</td>
+<td class="gt_row gt_left">93 (85–98)</td>
+<td class="gt_row gt_left" style="color: #707173;"><b>30 (17–44)</b></td></tr>
+    <tr><td class="gt_row gt_right gt_stub">Specificity – % (95% CI)</td>
+<td class="gt_row gt_left">100 (82–100)</td>
+<td class="gt_row gt_left">89 (67–99)</td>
+<td class="gt_row gt_left" style="color: #707173;">-11 (-35–14)</td></tr>
+    <tr class="gt_group_heading_row">
+      <td colspan="4" class="gt_group_heading">Ultrasound evaluation †</td>
+    </tr>
+    <tr class="gt_row_group_first"><td class="gt_row gt_right gt_stub">Sensitivity – % (95% CI)</td>
+<td class="gt_row gt_left">92 (85–96)</td>
+<td class="gt_row gt_left">90 (83–95)</td>
+<td class="gt_row gt_left" style="color: #707173;">-2 (-10–7)</td></tr>
+    <tr><td class="gt_row gt_right gt_stub">Specificity – % (95% CI)</td>
+<td class="gt_row gt_left">51 (41–61)</td>
+<td class="gt_row gt_left">87 (78–93)</td>
+<td class="gt_row gt_left" style="color: #707173;"><b>36 (22–49)</b></td></tr>
+  </tbody>
+  <tfoot class="gt_sourcenotes">
+    <tr>
+      <td class="gt_sourcenote" colspan="4">Significant differences, as evaluated by assessment of the confidence interval of the differences, are shown in <b>bold</b>.<br>
+  * Cutoff ≥ 1 mutation. Endometrial cancers – 76, Cancer-free controls – 19.<br>
+                                         † Qualitative evaluation by expert assessor (normal or abnormal endometrial thickness). Endometrial cancers – 122, Cancer-free controls – 98.</td>
+    </tr>
+  </tfoot>
+  
+</table>
+</div>
+</div>
+<div id="comparison-of-wid-qec-dna-mutation-analysis-and-ultrasound-dependent-on-stage-table-s6" class="section level2">
+<h2>Comparison of WID-qEC, DNA mutation analysis, and ultrasound dependent on stage (Table S6)</h2>
+<pre class="r"><code>tmp &lt;- mldat %&gt;%
+  filter(set == &quot;Barcelona Validation&quot; &amp; !is.na(type) &amp; dnamut_analysis == &quot;Yes&quot; &amp; !is.na(dnamut_analysis) &amp; !is.na(us_cat)) %&gt;%
+  mutate(sum_cutoff = case_when(sum &gt;= cut$threshold[1] ~ &quot;positive&quot;,
+                                sum &lt; cut$threshold[1] ~ &quot;negative&quot;)) %&gt;%
+  mutate(type = factor(type, levels = c(&quot;Endometrial cancer&quot;, &quot;Control&quot;)),
+         sum_cutoff = factor(sum_cutoff, levels = c(&quot;positive&quot;, &quot;negative&quot;)),
+         dnamut_result = factor(dnamut_result, levels = c(&quot;Positive&quot;, &quot;Negative&quot;)),
+         us = factor(us_cat, levels = c(&quot;Abnormal&quot;, &quot;Normal&quot;))) %&gt;%
+  mutate(disease = case_when(type==&quot;Endometrial cancer&quot; ~ 1,
+                             type == &quot;Control&quot; ~ 0),
+         score = case_when(sum_cutoff == &quot;positive&quot; ~ 1,
+                           sum_cutoff == &quot;negative&quot; ~ 0),
+         us_score = case_when(us==&quot;Abnormal&quot; ~ 1,
+                              us==&quot;Normal&quot; ~ 0),
+         dnamut_score = case_when(dnamut_result == &quot;Positive&quot; ~ 1,
+                                  dnamut_result == &quot;Negative&quot; ~ 0)) %&gt;%
+  droplevels()
+
+tmp2 &lt;- tmp %&gt;%
+  pivot_longer(c(sum_cutoff, dnamut_result, us),
+               names_to = &quot;analysis&quot;,
+               values_to = &quot;value&quot;) %&gt;%
+  mutate(analysis = factor(analysis, levels = c(&quot;sum_cutoff&quot;, &quot;us&quot;, &quot;dnamut_result&quot;)))
+
+tmp_stage1 &lt;- tmp %&gt;%
+  filter(stage %in% c(&quot;I&quot;, &quot;N/A&quot;)) %&gt;%
+  mutate(sum_cutoff = case_when(sum &gt;= cut$threshold[1] ~ &quot;positive&quot;,
+                                sum &lt; cut$threshold[1] ~ &quot;negative&quot;)) %&gt;%
+  mutate(type = factor(type, levels = c(&quot;Endometrial cancer&quot;, &quot;Control&quot;))) %&gt;%
+  mutate(sum_cutoff = factor(sum_cutoff, levels = c(&quot;positive&quot;, &quot;negative&quot;)),
+         dnamut_result = factor(dnamut_result, levels = c(&quot;Positive&quot;, &quot;Negative&quot;)),
+         us = factor(us_cat, levels = c(&quot;Abnormal&quot;, &quot;Normal&quot;))) %&gt;%
+  mutate(disease = case_when(type==&quot;Endometrial cancer&quot; ~ 1,
+                             type == &quot;Control&quot; ~ 0),
+         score = case_when(sum_cutoff == &quot;positive&quot; ~ 1,
+                           sum_cutoff == &quot;negative&quot; ~ 0),
+         us_score = case_when(us==&quot;Abnormal&quot; ~ 1,
+                              us==&quot;Normal&quot; ~ 0),
+         dnamut_score = case_when(dnamut_result == &quot;Positive&quot; ~ 1,
+                                  dnamut_result == &quot;Negative&quot; ~ 0)) %&gt;%
+  droplevels()
+
+tmp2_stage1 &lt;- tmp_stage1 %&gt;%
+  pivot_longer(c(sum_cutoff, dnamut_result, us),
+               names_to = &quot;analysis&quot;,
+               values_to = &quot;value&quot;) %&gt;%
+  mutate(analysis = factor(analysis, levels = c(&quot;sum_cutoff&quot;, &quot;us&quot;, &quot;dnamut_result&quot;)))
+
+dat &lt;- data.frame(matrix(nrow = 4, ncol = 7))
+colnames(dat) &lt;- c(&quot;WID™-qEC&quot;,
+                   &quot;Ultrasound&quot;,
+                   &quot;DNAmut analysis&quot;,
+                   &quot;∆ qEC-US&quot;,
+                   &quot;∆ qEC-DNAmut&quot;,
+                   &quot;type&quot;,
+                   &quot;set&quot;)
+dat$set &lt;- rep(c(&quot;all stages (n = 88)&quot;, &quot;stage I only (n = 64)&quot;), 2)
+dat$type &lt;- c(rep(&quot;Sensitivity – % (95% CI)&quot;, 2), rep(&quot;Specificity – % (95% CI)&quot;, 2))
+
+for (i in 1:length(levels(tmp2$analysis))){
+  pop_prev = 0.09
+  name &lt;- levels(tmp2$analysis)[i]
+  tmp_all &lt;- tmp2 %&gt;%
+    filter(analysis == name) %&gt;%
+    droplevels()
+  
+  tmp_stage1_calc &lt;- tmp2_stage1  %&gt;%
+    filter(analysis == name) %&gt;%
+    droplevels()
+  
+  tab &lt;- table(tmp_all$value, tmp_all$type)
+  # rval &lt;- summary(epi.tests(tab))
+  tab &lt;- matrix(c(tab[1,1], tab[2,1], tab[1,2], tab[2,2]), ncol = 2)
+  colnames(tab) &lt;- c(&quot;Case&quot;, &quot;Control&quot;)
+  rownames(tab) &lt;- c(&quot;Case&quot;, &quot;Control&quot;)
+  rval2 &lt;- BDtest(xmat=as.matrix(tab), pr=pop_prev, conf.level = 0.95)
+  
+
+  dat[1,i] &lt;- paste0(round(rval2$SESPDAT$Estimate[1]*100,1), &quot; (&quot;,
+                     round(rval2$SESPDAT$`Lower 97.5% limit`[1]*100,1), &quot;–&quot;,
+                     round(rval2$SESPDAT$`Upper 97.5% limit`[1]*100,1), &quot;)&quot;)
+  
+  dat[3,i] &lt;- paste0(round(rval2$SESPDAT$Estimate[2]*100,1), &quot; (&quot;,
+                     round(rval2$SESPDAT$`Lower 97.5% limit`[2]*100,1), &quot;–&quot;,
+                     round(rval2$SESPDAT$`Upper 97.5% limit`[2]*100,1), &quot;)&quot;)
+  
+  tab &lt;- table(tmp_stage1_calc$value, tmp_stage1_calc$type)
+  # rval &lt;- summary(epi.tests(tab))
+  tab &lt;- matrix(c(tab[1,1], tab[2,1], tab[1,2], tab[2,2]), ncol = 2)
+  colnames(tab) &lt;- c(&quot;Case&quot;, &quot;Control&quot;)
+  rownames(tab) &lt;- c(&quot;Case&quot;, &quot;Control&quot;)
+  rval2 &lt;- BDtest(xmat=as.matrix(tab), pr=pop_prev, conf.level = 0.95)
+  
+  dat[2,i] &lt;- paste0(round(rval2$SESPDAT$Estimate[1]*100,1), &quot; (&quot;,
+                     round(rval2$SESPDAT$`Lower 97.5% limit`[1]*100,1), &quot;–&quot;,
+                     round(rval2$SESPDAT$`Upper 97.5% limit`[1]*100,1), &quot;)&quot;)
+  
+  dat[4,i] &lt;- paste0(round(rval2$SESPDAT$Estimate[2]*100,1), &quot; (&quot;,
+                     round(rval2$SESPDAT$`Lower 97.5% limit`[2]*100,1), &quot;–&quot;,
+                     round(rval2$SESPDAT$`Upper 97.5% limit`[2]*100,1), &quot;)&quot;)
+  
+}
+
+# US-EC all --------
+tmp_diff &lt;- tmp %&gt;%
+  select(disease, score, us_score)
+
+tab &lt;- tab.paired(tmp_diff$disease, tmp_diff$us_score, tmp_diff$score,
+                  testnames = c(&quot;qEC&quot;, &quot;US&quot;))
+sesp &lt;- sesp.diff.ci(tab, &quot;wald&quot;, cont.corr = TRUE)
+
+dat[1,4] &lt;- paste0(round(sesp$sensitivity[3]*100, 1), &quot; (&quot;, 
+                    round(sesp$sensitivity[5]*100, 1), &quot;–&quot;,
+                    round(sesp$sensitivity[6]*100, 1), &quot;)&quot;)
+dat[3,4] &lt;- paste0(round(sesp$specificity[3]*100, 1), &quot; (&quot;, 
+                    round(sesp$specificity[5]*100, 1), &quot;–&quot;,
+                    round(sesp$specificity[6]*100, 1), &quot;)&quot;)
+
+# US-EC stage 1----------------
+tmp_diff &lt;- tmp_stage1 %&gt;%
+  select(disease, score, us_score)
+
+tab &lt;- tab.paired(tmp_diff$disease, tmp_diff$us_score, tmp_diff$score,
+                  testnames = c(&quot;qEC&quot;, &quot;US&quot;))
+sesp &lt;- sesp.diff.ci(tab, &quot;wald&quot;, cont.corr = TRUE)
+
+dat[2,4] &lt;- paste0(round(sesp$sensitivity[3]*100, 1), &quot; (&quot;, 
+                   round(sesp$sensitivity[5]*100, 1), &quot;–&quot;,
+                   round(sesp$sensitivity[6]*100, 1), &quot;)&quot;)
+dat[4,4] &lt;- paste0(round(sesp$specificity[3]*100, 1), &quot; (&quot;, 
+                   round(sesp$specificity[5]*100, 1), &quot;–&quot;,
+                   round(sesp$specificity[6]*100, 1), &quot;)&quot;)
+
+
+# Mut-EC all --------
+tmp_diff &lt;- tmp %&gt;%
+  select(disease, score, dnamut_score)
+
+tab &lt;- tab.paired(tmp_diff$disease, tmp_diff$dnamut_score, tmp_diff$score,
+                  testnames = c(&quot;DNAmut&quot;, &quot;US&quot;))
+sesp &lt;- sesp.diff.ci(tab, &quot;wald&quot;, cont.corr = TRUE)
+
+dat[1,5] &lt;- paste0(round(sesp$sensitivity[3]*100, 1), &quot; (&quot;, 
+                   round(sesp$sensitivity[5]*100, 1), &quot;–&quot;,
+                   round(sesp$sensitivity[6]*100, 1), &quot;)&quot;)
+dat[3,5] &lt;- paste0(round(sesp$specificity[3]*100, 1), &quot; (&quot;, 
+                   round(sesp$specificity[5]*100, 1), &quot;–&quot;,
+                   round(sesp$specificity[6]*100, 1), &quot;)&quot;)
+
+# Mut-EC stage 1----------------
+tmp_diff &lt;- tmp_stage1 %&gt;%
+  select(disease, score, dnamut_score)
+
+tab &lt;- tab.paired(tmp_diff$disease, tmp_diff$dnamut_score, tmp_diff$score,
+                  testnames = c(&quot;DNAmut&quot;, &quot;US&quot;))
+sesp &lt;- sesp.diff.ci(tab, &quot;wald&quot;, cont.corr = TRUE)
+
+dat[2,5] &lt;- paste0(round(sesp$sensitivity[3]*100, 1), &quot; (&quot;, 
+                   round(sesp$sensitivity[5]*100, 1), &quot;–&quot;,
+                   round(sesp$sensitivity[6]*100, 1), &quot;)&quot;)
+dat[4,5] &lt;- paste0(round(sesp$specificity[3]*100, 1), &quot; (&quot;, 
+                   round(sesp$specificity[5]*100, 1), &quot;–&quot;,
+                   round(sesp$specificity[6]*100, 1), &quot;)&quot;)
+
+
+tbl &lt;- dat %&gt;%
+  gt(rowname_col = &quot;type&quot;,
+     groupname_col = &quot;set&quot;) %&gt;%
+  cols_label(
+    &quot;∆ qEC-US&quot; = html(&#39;&lt;i&gt;Difference&lt;br&gt;WID™-qEC–&lt;br&gt; Ultrasound&lt;/i&gt;&#39;),
+    &quot;∆ qEC-DNAmut&quot; = html(&#39;&lt;i&gt;Difference&lt;br&gt;WID™-qEC–&lt;br&gt;DNAmut analysis&lt;/i&gt;&#39;),
+    &quot;DNAmut analysis&quot; = &quot;DNAmut analysis *&quot;,
+  ) %&gt;%
+  tab_style(
+    style = cell_text(color = &quot;#707173&quot;),
+    locations = list(cells_body(
+      columns = c(&quot;∆ qEC-US&quot;,
+                  &quot;∆ qEC-DNAmut&quot;),
+      rows = everything()
+    ),
+    cells_column_labels(columns = c(&quot;∆ qEC-US&quot;,
+                                    &quot;∆ qEC-DNAmut&quot;))
+    )) %&gt;%
+  text_transform(locations = cells_body(),
+                 fn = function(x){
+                   paste0(ifelse(x == &quot;63.2 (31.2–95.2)&quot;, html(&quot;&lt;b&gt;63.2 (31.2–95.2)&lt;/b&quot;),
+                                 ifelse(x == &quot;31.9 (17.3–46.4)&quot;, html(&quot;&lt;b&gt;31.9 (17.3–46.4)&lt;/b&gt;&quot;),
+                                        ifelse(x == &quot;33.3 (13.9–52.8)&quot;, html(&quot;&lt;b&gt;33.3 (13.9–52.8)&lt;/b&gt;&quot;), x))))}) %&gt;%
+  tab_options(table.font.names = &quot;Guardian Sans&quot;,
+              column_labels.font.weight = &quot;bold&quot;,
+              row_group.font.weight = &quot;bold&quot;,
+              data_row.padding = 2,
+              column_labels.font.size = 12,
+              table.font.size = 10,
+              row_group.padding = 2,
+              row_group.border.right.width = px(10),
+              summary_row.padding = 2,
+              table.border.top.color = &quot;white&quot;,
+              row_group.border.top.width = px(1),
+              row_group.border.bottom.width = px(1),
+              stub.border.width = px(0),
+              heading.title.font.size = 14,
+              table.width = px(700)) %&gt;%
+  tab_source_note(gt::html(&quot;Significant differences, as evaluated by assessment of the confidence interval of the differences, are shown in &lt;b&gt;bold&lt;/b&gt;.&lt;br&gt;
+  * Cutoff ≥ 1 mutation. &quot;))
+
+tbl</code></pre>
+<div id="erceqajkwd" style="overflow-x:auto;overflow-y:auto;width:auto;height:auto;">
+<style>html {
+  font-family: 'Guardian Sans';
+}
+
+#erceqajkwd .gt_table {
+  display: table;
+  border-collapse: collapse;
+  margin-left: auto;
+  margin-right: auto;
+  color: #333333;
+  font-size: 10px;
   font-weight: normal;
   font-style: normal;
   background-color: #FFFFFF;
@@ -1061,7 +1871,7 @@ tbl</code></pre>
   border-left-color: #D3D3D3;
 }
 
-#gtvartogis .gt_heading {
+#erceqajkwd .gt_heading {
   background-color: #FFFFFF;
   text-align: center;
   border-bottom-color: #FFFFFF;
@@ -1073,33 +1883,37 @@ tbl</code></pre>
   border-right-color: #D3D3D3;
 }
 
-#gtvartogis .gt_title {
+#erceqajkwd .gt_title {
   color: #333333;
   font-size: 14px;
   font-weight: initial;
   padding-top: 4px;
   padding-bottom: 4px;
+  padding-left: 5px;
+  padding-right: 5px;
   border-bottom-color: #FFFFFF;
   border-bottom-width: 0;
 }
 
-#gtvartogis .gt_subtitle {
+#erceqajkwd .gt_subtitle {
   color: #333333;
   font-size: 85%;
   font-weight: initial;
   padding-top: 0;
   padding-bottom: 6px;
+  padding-left: 5px;
+  padding-right: 5px;
   border-top-color: #FFFFFF;
   border-top-width: 0;
 }
 
-#gtvartogis .gt_bottom_border {
+#erceqajkwd .gt_bottom_border {
   border-bottom-style: solid;
   border-bottom-width: 2px;
   border-bottom-color: #D3D3D3;
 }
 
-#gtvartogis .gt_col_headings {
+#erceqajkwd .gt_col_headings {
   border-top-style: solid;
   border-top-width: 2px;
   border-top-color: #D3D3D3;
@@ -1114,7 +1928,7 @@ tbl</code></pre>
   border-right-color: #D3D3D3;
 }
 
-#gtvartogis .gt_col_heading {
+#erceqajkwd .gt_col_heading {
   color: #333333;
   background-color: #FFFFFF;
   font-size: 12px;
@@ -1134,7 +1948,7 @@ tbl</code></pre>
   overflow-x: hidden;
 }
 
-#gtvartogis .gt_column_spanner_outer {
+#erceqajkwd .gt_column_spanner_outer {
   color: #333333;
   background-color: #FFFFFF;
   font-size: 12px;
@@ -1146,15 +1960,15 @@ tbl</code></pre>
   padding-right: 4px;
 }
 
-#gtvartogis .gt_column_spanner_outer:first-child {
+#erceqajkwd .gt_column_spanner_outer:first-child {
   padding-left: 0;
 }
 
-#gtvartogis .gt_column_spanner_outer:last-child {
+#erceqajkwd .gt_column_spanner_outer:last-child {
   padding-right: 0;
 }
 
-#gtvartogis .gt_column_spanner {
+#erceqajkwd .gt_column_spanner {
   border-bottom-style: solid;
   border-bottom-width: 2px;
   border-bottom-color: #D3D3D3;
@@ -1166,8 +1980,11 @@ tbl</code></pre>
   width: 100%;
 }
 
-#gtvartogis .gt_group_heading {
-  padding: 2px;
+#erceqajkwd .gt_group_heading {
+  padding-top: 2px;
+  padding-bottom: 2px;
+  padding-left: 5px;
+  padding-right: 5px;
   color: #333333;
   background-color: #FFFFFF;
   font-size: 100%;
@@ -1188,7 +2005,7 @@ tbl</code></pre>
   vertical-align: middle;
 }
 
-#gtvartogis .gt_empty_group_heading {
+#erceqajkwd .gt_empty_group_heading {
   padding: 0.5px;
   color: #333333;
   background-color: #FFFFFF;
@@ -1203,15 +2020,15 @@ tbl</code></pre>
   vertical-align: middle;
 }
 
-#gtvartogis .gt_from_md > :first-child {
+#erceqajkwd .gt_from_md > :first-child {
   margin-top: 0;
 }
 
-#gtvartogis .gt_from_md > :last-child {
+#erceqajkwd .gt_from_md > :last-child {
   margin-bottom: 0;
 }
 
-#gtvartogis .gt_row {
+#erceqajkwd .gt_row {
   padding-top: 2px;
   padding-bottom: 2px;
   padding-left: 5px;
@@ -1230,7 +2047,7 @@ tbl</code></pre>
   overflow-x: hidden;
 }
 
-#gtvartogis .gt_stub {
+#erceqajkwd .gt_stub {
   color: #333333;
   background-color: #FFFFFF;
   font-size: 100%;
@@ -1239,10 +2056,29 @@ tbl</code></pre>
   border-right-style: solid;
   border-right-width: 0px;
   border-right-color: #D3D3D3;
-  padding-left: 12px;
+  padding-left: 5px;
+  padding-right: 5px;
 }
 
-#gtvartogis .gt_summary_row {
+#erceqajkwd .gt_stub_row_group {
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: initial;
+  text-transform: inherit;
+  border-right-style: solid;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+  padding-left: 5px;
+  padding-right: 5px;
+  vertical-align: top;
+}
+
+#erceqajkwd .gt_row_group_first td {
+  border-top-width: 1px;
+}
+
+#erceqajkwd .gt_summary_row {
   color: #333333;
   background-color: #FFFFFF;
   text-transform: inherit;
@@ -1252,17 +2088,26 @@ tbl</code></pre>
   padding-right: 5px;
 }
 
-#gtvartogis .gt_first_summary_row {
+#erceqajkwd .gt_first_summary_row {
+  border-top-style: solid;
+  border-top-color: #D3D3D3;
+}
+
+#erceqajkwd .gt_first_summary_row.thick {
+  border-top-width: 2px;
+}
+
+#erceqajkwd .gt_last_summary_row {
   padding-top: 2px;
   padding-bottom: 2px;
   padding-left: 5px;
   padding-right: 5px;
-  border-top-style: solid;
-  border-top-width: 2px;
-  border-top-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
 }
 
-#gtvartogis .gt_grand_summary_row {
+#erceqajkwd .gt_grand_summary_row {
   color: #333333;
   background-color: #FFFFFF;
   text-transform: inherit;
@@ -1272,7 +2117,7 @@ tbl</code></pre>
   padding-right: 5px;
 }
 
-#gtvartogis .gt_first_grand_summary_row {
+#erceqajkwd .gt_first_grand_summary_row {
   padding-top: 8px;
   padding-bottom: 8px;
   padding-left: 5px;
@@ -1282,11 +2127,11 @@ tbl</code></pre>
   border-top-color: #D3D3D3;
 }
 
-#gtvartogis .gt_striped {
+#erceqajkwd .gt_striped {
   background-color: rgba(128, 128, 128, 0.05);
 }
 
-#gtvartogis .gt_table_body {
+#erceqajkwd .gt_table_body {
   border-top-style: solid;
   border-top-width: 2px;
   border-top-color: #D3D3D3;
@@ -1295,7 +2140,7 @@ tbl</code></pre>
   border-bottom-color: #D3D3D3;
 }
 
-#gtvartogis .gt_footnotes {
+#erceqajkwd .gt_footnotes {
   color: #333333;
   background-color: #FFFFFF;
   border-bottom-style: none;
@@ -1309,13 +2154,16 @@ tbl</code></pre>
   border-right-color: #D3D3D3;
 }
 
-#gtvartogis .gt_footnote {
+#erceqajkwd .gt_footnote {
   margin: 0px;
   font-size: 90%;
-  padding: 4px;
+  padding-left: 4px;
+  padding-right: 4px;
+  padding-left: 5px;
+  padding-right: 5px;
 }
 
-#gtvartogis .gt_sourcenotes {
+#erceqajkwd .gt_sourcenotes {
   color: #333333;
   background-color: #FFFFFF;
   border-bottom-style: none;
@@ -1329,44 +2177,80 @@ tbl</code></pre>
   border-right-color: #D3D3D3;
 }
 
-#gtvartogis .gt_sourcenote {
+#erceqajkwd .gt_sourcenote {
   font-size: 90%;
-  padding: 4px;
+  padding-top: 4px;
+  padding-bottom: 4px;
+  padding-left: 5px;
+  padding-right: 5px;
 }
 
-#gtvartogis .gt_left {
+#erceqajkwd .gt_left {
   text-align: left;
 }
 
-#gtvartogis .gt_center {
+#erceqajkwd .gt_center {
   text-align: center;
 }
 
-#gtvartogis .gt_right {
+#erceqajkwd .gt_right {
   text-align: right;
   font-variant-numeric: tabular-nums;
 }
 
-#gtvartogis .gt_font_normal {
+#erceqajkwd .gt_font_normal {
   font-weight: normal;
 }
 
-#gtvartogis .gt_font_bold {
+#erceqajkwd .gt_font_bold {
   font-weight: bold;
 }
 
-#gtvartogis .gt_font_italic {
+#erceqajkwd .gt_font_italic {
   font-style: italic;
 }
 
-#gtvartogis .gt_super {
+#erceqajkwd .gt_super {
   font-size: 65%;
 }
 
-#gtvartogis .gt_footnote_marks {
+#erceqajkwd .gt_two_val_uncert {
+  display: inline-block;
+  line-height: 1em;
+  text-align: right;
+  font-size: 60%;
+  vertical-align: -0.25em;
+  margin-left: 0.1em;
+}
+
+#erceqajkwd .gt_footnote_marks {
   font-style: italic;
   font-weight: normal;
-  font-size: 65%;
+  font-size: 75%;
+  vertical-align: 0.4em;
+}
+
+#erceqajkwd .gt_asterisk {
+  font-size: 100%;
+  vertical-align: 0;
+}
+
+#erceqajkwd .gt_slash_mark {
+  font-size: 0.7em;
+  line-height: 0.7em;
+  vertical-align: 0.15em;
+}
+
+#erceqajkwd .gt_fraction_numerator {
+  font-size: 0.6em;
+  line-height: 0.6em;
+  vertical-align: 0.45em;
+}
+
+#erceqajkwd .gt_fraction_denominator {
+  font-size: 0.6em;
+  line-height: 0.6em;
+  vertical-align: -0.05em;
 }
 </style>
 <table class="gt_table">
@@ -1374,553 +2258,68 @@ tbl</code></pre>
   <thead class="gt_col_headings">
     <tr>
       <th class="gt_col_heading gt_columns_bottom_border gt_left" rowspan="1" colspan="1"></th>
-      <th class="gt_col_heading gt_columns_bottom_border gt_left" rowspan="1" colspan="1">DNA mutation analysis *</th>
-      <th class="gt_col_heading gt_columns_bottom_border gt_left" rowspan="1" colspan="1">Ultrasound analysis</th>
+      <th class="gt_col_heading gt_columns_bottom_border gt_left" rowspan="1" colspan="1">WID™-qEC</th>
+      <th class="gt_col_heading gt_columns_bottom_border gt_left" rowspan="1" colspan="1">Ultrasound</th>
+      <th class="gt_col_heading gt_columns_bottom_border gt_left" rowspan="1" colspan="1">DNAmut analysis *</th>
+      <th class="gt_col_heading gt_columns_bottom_border gt_left" rowspan="1" colspan="1" style="color: #707173;"><i>Difference<br>WID™-qEC–<br> Ultrasound</i></th>
+      <th class="gt_col_heading gt_columns_bottom_border gt_left" rowspan="1" colspan="1" style="color: #707173;"><i>Difference<br>WID™-qEC–<br>DNAmut analysis</i></th>
     </tr>
   </thead>
   <tbody class="gt_table_body">
     <tr class="gt_group_heading_row">
-      <td colspan="3" class="gt_empty_group_heading"></td>
+      <td colspan="6" class="gt_group_heading">all stages (n = 88)</td>
     </tr>
-    <tr><td class="gt_row gt_left gt_stub">n</td>
-<td class="gt_row gt_left">76 cancer cases,
-19 cancer-free controls</td>
-<td class="gt_row gt_left">122 cancer cases,
-98 cancer-free controls</td></tr>
+    <tr class="gt_row_group_first"><td class="gt_row gt_right gt_stub">Sensitivity – % (95% CI)</td>
+<td class="gt_row gt_left">94.2 (85.8–98.4)</td>
+<td class="gt_row gt_left">91.3 (82–96.7)</td>
+<td class="gt_row gt_left">62.3 (49.8–73.7)</td>
+<td class="gt_row gt_left" style="color: #707173;">2.9 (-8.9–14.7)</td>
+<td class="gt_row gt_left" style="color: #707173;"><b>31.9 (17.3–46.4)</b></td></tr>
+    <tr><td class="gt_row gt_right gt_stub">Specificity – % (95% CI)</td>
+<td class="gt_row gt_left">89.5 (66.9–98.7)</td>
+<td class="gt_row gt_left">26.3 (9.1–51.2)</td>
+<td class="gt_row gt_left">100 (82.4–100)</td>
+<td class="gt_row gt_left" style="color: #707173;"><b>63.2 (31.2–95.2)</b</td>
+<td class="gt_row gt_left" style="color: #707173;">-10.5 (-34.6–13.6)</td></tr>
     <tr class="gt_group_heading_row">
-      <td colspan="3" class="gt_group_heading">Comparison test</td>
+      <td colspan="6" class="gt_group_heading">stage I only (n = 64)</td>
     </tr>
-    <tr><td class="gt_row gt_left gt_stub">Sensitivity – % (95% CI)</td>
-<td class="gt_row gt_left">63 (51-74)</td>
-<td class="gt_row gt_left">92 (85-96)</td></tr>
-    <tr><td class="gt_row gt_left gt_stub">Specificity – % (95%)</td>
-<td class="gt_row gt_left">100 (82-100)</td>
-<td class="gt_row gt_left">51 (41-61)</td></tr>
-    <tr class="gt_group_heading_row">
-      <td colspan="3" class="gt_group_heading">WID™-qEC Threshold 1</td>
-    </tr>
-    <tr><td class="gt_row gt_left gt_stub">Sensitivity – % (95% CI)</td>
-<td class="gt_row gt_left">93 (85-98)</td>
-<td class="gt_row gt_left">90 (83-95)</td></tr>
-    <tr><td class="gt_row gt_left gt_stub">Specificity – % (95%)</td>
-<td class="gt_row gt_left">89 (67-99)</td>
-<td class="gt_row gt_left">87 (78-93)</td></tr>
-    <tr class="gt_group_heading_row">
-      <td colspan="3" class="gt_group_heading">WID™-qEC Threshold 2</td>
-    </tr>
-    <tr><td class="gt_row gt_left gt_stub">Sensitivity – % (95% CI)</td>
-<td class="gt_row gt_left">82 (71-90)</td>
-<td class="gt_row gt_left">78 (69-85)</td></tr>
-    <tr><td class="gt_row gt_left gt_stub">Specificity – % (95%)</td>
-<td class="gt_row gt_left">100 (82-100)</td>
-<td class="gt_row gt_left">97 (91-99)</td></tr>
+    <tr class="gt_row_group_first"><td class="gt_row gt_right gt_stub">Sensitivity – % (95% CI)</td>
+<td class="gt_row gt_left">93.3 (81.7–98.6)</td>
+<td class="gt_row gt_left">88.9 (75.9–96.3)</td>
+<td class="gt_row gt_left">60 (44.3–74.3)</td>
+<td class="gt_row gt_left" style="color: #707173;">4.4 (-12.2–21.1)</td>
+<td class="gt_row gt_left" style="color: #707173;"><b>33.3 (13.9–52.8)</b></td></tr>
+    <tr><td class="gt_row gt_right gt_stub">Specificity – % (95% CI)</td>
+<td class="gt_row gt_left">89.5 (66.9–98.7)</td>
+<td class="gt_row gt_left">26.3 (9.1–51.2)</td>
+<td class="gt_row gt_left">100 (82.4–100)</td>
+<td class="gt_row gt_left" style="color: #707173;"><b>63.2 (31.2–95.2)</b</td>
+<td class="gt_row gt_left" style="color: #707173;">-10.5 (-34.6–13.6)</td></tr>
   </tbody>
   <tfoot class="gt_sourcenotes">
     <tr>
-      <td class="gt_sourcenote" colspan="3">* Cutoff >= 1 mutation.</td>
+      <td class="gt_sourcenote" colspan="6">Significant differences, as evaluated by assessment of the confidence interval of the differences, are shown in <b>bold</b>.<br>
+  * Cutoff ≥ 1 mutation. </td>
     </tr>
   </tfoot>
   
 </table>
 </div>
 </div>
-<div id="comparison-of-wid-qec-dna-mutation-analysis-and-ultrasound-dependent-on-stage-table-s6" class="section level2">
-<h2>Comparison of WID-qEC, DNA mutation analysis, and ultrasound dependent on stage (Table S6)</h2>
-<pre class="r"><code>tmp &lt;- mldat %&gt;%
-  filter(set == &quot;Barcelona Validation&quot; &amp; !is.na(type) &amp; dnamut_analysis == &quot;Yes&quot; &amp; !is.na(dnamut_analysis) &amp; !is.na(us_cat)) %&gt;%
-  mutate(sum_cutoff = case_when(sum &gt;= 0.03 ~ &quot;positive&quot;,
-                                sum &lt; 0.03 ~ &quot;negative&quot;)) %&gt;%
-  mutate(sum_cutoff2 = case_when(sum &gt;= 0.63 ~ &quot;positive&quot;,
-                                 sum &lt; 0.63 ~ &quot;negative&quot;)) %&gt;%
-  mutate(type = factor(type, levels = c(&quot;Endometrial cancer&quot;, &quot;Control&quot;)),
-         sum_cutoff = factor(sum_cutoff, levels = c(&quot;positive&quot;, &quot;negative&quot;)),
-         sum_cutoff2 = factor(sum_cutoff2, levels = c(&quot;positive&quot;, &quot;negative&quot;)),
-         dnamut_result = factor(dnamut_result, levels = c(&quot;Positive&quot;, &quot;Negative&quot;)),
-         us = factor(us_cat, levels = c(&quot;Abnormal&quot;, &quot;Normal&quot;))) %&gt;%
+<div id="comparison-of-wid-qec-and-ultrasound-alone-figure-s14" class="section level2">
+<h2>Comparison of WID-qEC and ultrasound alone (Figure S14)</h2>
+<pre class="r"><code>mldat_us &lt;- mldat %&gt;%
+  filter(!is.na(us_thickness) &amp; !is.na(type)) %&gt;%
   droplevels()
 
-tmp2 &lt;- tmp %&gt;%
-  pivot_longer(c(sum_cutoff, sum_cutoff2, dnamut_result, us),
-               names_to = &quot;analysis&quot;,
-               values_to = &quot;value&quot;) %&gt;%
-  mutate(analysis = factor(analysis, levels = c(&quot;sum_cutoff&quot;, &quot;sum_cutoff2&quot;, &quot;us&quot;, &quot;dnamut_result&quot;)))
+p1 &lt;- plot_2_rocs(mldat_us$type,
+                  mldat_us$sum, mldat_us$us_thickness,
+                  &quot;black&quot;, cols[7],
+                  &quot;WID™-qEC&quot;, &quot;US&quot;, &quot;&lt;&quot;)
 
-tmp_stage1 &lt;- tmp %&gt;%
-  filter(stage %in% c(&quot;I&quot;, &quot;N/A&quot;)) %&gt;%
-  mutate(sum_cutoff = case_when(sum &gt;= 0.03 ~ &quot;positive&quot;,
-                                sum &lt; 0.03 ~ &quot;negative&quot;),
-         sum_cutoff2 = case_when(sum &gt;= 0.63 ~ &quot;positive&quot;,
-                                 sum &lt; 0.63 ~ &quot;negative&quot;)) %&gt;%
-  mutate(type = factor(type, levels = c(&quot;Endometrial cancer&quot;, &quot;Control&quot;))) %&gt;%
-  mutate(sum_cutoff = factor(sum_cutoff, levels = c(&quot;positive&quot;, &quot;negative&quot;)),
-         dnamut_result = factor(dnamut_result, levels = c(&quot;Positive&quot;, &quot;Negative&quot;)),
-         sum_cutoff2 = factor(sum_cutoff2, levels = c(&quot;positive&quot;, &quot;negative&quot;)),
-         us = factor(us_cat, levels = c(&quot;Abnormal&quot;, &quot;Normal&quot;))) 
-
-tmp2_stage1 &lt;- tmp_stage1 %&gt;%
-  pivot_longer(c(sum_cutoff, sum_cutoff2, dnamut_result, us),
-               names_to = &quot;analysis&quot;,
-               values_to = &quot;value&quot;) %&gt;%
-  mutate(analysis = factor(analysis, levels = c(&quot;sum_cutoff&quot;, &quot;sum_cutoff2&quot;, &quot;us&quot;, &quot;dnamut_result&quot;)))
-
-dat &lt;- data.frame(matrix(nrow = 4, ncol = 6))
-colnames(dat) &lt;- c(&quot;WID™-qEC (Threshold 1)&quot;,
-                   &quot;WID™-qEC (Threshold 2)&quot;,
-                   &quot;Ultrasound&quot;,
-                   &quot;DNAmut analysis&quot;,
-                   &quot;type&quot;,
-                   &quot;set&quot;)
-dat$set &lt;- rep(c(&quot;all stages (n = 88)&quot;, &quot;stage I only (n = 64)&quot;), 2)
-dat$type &lt;- c(rep(&quot;Sensitivity – % (95% CI)&quot;, 2), rep(&quot;Specificity – % (95% CI)&quot;, 2))
-
-for (i in 1:length(levels(tmp2$analysis))){
-
-  name &lt;- levels(tmp2$analysis)[i]
-  tmp_all &lt;- tmp2 %&gt;%
-    filter(analysis == name) %&gt;%
-    droplevels()
-  
-  tmp_stage1_calc &lt;- tmp2_stage1  %&gt;%
-    filter(analysis == name) %&gt;%
-    droplevels()
-  
-  tab &lt;- table(tmp_all$value, tmp_all$type)
-  rval &lt;- summary(epi.tests(tab))
-  
-
-  dat[1,i] &lt;- paste0(round(rval[3,1],2)*100, &quot; (&quot;, round(rval[3,2],2)*100, &quot;-&quot;, round(rval[3,3],2)*100, &quot;)&quot;)
-  dat[3,i] &lt;- paste0(round(rval[4,1],2)*100, &quot; (&quot;, round(rval[4,2],2)*100, &quot;-&quot;, round(rval[4,3],2)*100, &quot;)&quot;)
-  
-  tab &lt;- table(tmp_stage1_calc$value, tmp_stage1_calc$type)
-  rval &lt;- summary(epi.tests(tab))
-  
-  dat[2,i] &lt;- paste0(round(rval[3,1],2)*100, &quot; (&quot;, round(rval[3,2],2)*100, &quot;-&quot;, round(rval[3,3],2)*100, &quot;)&quot;)
-  dat[4,i] &lt;- paste0(round(rval[4,1],2)*100, &quot; (&quot;, round(rval[4,2],2)*100, &quot;-&quot;, round(rval[4,3],2)*100, &quot;)&quot;)
-  
-}
-
-
-tbl &lt;- dat %&gt;%
-  gt(rowname_col = &quot;type&quot;,
-     groupname_col = &quot;set&quot;) %&gt;%
-  tab_spanner(
-    columns = c(&quot;WID™-qEC (Threshold 1)&quot;, &quot;WID™-qEC (Threshold 2)&quot;),
-    label = &quot;WID™-qEC&quot;
-  ) %&gt;%
-  cols_label(
-    &quot;WID™-qEC (Threshold 1)&quot; = &quot;Threshold 1&quot;,
-    &quot;WID™-qEC (Threshold 2)&quot; = &quot;Threshold 2&quot;
-  ) %&gt;%
-  text_transform(locations = cells_body(),
-                 fn = function(x){
-                   gsub(&quot;[.]&quot;, &quot;·&quot;, x)
-                 }
-  ) %&gt;%
-  tab_options(table.font.names = &quot;Guardian Sans&quot;,
-              column_labels.font.weight = &quot;bold&quot;,
-              row_group.font.weight = &quot;bold&quot;,
-              data_row.padding = 2,
-              column_labels.font.size = 12,
-              table.font.size = 10,
-              row_group.padding = 2,
-              row_group.border.right.width = px(10),
-              summary_row.padding = 2,
-              table.border.top.color = &quot;white&quot;,
-              row_group.border.top.width = px(1),
-              row_group.border.bottom.width = px(1),
-              stub.border.width = px(0),
-              heading.title.font.size = 14,
-              table.width = px(600))
-
-
-
-tbl</code></pre>
-<div id="ritybyzanr" style="overflow-x:auto;overflow-y:auto;width:auto;height:auto;">
-<style>html {
-  font-family: 'Guardian Sans';
-}
-
-#ritybyzanr .gt_table {
-  display: table;
-  border-collapse: collapse;
-  margin-left: auto;
-  margin-right: auto;
-  color: #333333;
-  font-size: 10px;
-  font-weight: normal;
-  font-style: normal;
-  background-color: #FFFFFF;
-  width: 600px;
-  border-top-style: solid;
-  border-top-width: 2px;
-  border-top-color: #FFFFFF;
-  border-right-style: none;
-  border-right-width: 2px;
-  border-right-color: #D3D3D3;
-  border-bottom-style: solid;
-  border-bottom-width: 2px;
-  border-bottom-color: #A8A8A8;
-  border-left-style: none;
-  border-left-width: 2px;
-  border-left-color: #D3D3D3;
-}
-
-#ritybyzanr .gt_heading {
-  background-color: #FFFFFF;
-  text-align: center;
-  border-bottom-color: #FFFFFF;
-  border-left-style: none;
-  border-left-width: 1px;
-  border-left-color: #D3D3D3;
-  border-right-style: none;
-  border-right-width: 1px;
-  border-right-color: #D3D3D3;
-}
-
-#ritybyzanr .gt_title {
-  color: #333333;
-  font-size: 14px;
-  font-weight: initial;
-  padding-top: 4px;
-  padding-bottom: 4px;
-  border-bottom-color: #FFFFFF;
-  border-bottom-width: 0;
-}
-
-#ritybyzanr .gt_subtitle {
-  color: #333333;
-  font-size: 85%;
-  font-weight: initial;
-  padding-top: 0;
-  padding-bottom: 6px;
-  border-top-color: #FFFFFF;
-  border-top-width: 0;
-}
-
-#ritybyzanr .gt_bottom_border {
-  border-bottom-style: solid;
-  border-bottom-width: 2px;
-  border-bottom-color: #D3D3D3;
-}
-
-#ritybyzanr .gt_col_headings {
-  border-top-style: solid;
-  border-top-width: 2px;
-  border-top-color: #D3D3D3;
-  border-bottom-style: solid;
-  border-bottom-width: 2px;
-  border-bottom-color: #D3D3D3;
-  border-left-style: none;
-  border-left-width: 1px;
-  border-left-color: #D3D3D3;
-  border-right-style: none;
-  border-right-width: 1px;
-  border-right-color: #D3D3D3;
-}
-
-#ritybyzanr .gt_col_heading {
-  color: #333333;
-  background-color: #FFFFFF;
-  font-size: 12px;
-  font-weight: bold;
-  text-transform: inherit;
-  border-left-style: none;
-  border-left-width: 1px;
-  border-left-color: #D3D3D3;
-  border-right-style: none;
-  border-right-width: 1px;
-  border-right-color: #D3D3D3;
-  vertical-align: bottom;
-  padding-top: 5px;
-  padding-bottom: 6px;
-  padding-left: 5px;
-  padding-right: 5px;
-  overflow-x: hidden;
-}
-
-#ritybyzanr .gt_column_spanner_outer {
-  color: #333333;
-  background-color: #FFFFFF;
-  font-size: 12px;
-  font-weight: bold;
-  text-transform: inherit;
-  padding-top: 0;
-  padding-bottom: 0;
-  padding-left: 4px;
-  padding-right: 4px;
-}
-
-#ritybyzanr .gt_column_spanner_outer:first-child {
-  padding-left: 0;
-}
-
-#ritybyzanr .gt_column_spanner_outer:last-child {
-  padding-right: 0;
-}
-
-#ritybyzanr .gt_column_spanner {
-  border-bottom-style: solid;
-  border-bottom-width: 2px;
-  border-bottom-color: #D3D3D3;
-  vertical-align: bottom;
-  padding-top: 5px;
-  padding-bottom: 5px;
-  overflow-x: hidden;
-  display: inline-block;
-  width: 100%;
-}
-
-#ritybyzanr .gt_group_heading {
-  padding: 2px;
-  color: #333333;
-  background-color: #FFFFFF;
-  font-size: 100%;
-  font-weight: bold;
-  text-transform: inherit;
-  border-top-style: solid;
-  border-top-width: 1px;
-  border-top-color: #D3D3D3;
-  border-bottom-style: solid;
-  border-bottom-width: 1px;
-  border-bottom-color: #D3D3D3;
-  border-left-style: none;
-  border-left-width: 1px;
-  border-left-color: #D3D3D3;
-  border-right-style: none;
-  border-right-width: 10px;
-  border-right-color: #D3D3D3;
-  vertical-align: middle;
-}
-
-#ritybyzanr .gt_empty_group_heading {
-  padding: 0.5px;
-  color: #333333;
-  background-color: #FFFFFF;
-  font-size: 100%;
-  font-weight: bold;
-  border-top-style: solid;
-  border-top-width: 1px;
-  border-top-color: #D3D3D3;
-  border-bottom-style: solid;
-  border-bottom-width: 1px;
-  border-bottom-color: #D3D3D3;
-  vertical-align: middle;
-}
-
-#ritybyzanr .gt_from_md > :first-child {
-  margin-top: 0;
-}
-
-#ritybyzanr .gt_from_md > :last-child {
-  margin-bottom: 0;
-}
-
-#ritybyzanr .gt_row {
-  padding-top: 2px;
-  padding-bottom: 2px;
-  padding-left: 5px;
-  padding-right: 5px;
-  margin: 10px;
-  border-top-style: solid;
-  border-top-width: 1px;
-  border-top-color: #D3D3D3;
-  border-left-style: none;
-  border-left-width: 1px;
-  border-left-color: #D3D3D3;
-  border-right-style: none;
-  border-right-width: 1px;
-  border-right-color: #D3D3D3;
-  vertical-align: middle;
-  overflow-x: hidden;
-}
-
-#ritybyzanr .gt_stub {
-  color: #333333;
-  background-color: #FFFFFF;
-  font-size: 100%;
-  font-weight: initial;
-  text-transform: inherit;
-  border-right-style: solid;
-  border-right-width: 0px;
-  border-right-color: #D3D3D3;
-  padding-left: 12px;
-}
-
-#ritybyzanr .gt_summary_row {
-  color: #333333;
-  background-color: #FFFFFF;
-  text-transform: inherit;
-  padding-top: 2px;
-  padding-bottom: 2px;
-  padding-left: 5px;
-  padding-right: 5px;
-}
-
-#ritybyzanr .gt_first_summary_row {
-  padding-top: 2px;
-  padding-bottom: 2px;
-  padding-left: 5px;
-  padding-right: 5px;
-  border-top-style: solid;
-  border-top-width: 2px;
-  border-top-color: #D3D3D3;
-}
-
-#ritybyzanr .gt_grand_summary_row {
-  color: #333333;
-  background-color: #FFFFFF;
-  text-transform: inherit;
-  padding-top: 8px;
-  padding-bottom: 8px;
-  padding-left: 5px;
-  padding-right: 5px;
-}
-
-#ritybyzanr .gt_first_grand_summary_row {
-  padding-top: 8px;
-  padding-bottom: 8px;
-  padding-left: 5px;
-  padding-right: 5px;
-  border-top-style: double;
-  border-top-width: 6px;
-  border-top-color: #D3D3D3;
-}
-
-#ritybyzanr .gt_striped {
-  background-color: rgba(128, 128, 128, 0.05);
-}
-
-#ritybyzanr .gt_table_body {
-  border-top-style: solid;
-  border-top-width: 2px;
-  border-top-color: #D3D3D3;
-  border-bottom-style: solid;
-  border-bottom-width: 2px;
-  border-bottom-color: #D3D3D3;
-}
-
-#ritybyzanr .gt_footnotes {
-  color: #333333;
-  background-color: #FFFFFF;
-  border-bottom-style: none;
-  border-bottom-width: 2px;
-  border-bottom-color: #D3D3D3;
-  border-left-style: none;
-  border-left-width: 2px;
-  border-left-color: #D3D3D3;
-  border-right-style: none;
-  border-right-width: 2px;
-  border-right-color: #D3D3D3;
-}
-
-#ritybyzanr .gt_footnote {
-  margin: 0px;
-  font-size: 90%;
-  padding: 4px;
-}
-
-#ritybyzanr .gt_sourcenotes {
-  color: #333333;
-  background-color: #FFFFFF;
-  border-bottom-style: none;
-  border-bottom-width: 2px;
-  border-bottom-color: #D3D3D3;
-  border-left-style: none;
-  border-left-width: 2px;
-  border-left-color: #D3D3D3;
-  border-right-style: none;
-  border-right-width: 2px;
-  border-right-color: #D3D3D3;
-}
-
-#ritybyzanr .gt_sourcenote {
-  font-size: 90%;
-  padding: 4px;
-}
-
-#ritybyzanr .gt_left {
-  text-align: left;
-}
-
-#ritybyzanr .gt_center {
-  text-align: center;
-}
-
-#ritybyzanr .gt_right {
-  text-align: right;
-  font-variant-numeric: tabular-nums;
-}
-
-#ritybyzanr .gt_font_normal {
-  font-weight: normal;
-}
-
-#ritybyzanr .gt_font_bold {
-  font-weight: bold;
-}
-
-#ritybyzanr .gt_font_italic {
-  font-style: italic;
-}
-
-#ritybyzanr .gt_super {
-  font-size: 65%;
-}
-
-#ritybyzanr .gt_footnote_marks {
-  font-style: italic;
-  font-weight: normal;
-  font-size: 65%;
-}
-</style>
-<table class="gt_table">
-  
-  <thead class="gt_col_headings">
-    <tr>
-      <th class="gt_col_heading gt_columns_bottom_border gt_left" rowspan="2" colspan="1"></th>
-      <th class="gt_center gt_columns_top_border gt_column_spanner_outer" rowspan="1" colspan="2">
-        <span class="gt_column_spanner">WID™-qEC</span>
-      </th>
-      <th class="gt_col_heading gt_columns_bottom_border gt_left" rowspan="2" colspan="1">Ultrasound</th>
-      <th class="gt_col_heading gt_columns_bottom_border gt_left" rowspan="2" colspan="1">DNAmut analysis</th>
-    </tr>
-    <tr>
-      <th class="gt_col_heading gt_columns_bottom_border gt_left" rowspan="1" colspan="1">Threshold 1</th>
-      <th class="gt_col_heading gt_columns_bottom_border gt_left" rowspan="1" colspan="1">Threshold 2</th>
-    </tr>
-  </thead>
-  <tbody class="gt_table_body">
-    <tr class="gt_group_heading_row">
-      <td colspan="5" class="gt_group_heading">all stages (n = 88)</td>
-    </tr>
-    <tr><td class="gt_row gt_left gt_stub">Sensitivity – % (95% CI)</td>
-<td class="gt_row gt_left">94 (86-98)</td>
-<td class="gt_row gt_left">81 (70-90)</td>
-<td class="gt_row gt_left">91 (82-97)</td>
-<td class="gt_row gt_left">62 (50-74)</td></tr>
-    <tr><td class="gt_row gt_left gt_stub">Specificity – % (95% CI)</td>
-<td class="gt_row gt_left">89 (67-99)</td>
-<td class="gt_row gt_left">100 (82-100)</td>
-<td class="gt_row gt_left">26 (9-51)</td>
-<td class="gt_row gt_left">100 (82-100)</td></tr>
-    <tr class="gt_group_heading_row">
-      <td colspan="5" class="gt_group_heading">stage I only (n = 64)</td>
-    </tr>
-    <tr><td class="gt_row gt_left gt_stub">Sensitivity – % (95% CI)</td>
-<td class="gt_row gt_left">93 (82-99)</td>
-<td class="gt_row gt_left">78 (63-89)</td>
-<td class="gt_row gt_left">89 (76-96)</td>
-<td class="gt_row gt_left">60 (44-74)</td></tr>
-    <tr><td class="gt_row gt_left gt_stub">Specificity – % (95% CI)</td>
-<td class="gt_row gt_left">89 (67-99)</td>
-<td class="gt_row gt_left">100 (82-100)</td>
-<td class="gt_row gt_left">26 (9-51)</td>
-<td class="gt_row gt_left">100 (82-100)</td></tr>
-  </tbody>
-  
-  
-</table>
-</div>
+p1</code></pre>
+<p><img src="5-barcelona-set_files/figure-html/unnamed-chunk-5-1.png" width="408" style="display: block; margin: auto;" /></p>
 </div>
 
 

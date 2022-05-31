@@ -11,11 +11,11 @@
 
 <meta name="author" content="Chiara Herzog" />
 
-<meta name="date" content="2022-04-04" />
+<meta name="date" content="2022-05-31" />
 
 <title>4. Association with epidemiological factors</title>
 
-<script src="site_libs/header-attrs-2.11/header-attrs.js"></script>
+<script src="site_libs/header-attrs-2.14/header-attrs.js"></script>
 <script src="site_libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <link href="site_libs/bootstrap-3.3.5/css/cosmo.min.css" rel="stylesheet" />
@@ -63,6 +63,7 @@ if (window.hljs) {
 
 
 
+
 <style type = "text/css">
 .main-container {
   max-width: 940px;
@@ -83,6 +84,9 @@ button.code-folding-btn:focus {
 }
 summary {
   display: list-item;
+}
+details > summary > p:only-child {
+  display: inline;
 }
 pre code {
   padding: 0;
@@ -238,7 +242,7 @@ $(document).ready(function () {
 <div class="navbar navbar-default  navbar-fixed-top" role="navigation">
   <div class="container">
     <div class="navbar-header">
-      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-bs-toggle="collapse" data-target="#navbar" data-bs-target="#navbar">
         <span class="icon-bar"></span>
         <span class="icon-bar"></span>
         <span class="icon-bar"></span>
@@ -248,7 +252,7 @@ $(document).ready(function () {
     <div id="navbar" class="navbar-collapse collapse">
       <ul class="nav navbar-nav">
         <li class="dropdown">
-  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
     WID-qEC source code
      
     <span class="caret"></span>
@@ -294,7 +298,7 @@ $(document).ready(function () {
 <div id="header">
 
 <div class="btn-group pull-right float-right">
-<button type="button" class="btn btn-default btn-xs btn-secondary btn-sm dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><span>Code</span> <span class="caret"></span></button>
+<button type="button" class="btn btn-default btn-xs btn-secondary btn-sm dropdown-toggle" data-toggle="dropdown" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><span>Code</span> <span class="caret"></span></button>
 <ul class="dropdown-menu dropdown-menu-right" style="min-width: 50px;">
 <li><a id="rmd-show-all-code" href="#">Show All Code</a></li>
 <li><a id="rmd-hide-all-code" href="#">Hide All Code</a></li>
@@ -305,7 +309,7 @@ $(document).ready(function () {
 
 <h1 class="title toc-ignore">4. Association with epidemiological factors</h1>
 <h4 class="author">Chiara Herzog</h4>
-<h4 class="date">April 4, 2022</h4>
+<h4 class="date">May 31, 2022</h4>
 
 </div>
 
@@ -323,16 +327,26 @@ $(document).ready(function () {
                        ifelse(hist == &quot;Other *&quot;, &quot;Other&quot;, hist))) %&gt;%
   mutate(grade = factor(grade, levels = c(&quot;Control&quot;, &quot;Grade I&quot;, &quot;Grade II&quot;, &quot;Grade III&quot;, &quot;Unknown&quot;))) %&gt;%
   mutate(hist = factor(hist, levels = c(&quot;Control&quot;, &quot;Endometrioid&quot;, &quot;Serous&quot;, &quot;Clear cell&quot;, &quot;Other&quot;, &quot;Unknown&quot;))) %&gt;%
-  mutate(stage = factor(stage, levels = c(&quot;Control&quot;, &quot;I&quot;, &quot;II&quot;, &quot;III/IV&quot;, &quot;Unknown&quot;)))
+  mutate(stage = factor(stage, levels = c(&quot;Control&quot;, &quot;I&quot;, &quot;II&quot;, &quot;III/IV&quot;, &quot;Unknown&quot;))) %&gt;%
+  mutate(sum = sum + 0.00001)
 
 p1 &lt;- tmp %&gt;%
   ggplot(aes(x = age,
-             y = log(sum + 0.00001),
+             y = log(sum),
              colour = type)) +
   geom_point(size = 0.3) +
   geom_smooth(method = &quot;lm&quot;,
               se = FALSE) +
-  ylab(expression(paste(atop(bold(&quot;WID™-qEC&quot;), &quot;log (&quot;~Sigma~&quot; PMR)&quot;)))) + 
+  geom_hline(yintercept = log(0.03),
+             linetype = &quot;dotted&quot;,
+             colour = cols[1]) +
+  annotate(&quot;text&quot;,
+           x = 40,
+           y = log(0.03)-1,
+           label = &quot;Threshold&quot;,
+           size = 3,
+           colour = cols[1]) +
+  ylab(expression(paste(atop(bold(&quot;WID™-qEC&quot;), &quot;log (Σ PMR)&quot;)))) +
   theme(panel.background = element_blank(),
         legend.position = c(0.32, 1.1),
         legend.key = element_blank()) +
@@ -357,15 +371,18 @@ names(labs) &lt;- c(&quot;stage&quot;, &quot;grade&quot;, &quot;hist&quot;)
 p2 &lt;- tmp %&gt;%
   mutate(types = factor(types, levels = c(&quot;stage&quot;, &quot;grade&quot;, &quot;hist&quot;))) %&gt;%
   ggplot(aes(x = factors,
-             y = log(sum + 0.00001))) +
+             y = log(sum))) +
   geom_violin(width = 0.4,
               aes(colour = type)) +
   geom_jitter(size = 0.3,
               aes(colour = type)) +
-  ylab(expression(paste(atop(bold(&quot;WID™-qEC&quot;), &quot;log (&quot;~Sigma~&quot; PMR)&quot;)))) + 
+  ylab(expression(paste(atop(bold(&quot;WID™-qEC&quot;), &quot;log (Σ PMR)&quot;)))) +
   xlab(&quot;&quot;) +
   scale_colour_manual(values = cols[c(1,2)],
                       name = &quot;&quot;) +
+  geom_hline(yintercept = log(0.03),
+             linetype = &quot;dotted&quot;,
+             colour = cols[1]) +
   facet_wrap(~types,
              scales = &quot;free_x&quot;,
              labeller = labeller(types = labs)) +
@@ -401,25 +418,36 @@ plot</code></pre>
                               hist))) %&gt;%
   mutate(grade = factor(grade, levels = c(&quot;Control&quot;, &quot;Grade I&quot;, &quot;Grade II&quot;, &quot;Grade III&quot;, &quot;Unknown&quot;))) %&gt;%
   mutate(hist = factor(hist, levels = c(&quot;Control&quot;, &quot;Endometrioid&quot;, &quot;Serous&quot;, &quot;Clear cell&quot;, &quot;Other&quot;, &quot;Unknown&quot;))) %&gt;%
-  mutate(stage = factor(stage, levels = c(&quot;Control&quot;, &quot;I&quot;, &quot;II&quot;, &quot;III/IV&quot;, &quot;Unknown&quot;)))
+  mutate(stage = factor(stage, levels = c(&quot;Control&quot;, &quot;I&quot;, &quot;II&quot;, &quot;III/IV&quot;, &quot;Unknown&quot;))) %&gt;%
+  mutate(sum = sum + 0.00001)
 
 
 p1 &lt;- tmp %&gt;%
+  filter(!is.na(type)) %&gt;%
   ggplot(aes(x = age,
-             y = log(sum + 0.00001),
+             y = log(sum),
              colour = type)) +
   geom_point(size = 0.3) +
   geom_smooth(method = &quot;lm&quot;,
               se = FALSE) +
-  ylab(expression(paste(atop(bold(&quot;WID™-qEC&quot;), &quot;log (&quot;~Sigma~&quot; PMR)&quot;)))) + 
-  theme(panel.background = element_blank(),
+  geom_hline(yintercept = log(0.03),
+             linetype = &quot;dotted&quot;,
+             colour = cols[1]) +
+  annotate(&quot;text&quot;,
+           x = 40,
+           y = log(0.03)-1,
+           label = &quot;Threshold&quot;,
+           size = 3,
+           colour = cols[1]) +
+  theme(panel.grid = element_blank(),
         legend.position = c(0.32, 1.1),
-        legend.key = element_blank()) +
+        axis.title.x = element_text(margin = margin(t = -20, r = 0, b = 0, l = 0)),
+        legend.key = element_blank(),
+        panel.background = element_blank()) +
   scale_colour_manual(values = cols[c(1,2)],
                       name = &quot;&quot;) +
   xlab(&quot;Age&quot;) +
-  coord_cartesian(ylim = c(-11, 5.5),
-                  clip = &quot;off&quot;)
+  ylab(expression(paste(atop(bold(&quot;WID™-qEC&quot;), &quot;log (&quot;~Sigma~&quot; PMR)&quot;))))
 
 
 tmp &lt;- tmp %&gt;%
@@ -428,7 +456,8 @@ tmp &lt;- tmp %&gt;%
                                               &quot;I&quot;, &quot;II&quot;, &quot;III/IV&quot;,
                                               &quot;Grade I&quot;, &quot;Grade II&quot;, &quot;Grade III&quot;,
                                               &quot;Endometrioid&quot;, &quot;Serous&quot;, &quot;Clear cell&quot;, &quot;Other&quot;,
-                                              &quot;Unknown&quot;)))
+                                              &quot;Unknown&quot;)))%&gt;%
+  mutate(sum = sum + 0.00001)
 
 labs &lt;- c(&quot;Stage&quot;, &quot;Grade&quot;, &quot;Histology&quot;)
 names(labs) &lt;- c(&quot;stage&quot;, &quot;grade&quot;, &quot;hist&quot;)
@@ -436,15 +465,19 @@ names(labs) &lt;- c(&quot;stage&quot;, &quot;grade&quot;, &quot;hist&quot;)
 p2 &lt;- tmp %&gt;%
   mutate(types = factor(types, levels = c(&quot;stage&quot;, &quot;grade&quot;, &quot;hist&quot;))) %&gt;%
   ggplot(aes(x = factors,
-             y = log(sum + 0.00001))) +
+             y = log(sum))) +
   geom_violin(width = 0.4,
               aes(colour = type)) +
   geom_jitter(size = 0.3,
               aes(colour = type)) +
-  ylab(expression(paste(atop(bold(&quot;WID™-qEC&quot;), &quot;log (&quot;~Sigma~&quot; PMR)&quot;)))) + 
-  xlab(&quot;&quot;) +
   scale_colour_manual(values = cols[c(1,2)],
                       name = &quot;&quot;) +
+  geom_smooth() + 
+  geom_hline(yintercept = log(0.03),
+             linetype = &quot;dotted&quot;,
+             colour = cols[1]) +
+  ylab(expression(paste(atop(bold(&quot;WID™-qEC&quot;), &quot;log (&quot;~Sigma~&quot; PMR)&quot;)))) + 
+  xlab(&quot;&quot;) +
   facet_wrap(~types,
              scales = &quot;free_x&quot;,
              labeller = labeller(types = labs)) +
@@ -456,6 +489,7 @@ p2 &lt;- tmp %&gt;%
         legend.key = element_blank(),
         legend.text = element_blank(),
         legend.background = element_blank(),
+        legend.box.background = element_blank(),
         plot.margin = margin(10, 10, 20, 10))
 
 plot &lt;- (p1 + p2) +
@@ -469,78 +503,97 @@ plot</code></pre>
 <div id="ethnicity-table-s3" class="section level2">
 <h2>Ethnicity (Table S3)</h2>
 <pre class="r"><code>mldat_tmp &lt;- mldat %&gt;%
-  filter(set == &quot;FORECEE Validation&quot; &amp; ethnicity != &quot;Unknown&quot;) %&gt;%
+  filter(set == &quot;FORECEE Validation&quot; &amp; !is.na(ethnicity) &amp; ethnicity != &quot;Unknown&quot;)%&gt;%
   mutate(ethnicity = factor(ethnicity, levels = c(&quot;White&quot;, &quot;Non-white&quot;))) %&gt;%
   droplevels() %&gt;%
-  mutate(sum = `ZSCAN12\n(cg25060829 [ii])` + `GYPC\n(cg15768103 [ii])` + `GYPC\n(cg15975865 [i])`) %&gt;%
   mutate(thresh1 = case_when(sum &gt;= cut$threshold[1] ~ &quot;Endometrial cancer&quot;,
                              sum &lt; cut$threshold[1] ~ &quot;Control&quot;)) %&gt;%
-  mutate(thresh2 = case_when(sum &gt;= cut$threshold[2] ~ &quot;Endometrial cancer&quot;,
-                             sum &lt; cut$threshold[2] ~ &quot;Control&quot;)) %&gt;%
   mutate(type = factor(type, levels = c(&quot;Endometrial cancer&quot;, &quot;Control&quot;))) %&gt;%
-  mutate(thresh1 = factor(thresh1, levels = c(&quot;Endometrial cancer&quot;, &quot;Control&quot;))) %&gt;%
-  mutate(thresh2 = factor(thresh2, levels = c(&quot;Endometrial cancer&quot;, &quot;Control&quot;)))
+  mutate(thresh1 = factor(thresh1, levels = c(&quot;Endometrial cancer&quot;, &quot;Control&quot;)))  %&gt;%
+  mutate(disease = case_when(type==&quot;Endometrial cancer&quot; ~ 1,
+                           type == &quot;Control&quot; ~ 0),
+       score = case_when(thresh1 == &quot;Endometrial cancer&quot; ~ 1,
+                         thresh1 == &quot;Control&quot; ~ 0))
 
 # create df
-dat &lt;- data.frame(matrix(nrow = 9, ncol = length(unique(mldat_tmp$ethnicity))+2))
-colnames(dat) &lt;- c(levels(mldat_tmp$ethnicity), &quot;threshold&quot;, &quot;type&quot;)
-dat$threshold &lt;- c(&quot;&quot;, rep(&quot;Threshold 1&quot;, 4), rep(&quot;Threshold 2&quot;, 4))
-dat$type &lt;- c( &quot;n (controls, cases)&quot;, rep(c(&quot;Sensitivity – % (95% CI)&quot;, &quot;Specificity – % (95% CI)&quot;, &quot;PPV – % (95% CI) †&quot;, &quot;NPV – % (95% CI) †&quot;), 2))
+dat &lt;- data.frame(matrix(nrow = 6, ncol = length(unique(mldat_tmp$ethnicity))+1))
+colnames(dat) &lt;- c(levels(mldat_tmp$ethnicity), &quot;type&quot;)
+dat$type &lt;- c(&quot;Endometrial cancers  – n&quot;, &quot;Cancer-free controls  – n&quot;, c(&quot;Sensitivity – % (95% CI)&quot;, &quot;Specificity – % (95% CI)&quot;, &quot;PPV – % (95% CI) †&quot;, &quot;NPV – % (95% CI) †&quot;))
 
 for(i in  1:length(levels(mldat_tmp$ethnicity))){
   name &lt;- levels(mldat_tmp$ethnicity)[i]
+  set &lt;- unique(mldat_tmp$set)
   tmp &lt;- mldat_tmp %&gt;%
     filter(ethnicity == name)
   pop_prev &lt;- 0.09
   
   tab &lt;- table(tmp$thresh1, tmp$type)
-  rval &lt;- summary(epi.tests(tab))
+  # rval &lt;- summary(epi.tests(tab))
   tab &lt;- matrix(c(tab[1,1], tab[2,1], tab[1,2], tab[2,2]), ncol = 2)
   colnames(tab) &lt;- c(&quot;Case&quot;, &quot;Control&quot;)
   rownames(tab) &lt;- c(&quot;Case&quot;, &quot;Control&quot;)
   rval2 &lt;- BDtest(xmat=as.matrix(tab), pr=pop_prev, conf.level = 0.95)
   
-  dat[1,i] &lt;- paste0(sum(tmp$type==&quot;Control&quot;), &quot;, &quot;, 
-                     sum(tmp$type == &quot;Endometrial cancer&quot;)) 
-  dat[2,i] &lt;- paste0(round(rval[3,1],2)*100, &quot; (&quot;,
-                     round(rval[3,2],2)*100, &quot;–&quot;,
-                     round(rval[3,3],2)*100, &quot;)&quot;)
-  dat[3,i] &lt;- paste0(round(rval[4,1],2)*100, &quot; (&quot;,
-                     round(rval[4,2],2)*100, &quot;–&quot;,
-                     round(rval[4,3],2)*100, &quot;)&quot;)
-  dat[4,i] &lt;- paste0(round(rval2$PPVNPVDAT[2,1],2)*100, &quot; (&quot;,
-                     round(rval2$PPVNPVDAT[2,2],2)*100, &quot;–&quot;,
-                     round(rval2$PPVNPVDAT[2,4],2)*100, &quot;)&quot;)
-  dat[5,i] &lt;- paste0(round(rval2$PPVNPVDAT[1,1],2)*100, &quot; (&quot;,
-                     round(rval2$PPVNPVDAT[1,2],2)*100, &quot;–&quot;,
-                     round(rval2$PPVNPVDAT[1,4],2)*100, &quot;)&quot;)
-  
-  tab &lt;- table(tmp$thresh2, tmp$type)
-  rval &lt;- summary(epi.tests(tab))
-  tab &lt;- matrix(c(tab[1,1], tab[2,1], tab[1,2], tab[2,2]), ncol = 2)
-  colnames(tab) &lt;- c(&quot;Case&quot;, &quot;Control&quot;)
-  rownames(tab) &lt;- c(&quot;Case&quot;, &quot;Control&quot;)
-  rval2 &lt;- BDtest(xmat=as.matrix(tab), pr=pop_prev, conf.level = 0.95)
-  
-  dat[6,i] &lt;- paste0(round(rval[3,1],2)*100, &quot; (&quot;,
-                     round(rval[3,2],2)*100, &quot;–&quot;,
-                     round(rval[3,3],2)*100, &quot;)&quot;)
-  dat[7,i] &lt;- paste0(round(rval[4,1],2)*100, &quot; (&quot;,
-                     round(rval[4,2],2)*100, &quot;–&quot;,
-                     round(rval[4,3],2)*100, &quot;)&quot;)
-  dat[8,i] &lt;- paste0(round(rval2$PPVNPVDAT[2,1],2)*100,&quot; (&quot;,
-                     round(rval2$PPVNPVDAT[2,2],2)*100, &quot;–&quot;,
-                     round(rval2$PPVNPVDAT[2,4],2)*100, &quot;)&quot;)
-  dat[9,i] &lt;- paste0(round(rval2$PPVNPVDAT[1,1],2)*100, &quot; (&quot;,
-                     round(rval2$PPVNPVDAT[1,2],2)*100, &quot;–&quot;,
-                     round(rval2$PPVNPVDAT[1,4],2)*100, &quot;)&quot;)
+  dat[1,i] &lt;- sum(tmp$type==&quot;Endometrial cancer&quot;)
+  dat[2,i] &lt;- sum(tmp$type==&quot;Control&quot;)
+  dat[3,i] &lt;- paste0(round(rval2$SESPDAT$Estimate[1],2)*100, &quot; (&quot;,
+                     round(rval2$SESPDAT$`Lower 97.5% limit`[1],2)*100, &quot;–&quot;,
+                     round(rval2$SESPDAT$`Upper 97.5% limit`[1],2)*100, &quot;)&quot;)
+  dat[4,i] &lt;- paste0(round(rval2$SESPDAT$Estimate[2],2)*100, &quot; (&quot;,
+                     round(rval2$SESPDAT$`Lower 95% limit`[2],2)*100, &quot;–&quot;,
+                     round(rval2$SESPDAT$`Upper 97.5% limit`[2],2)*100, &quot;)&quot;)
+  dat[5,i] &lt;- paste0(round(rval2$PPVNPVDAT$Estimate[2],2)*100, &quot; (&quot;,
+                     round(rval2$PPVNPVDAT$`Lower 97.5% limit`[2],2)*100, &quot;–&quot;,
+                     round(rval2$PPVNPVDAT$`Upper 97.5% limit`[2],2)*100, &quot;)&quot;)
+  dat[6,i] &lt;- paste0(round(rval2$PPVNPVDAT$Estimate[1],2)*100, &quot; (&quot;,
+                     round(rval2$PPVNPVDAT$`Lower 95% limit`[1],2)*100, &quot;–&quot;,
+                     round(rval2$PPVNPVDAT$`Upper 97.5% limit`[1],2)*100, &quot;)&quot;)
 }
 
+x &lt;- compute_ci_diff(mldat_tmp$disease, mldat_tmp$score, mldat_tmp$ethnicity, t  = 1.96)</code></pre>
+<pre><code>## Group 1 is White, group 2 is Non-white</code></pre>
+<pre class="r"><code>dat$`∆` &lt;- &quot;&quot;
+dat$`∆`[3] &lt;- paste0(round(x$diff[1]*100, 1), &quot; (&quot;,
+                     round(x$cil[1]*100, 1), &quot;–&quot;,
+                     round(x$ciu[1]*100, 1), &quot;)&quot;)
+dat$`∆`[4] &lt;- paste0(round(x$diff[2]*100, 1), &quot; (&quot;,
+                                  round(x$cil[2]*100, 1), &quot;–&quot;,
+                                  round(x$ciu[2]*100, 1), &quot;)&quot;) 
+dat$`∆`[5] &lt;- paste0(round(x$diff[3]*100, 1), &quot; (&quot;,
+                     round(x$cil[3]*100, 1), &quot;–&quot;,
+                     round(x$ciu[3]*100, 1), &quot;)&quot;)
+dat$`∆`[6] &lt;- paste0(round(x$diff[4]*100, 1), &quot; (&quot;,
+                     round(x$cil[4]*100, 1), &quot;–&quot;,
+                     round(x$ciu[4]*100, 1), &quot;)&quot;) 
+
+
 tbl &lt;- dat %&gt;%
-  gt(rowname_col = &quot;type&quot;, groupname_col = &quot;threshold&quot;) %&gt;%
+  gt(rowname_col = &quot;type&quot;) %&gt;%
   cols_label(
     White = &quot;White ethnicity&quot;,
-    `Non-white` = &quot;Non-white ethnicity&quot;
+    `Non-white` = &quot;Non-white ethnicity&quot;,
+    `∆` = html(&quot;&lt;i&gt;Difference *&lt;/i&gt;&quot;)
+  ) %&gt;%
+  tab_style(
+    style = cell_text(color = &quot;#707173&quot;),
+    locations = list(cells_body(
+      columns = &quot;∆&quot;,
+      rows = everything()
+    ),
+    cells_column_labels(columns = &quot;∆&quot;)
+    )) %&gt;%
+  text_transform(locations = cells_body(),
+                      fn = function(x){
+                        paste0(ifelse(x == &quot;NA&quot;, &quot;&quot;,
+                                      ifelse(x == &quot;7.5 (2.5–12.5)&quot;,
+                                             html(&quot;&lt;b&gt;7.5 (2.5–12.5)&lt;/b&quot;),
+                                             ifelse(x == &quot;-1.8 (-1.9–-1.6)&quot;,
+                                                    html(&quot;&lt;b&gt;-1.8 (-1.9–-1.6)&lt;/b&gt;&quot;), x))))}) %&gt;%
+  tab_style(
+    style = list(
+      cell_text(align = &quot;left&quot;)
+    ),
+    locations = cells_stub(rows = TRUE)
   ) %&gt;%
   tab_options(table.font.names = &quot;Guardian Sans&quot;,
               column_labels.font.weight = &quot;bold&quot;,
@@ -553,19 +606,19 @@ tbl &lt;- dat %&gt;%
               summary_row.padding = 2,
               table.border.top.color = &quot;white&quot;,
               row_group.border.top.width = px(1),
-              table.width = px(500),
+              table.width = px(600),
               row_group.border.bottom.width = px(1),
               stub.border.width = px(0),
               heading.title.font.size = 14) %&gt;% 
-  gt::tab_source_note(gt::md(&quot;**PPV** denotes positive predictive value, **NPV** negative predictive value.&lt;br&gt;† Assumed population prevalence: 9%&quot;))
+  gt::tab_source_note(gt::html(&quot;* Difference in sensitivity, specificity, PPV, and NPV (including confidence interval) for white and non-white ethnicity.&lt;br&gt;&lt;b&gt;PPV&lt;/b&gt; denotes positive predictive value, &lt;b&gt;NPV&lt;/b&gt; negative predictive value.&lt;br&gt;† Assumed population prevalence: 9%&quot;))
 
 tbl</code></pre>
-<div id="qothrlmvzx" style="overflow-x:auto;overflow-y:auto;width:auto;height:auto;">
+<div id="nqgzeekzdb" style="overflow-x:auto;overflow-y:auto;width:auto;height:auto;">
 <style>html {
   font-family: 'Guardian Sans';
 }
 
-#qothrlmvzx .gt_table {
+#nqgzeekzdb .gt_table {
   display: table;
   border-collapse: collapse;
   margin-left: auto;
@@ -575,7 +628,7 @@ tbl</code></pre>
   font-weight: normal;
   font-style: normal;
   background-color: #FFFFFF;
-  width: 500px;
+  width: 600px;
   border-top-style: solid;
   border-top-width: 2px;
   border-top-color: #FFFFFF;
@@ -590,7 +643,7 @@ tbl</code></pre>
   border-left-color: #D3D3D3;
 }
 
-#qothrlmvzx .gt_heading {
+#nqgzeekzdb .gt_heading {
   background-color: #FFFFFF;
   text-align: center;
   border-bottom-color: #FFFFFF;
@@ -602,33 +655,37 @@ tbl</code></pre>
   border-right-color: #D3D3D3;
 }
 
-#qothrlmvzx .gt_title {
+#nqgzeekzdb .gt_title {
   color: #333333;
   font-size: 14px;
   font-weight: initial;
   padding-top: 4px;
   padding-bottom: 4px;
+  padding-left: 5px;
+  padding-right: 5px;
   border-bottom-color: #FFFFFF;
   border-bottom-width: 0;
 }
 
-#qothrlmvzx .gt_subtitle {
+#nqgzeekzdb .gt_subtitle {
   color: #333333;
   font-size: 85%;
   font-weight: initial;
   padding-top: 0;
   padding-bottom: 6px;
+  padding-left: 5px;
+  padding-right: 5px;
   border-top-color: #FFFFFF;
   border-top-width: 0;
 }
 
-#qothrlmvzx .gt_bottom_border {
+#nqgzeekzdb .gt_bottom_border {
   border-bottom-style: solid;
   border-bottom-width: 2px;
   border-bottom-color: #D3D3D3;
 }
 
-#qothrlmvzx .gt_col_headings {
+#nqgzeekzdb .gt_col_headings {
   border-top-style: solid;
   border-top-width: 2px;
   border-top-color: #D3D3D3;
@@ -643,7 +700,7 @@ tbl</code></pre>
   border-right-color: #D3D3D3;
 }
 
-#qothrlmvzx .gt_col_heading {
+#nqgzeekzdb .gt_col_heading {
   color: #333333;
   background-color: #FFFFFF;
   font-size: 12px;
@@ -663,7 +720,7 @@ tbl</code></pre>
   overflow-x: hidden;
 }
 
-#qothrlmvzx .gt_column_spanner_outer {
+#nqgzeekzdb .gt_column_spanner_outer {
   color: #333333;
   background-color: #FFFFFF;
   font-size: 12px;
@@ -675,15 +732,15 @@ tbl</code></pre>
   padding-right: 4px;
 }
 
-#qothrlmvzx .gt_column_spanner_outer:first-child {
+#nqgzeekzdb .gt_column_spanner_outer:first-child {
   padding-left: 0;
 }
 
-#qothrlmvzx .gt_column_spanner_outer:last-child {
+#nqgzeekzdb .gt_column_spanner_outer:last-child {
   padding-right: 0;
 }
 
-#qothrlmvzx .gt_column_spanner {
+#nqgzeekzdb .gt_column_spanner {
   border-bottom-style: solid;
   border-bottom-width: 2px;
   border-bottom-color: #D3D3D3;
@@ -695,8 +752,11 @@ tbl</code></pre>
   width: 100%;
 }
 
-#qothrlmvzx .gt_group_heading {
-  padding: 2px;
+#nqgzeekzdb .gt_group_heading {
+  padding-top: 2px;
+  padding-bottom: 2px;
+  padding-left: 5px;
+  padding-right: 5px;
   color: #333333;
   background-color: #FFFFFF;
   font-size: 100%;
@@ -717,7 +777,7 @@ tbl</code></pre>
   vertical-align: middle;
 }
 
-#qothrlmvzx .gt_empty_group_heading {
+#nqgzeekzdb .gt_empty_group_heading {
   padding: 0.5px;
   color: #333333;
   background-color: #FFFFFF;
@@ -732,15 +792,15 @@ tbl</code></pre>
   vertical-align: middle;
 }
 
-#qothrlmvzx .gt_from_md > :first-child {
+#nqgzeekzdb .gt_from_md > :first-child {
   margin-top: 0;
 }
 
-#qothrlmvzx .gt_from_md > :last-child {
+#nqgzeekzdb .gt_from_md > :last-child {
   margin-bottom: 0;
 }
 
-#qothrlmvzx .gt_row {
+#nqgzeekzdb .gt_row {
   padding-top: 2px;
   padding-bottom: 2px;
   padding-left: 5px;
@@ -759,7 +819,7 @@ tbl</code></pre>
   overflow-x: hidden;
 }
 
-#qothrlmvzx .gt_stub {
+#nqgzeekzdb .gt_stub {
   color: #333333;
   background-color: #FFFFFF;
   font-size: 100%;
@@ -768,10 +828,29 @@ tbl</code></pre>
   border-right-style: solid;
   border-right-width: 0px;
   border-right-color: #D3D3D3;
-  padding-left: 12px;
+  padding-left: 5px;
+  padding-right: 5px;
 }
 
-#qothrlmvzx .gt_summary_row {
+#nqgzeekzdb .gt_stub_row_group {
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: initial;
+  text-transform: inherit;
+  border-right-style: solid;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+  padding-left: 5px;
+  padding-right: 5px;
+  vertical-align: top;
+}
+
+#nqgzeekzdb .gt_row_group_first td {
+  border-top-width: 1px;
+}
+
+#nqgzeekzdb .gt_summary_row {
   color: #333333;
   background-color: #FFFFFF;
   text-transform: inherit;
@@ -781,17 +860,26 @@ tbl</code></pre>
   padding-right: 5px;
 }
 
-#qothrlmvzx .gt_first_summary_row {
+#nqgzeekzdb .gt_first_summary_row {
+  border-top-style: solid;
+  border-top-color: #D3D3D3;
+}
+
+#nqgzeekzdb .gt_first_summary_row.thick {
+  border-top-width: 2px;
+}
+
+#nqgzeekzdb .gt_last_summary_row {
   padding-top: 2px;
   padding-bottom: 2px;
   padding-left: 5px;
   padding-right: 5px;
-  border-top-style: solid;
-  border-top-width: 2px;
-  border-top-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
 }
 
-#qothrlmvzx .gt_grand_summary_row {
+#nqgzeekzdb .gt_grand_summary_row {
   color: #333333;
   background-color: #FFFFFF;
   text-transform: inherit;
@@ -801,7 +889,7 @@ tbl</code></pre>
   padding-right: 5px;
 }
 
-#qothrlmvzx .gt_first_grand_summary_row {
+#nqgzeekzdb .gt_first_grand_summary_row {
   padding-top: 8px;
   padding-bottom: 8px;
   padding-left: 5px;
@@ -811,11 +899,11 @@ tbl</code></pre>
   border-top-color: #D3D3D3;
 }
 
-#qothrlmvzx .gt_striped {
+#nqgzeekzdb .gt_striped {
   background-color: rgba(128, 128, 128, 0.05);
 }
 
-#qothrlmvzx .gt_table_body {
+#nqgzeekzdb .gt_table_body {
   border-top-style: solid;
   border-top-width: 2px;
   border-top-color: #D3D3D3;
@@ -824,7 +912,7 @@ tbl</code></pre>
   border-bottom-color: #D3D3D3;
 }
 
-#qothrlmvzx .gt_footnotes {
+#nqgzeekzdb .gt_footnotes {
   color: #333333;
   background-color: #FFFFFF;
   border-bottom-style: none;
@@ -838,13 +926,16 @@ tbl</code></pre>
   border-right-color: #D3D3D3;
 }
 
-#qothrlmvzx .gt_footnote {
+#nqgzeekzdb .gt_footnote {
   margin: 0px;
   font-size: 90%;
-  padding: 4px;
+  padding-left: 4px;
+  padding-right: 4px;
+  padding-left: 5px;
+  padding-right: 5px;
 }
 
-#qothrlmvzx .gt_sourcenotes {
+#nqgzeekzdb .gt_sourcenotes {
   color: #333333;
   background-color: #FFFFFF;
   border-bottom-style: none;
@@ -858,44 +949,80 @@ tbl</code></pre>
   border-right-color: #D3D3D3;
 }
 
-#qothrlmvzx .gt_sourcenote {
+#nqgzeekzdb .gt_sourcenote {
   font-size: 90%;
-  padding: 4px;
+  padding-top: 4px;
+  padding-bottom: 4px;
+  padding-left: 5px;
+  padding-right: 5px;
 }
 
-#qothrlmvzx .gt_left {
+#nqgzeekzdb .gt_left {
   text-align: left;
 }
 
-#qothrlmvzx .gt_center {
+#nqgzeekzdb .gt_center {
   text-align: center;
 }
 
-#qothrlmvzx .gt_right {
+#nqgzeekzdb .gt_right {
   text-align: right;
   font-variant-numeric: tabular-nums;
 }
 
-#qothrlmvzx .gt_font_normal {
+#nqgzeekzdb .gt_font_normal {
   font-weight: normal;
 }
 
-#qothrlmvzx .gt_font_bold {
+#nqgzeekzdb .gt_font_bold {
   font-weight: bold;
 }
 
-#qothrlmvzx .gt_font_italic {
+#nqgzeekzdb .gt_font_italic {
   font-style: italic;
 }
 
-#qothrlmvzx .gt_super {
+#nqgzeekzdb .gt_super {
   font-size: 65%;
 }
 
-#qothrlmvzx .gt_footnote_marks {
+#nqgzeekzdb .gt_two_val_uncert {
+  display: inline-block;
+  line-height: 1em;
+  text-align: right;
+  font-size: 60%;
+  vertical-align: -0.25em;
+  margin-left: 0.1em;
+}
+
+#nqgzeekzdb .gt_footnote_marks {
   font-style: italic;
   font-weight: normal;
-  font-size: 65%;
+  font-size: 75%;
+  vertical-align: 0.4em;
+}
+
+#nqgzeekzdb .gt_asterisk {
+  font-size: 100%;
+  vertical-align: 0;
+}
+
+#nqgzeekzdb .gt_slash_mark {
+  font-size: 0.7em;
+  line-height: 0.7em;
+  vertical-align: 0.15em;
+}
+
+#nqgzeekzdb .gt_fraction_numerator {
+  font-size: 0.6em;
+  line-height: 0.6em;
+  vertical-align: 0.45em;
+}
+
+#nqgzeekzdb .gt_fraction_denominator {
+  font-size: 0.6em;
+  line-height: 0.6em;
+  vertical-align: -0.05em;
 }
 </style>
 <table class="gt_table">
@@ -905,49 +1032,38 @@ tbl</code></pre>
       <th class="gt_col_heading gt_columns_bottom_border gt_left" rowspan="1" colspan="1"></th>
       <th class="gt_col_heading gt_columns_bottom_border gt_left" rowspan="1" colspan="1">White ethnicity</th>
       <th class="gt_col_heading gt_columns_bottom_border gt_left" rowspan="1" colspan="1">Non-white ethnicity</th>
+      <th class="gt_col_heading gt_columns_bottom_border gt_left" rowspan="1" colspan="1" style="color: #707173;"><i>Difference *</i></th>
     </tr>
   </thead>
   <tbody class="gt_table_body">
-    <tr class="gt_group_heading_row">
-      <td colspan="3" class="gt_empty_group_heading"></td>
-    </tr>
-    <tr><td class="gt_row gt_left gt_stub">n (controls, cases)</td>
-<td class="gt_row gt_left">60, 65</td>
-<td class="gt_row gt_left">5, 6</td></tr>
-    <tr class="gt_group_heading_row">
-      <td colspan="3" class="gt_group_heading">Threshold 1</td>
-    </tr>
-    <tr><td class="gt_row gt_left gt_stub">Sensitivity – % (95% CI)</td>
+    <tr><td class="gt_row gt_right gt_stub" style="text-align: left;">Endometrial cancers  – n</td>
+<td class="gt_row gt_left">65</td>
+<td class="gt_row gt_left">6</td>
+<td class="gt_row gt_left" style="color: #707173;"></td></tr>
+    <tr><td class="gt_row gt_right gt_stub" style="text-align: left;">Cancer-free controls  – n</td>
+<td class="gt_row gt_left">60</td>
+<td class="gt_row gt_left">5</td>
+<td class="gt_row gt_left" style="color: #707173;"></td></tr>
+    <tr><td class="gt_row gt_right gt_stub" style="text-align: left;">Sensitivity – % (95% CI)</td>
 <td class="gt_row gt_left">97 (89–100)</td>
-<td class="gt_row gt_left">100 (54–100)</td></tr>
-    <tr><td class="gt_row gt_left gt_stub">Specificity – % (95% CI)</td>
-<td class="gt_row gt_left">75 (62–85)</td>
-<td class="gt_row gt_left">80 (28–99)</td></tr>
-    <tr><td class="gt_row gt_left gt_stub">PPV – % (95% CI) †</td>
-<td class="gt_row gt_left">28 (21–37)</td>
-<td class="gt_row gt_left">21 (10–39)</td></tr>
-    <tr><td class="gt_row gt_left gt_stub">NPV – % (95% CI) †</td>
+<td class="gt_row gt_left">100 (54–100)</td>
+<td class="gt_row gt_left" style="color: #707173;">3.1 (-15.5–21.7)</td></tr>
+    <tr><td class="gt_row gt_right gt_stub" style="text-align: left;">Specificity – % (95% CI)</td>
+<td class="gt_row gt_left">75 (64–85)</td>
+<td class="gt_row gt_left">80 (34–99)</td>
+<td class="gt_row gt_left" style="color: #707173;">5 (-35.4–45.4)</td></tr>
+    <tr><td class="gt_row gt_right gt_stub" style="text-align: left;">PPV – % (95% CI) †</td>
+<td class="gt_row gt_left">28 (20–37)</td>
+<td class="gt_row gt_left">21 (8–39)</td>
+<td class="gt_row gt_left" style="color: #707173;">-6.2 (-36.2–23.7)</td></tr>
+    <tr><td class="gt_row gt_right gt_stub" style="text-align: left;">NPV – % (95% CI) †</td>
 <td class="gt_row gt_left">100 (99–100)</td>
-<td class="gt_row gt_left">98 (92–99)</td></tr>
-    <tr class="gt_group_heading_row">
-      <td colspan="3" class="gt_group_heading">Threshold 2</td>
-    </tr>
-    <tr><td class="gt_row gt_left gt_stub">Sensitivity – % (95% CI)</td>
-<td class="gt_row gt_left">83 (72–91)</td>
-<td class="gt_row gt_left">67 (22–96)</td></tr>
-    <tr><td class="gt_row gt_left gt_stub">Specificity – % (95% CI)</td>
-<td class="gt_row gt_left">97 (88–100)</td>
-<td class="gt_row gt_left">100 (48–100)</td></tr>
-    <tr><td class="gt_row gt_left gt_stub">PPV – % (95% CI) †</td>
-<td class="gt_row gt_left">71 (44–91)</td>
-<td class="gt_row gt_left">26 (8–51)</td></tr>
-    <tr><td class="gt_row gt_left gt_stub">NPV – % (95% CI) †</td>
-<td class="gt_row gt_left">98 (97–99)</td>
-<td class="gt_row gt_left">96 (91–98)</td></tr>
+<td class="gt_row gt_left">98 (92–99)</td>
+<td class="gt_row gt_left" style="color: #707173;">-1.8 (-4.6–1.1)</td></tr>
   </tbody>
   <tfoot class="gt_sourcenotes">
     <tr>
-      <td class="gt_sourcenote" colspan="3"><strong>PPV</strong> denotes positive predictive value, <strong>NPV</strong> negative predictive value.<br>† Assumed population prevalence: 9%</td>
+      <td class="gt_sourcenote" colspan="4">* Difference in sensitivity, specificity, PPV, and NPV (including confidence interval) for white and non-white ethnicity.<br><b>PPV</b> denotes positive predictive value, <b>NPV</b> negative predictive value.<br>† Assumed population prevalence: 9%</td>
     </tr>
   </tfoot>
   

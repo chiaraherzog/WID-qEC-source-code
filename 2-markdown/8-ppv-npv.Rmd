@@ -1,7 +1,7 @@
 ---
 title: "8. PPV/NPV"
 author: "Chiara Herzog"
-date: April 4, 2022
+date: May 31, 2022
 output:
   rmarkdown::html_document:
     theme: cosmo
@@ -34,30 +34,28 @@ load("../0-data/cutoff.Rdata")
 ```
 
 
-## PPV/NPV value
+## PPV/NPV estimates (Figure S16)
 
 ```{r fig.align = "center", fig.width = 10, fig.height = 3.5}
-
 mldat_tmp <- mldat %>%
-  filter(set != "FORECEE Pilot") %>%
-  mutate(set = as.character(set)) %>%
-  mutate(set = ifelse(set != "Karolinska Cohort", set,
-                          ifelse(set == "Karolinska Cohort" & time_to_diagnosis < 365,
-                                 "Karolinska Cohort\n(<1 y)",
-                                 "Karolinska Cohort\n(>=1 y)"))) %>%
+  filter(!is.na(type) & set != "FORECEE Pilot") %>%
+  droplevels() %>%
   mutate(set = factor(set, levels = c("FORECEE Validation",
                                       "Barcelona Validation",
                                       "PMB Cohort", 
                                       "Lynch Cohort",
-                                      "Karolinska Cohort\n(<1 y)",
-                                      "Karolinska Cohort\n(>=1 y)"))) %>%
-  mutate(thresh1 = case_when(sum >= cut$threshold[1] ~ "Endometrial cancer",
-                             sum < cut$threshold[1] ~ "Control")) %>%
-  mutate(thresh2 = case_when(sum >= cut$threshold[2] ~ "Endometrial cancer",
-                             sum < cut$threshold[2] ~ "Control")) %>%
+                                      "Karolinska Cohort"))) %>%
+  mutate(thresh1 = case_when(sum >= cut$threshold[1] & set != "Karolinska Cohort" ~ "Endometrial cancer",
+                             sum < cut$threshold[1] & set != "Karolinska Cohort" ~ "Control",
+                             sum >= cut$threshold[2] & set == "Karolinska Cohort" ~ "Endometrial cancer",
+                             sum < cut$threshold[2] & set == "Karolinska Cohort" ~ "Control")) %>%
   mutate(type = factor(type, levels = c("Endometrial cancer", "Control"))) %>%
   mutate(thresh1 = factor(thresh1, levels = c("Endometrial cancer", "Control"))) %>%
-  mutate(thresh2 = factor(thresh2, levels = c("Endometrial cancer", "Control")))
+  mutate(set=as.character(set)) %>%
+  mutate(set = ifelse(set != "Karolinska Cohort", set,
+                          ifelse(set == "Karolinska Cohort" & time_to_diagnosis < 365,
+                                 "Karolinska Cohort\n(<1 y)",
+                                 "Karolinska Cohort\n(>=1 y)")))
 
 dat <- data.frame(matrix(nrow = 180, ncol = 8))
 colnames(dat) <- c("set", "prev", "PPV", "ppv_lo", "ppv_hi", "NPV", "npv_lo", "npv_hi")
@@ -65,7 +63,6 @@ dat$set <- rep(unique(mldat_tmp$set), each = 30)
 dat$prev <- rep(seq(from = 0.0009, to = 0.15, 0.005), 6)
 
 for(i in  1:nrow(dat)){
-  
   tmp <- mldat_tmp %>%
     filter(set == as.character(dat$set[i]))
   pop_prev <- dat$prev[i]
@@ -78,14 +75,13 @@ for(i in  1:nrow(dat)){
   rval2 <- BDtest(xmat=as.matrix(tab), pr=pop_prev, conf.level = 0.95)
   
   dat$PPV[i] <- rval2$PPVNPVDAT$Estimate[2]
-  dat$ppv_lo[i] <- rval2$PPVNPVDAT$`Lower 95% limit`[2]
+  dat$ppv_lo[i] <- rval2$PPVNPVDAT$`Lower 97.5% limit`[2]
   dat$ppv_hi[i] <- rval2$PPVNPVDAT$`Upper 97.5% limit`[2]
   dat$NPV[i] <- rval2$PPVNPVDAT$Estimate[1]
-  dat$npv_lo[i] <- rval2$PPVNPVDAT$`Lower 95% limit`[1]
+  dat$npv_lo[i] <- rval2$PPVNPVDAT$`Lower 97.5% limit`[1]
   dat$npv_hi[i] <- rval2$PPVNPVDAT$`Upper 97.5% limit`[1]
   
 }
-
 
 dat2 <- dat %>%
   pivot_longer(cols = c("PPV", "NPV"),
@@ -99,7 +95,7 @@ dat2 <- dat %>%
                names_to = "lo_val") %>%
   filter((type == "PPV" & hi_val == "ppv_hi" & lo_val == "ppv_lo") | (type== "NPV" & hi_val == "npv_hi" & lo_val == "npv_lo")) %>%
   select(set, prev, type, value, hi, lo) %>%
-  mutate(true = case_when(set %in% c("FORECEE Validation", "Barcelona Validation Set") ~ 0.09,
+  mutate(true = case_when(set %in% c("FORECEE Validation", "Barcelona Validation") ~ 0.09,
                           set == "Lynch Cohort" ~ 3/25,
                           set == "PMB Cohort" ~ 8/74,
                           grepl("Karolinska Cohort", set) ~ 0.0009)) %>%
@@ -115,7 +111,6 @@ dat2 <- dat %>%
                                               "Lynch\nCohort",
                                               "Karolinska Cohort\n(<1 y)",
                                               "Karolinska Cohort\n(>=1 y)")))
-
 
 plot <- dat2 %>%
   ggplot(aes(x = prev,
@@ -144,5 +139,4 @@ plot <- dat2 %>%
         panel.spacing.x = unit(1, "lines"))
 
 plot
-
 ```

@@ -11,11 +11,11 @@
 
 <meta name="author" content="Chiara Herzog" />
 
-<meta name="date" content="2022-04-04" />
+<meta name="date" content="2022-05-31" />
 
 <title>8. PPV/NPV</title>
 
-<script src="site_libs/header-attrs-2.11/header-attrs.js"></script>
+<script src="site_libs/header-attrs-2.14/header-attrs.js"></script>
 <script src="site_libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <link href="site_libs/bootstrap-3.3.5/css/cosmo.min.css" rel="stylesheet" />
@@ -63,6 +63,7 @@ if (window.hljs) {
 
 
 
+
 <style type = "text/css">
 .main-container {
   max-width: 940px;
@@ -83,6 +84,9 @@ button.code-folding-btn:focus {
 }
 summary {
   display: list-item;
+}
+details > summary > p:only-child {
+  display: inline;
 }
 pre code {
   padding: 0;
@@ -238,7 +242,7 @@ $(document).ready(function () {
 <div class="navbar navbar-default  navbar-fixed-top" role="navigation">
   <div class="container">
     <div class="navbar-header">
-      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-bs-toggle="collapse" data-target="#navbar" data-bs-target="#navbar">
         <span class="icon-bar"></span>
         <span class="icon-bar"></span>
         <span class="icon-bar"></span>
@@ -248,7 +252,7 @@ $(document).ready(function () {
     <div id="navbar" class="navbar-collapse collapse">
       <ul class="nav navbar-nav">
         <li class="dropdown">
-  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
     WID-qEC source code
      
     <span class="caret"></span>
@@ -294,7 +298,7 @@ $(document).ready(function () {
 <div id="header">
 
 <div class="btn-group pull-right float-right">
-<button type="button" class="btn btn-default btn-xs btn-secondary btn-sm dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><span>Code</span> <span class="caret"></span></button>
+<button type="button" class="btn btn-default btn-xs btn-secondary btn-sm dropdown-toggle" data-toggle="dropdown" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><span>Code</span> <span class="caret"></span></button>
 <ul class="dropdown-menu dropdown-menu-right" style="min-width: 50px;">
 <li><a id="rmd-show-all-code" href="#">Show All Code</a></li>
 <li><a id="rmd-hide-all-code" href="#">Hide All Code</a></li>
@@ -305,33 +309,32 @@ $(document).ready(function () {
 
 <h1 class="title toc-ignore">8. PPV/NPV</h1>
 <h4 class="author">Chiara Herzog</h4>
-<h4 class="date">April 4, 2022</h4>
+<h4 class="date">May 31, 2022</h4>
 
 </div>
 
 
-<div id="ppvnpv-value" class="section level2">
-<h2>PPV/NPV value</h2>
+<div id="ppvnpv-estimates-figure-s16" class="section level2">
+<h2>PPV/NPV estimates (Figure S16)</h2>
 <pre class="r"><code>mldat_tmp &lt;- mldat %&gt;%
-  filter(set != &quot;FORECEE Pilot&quot;) %&gt;%
-  mutate(set = as.character(set)) %&gt;%
-  mutate(set = ifelse(set != &quot;Karolinska Cohort&quot;, set,
-                          ifelse(set == &quot;Karolinska Cohort&quot; &amp; time_to_diagnosis &lt; 365,
-                                 &quot;Karolinska Cohort\n(&lt;1 y)&quot;,
-                                 &quot;Karolinska Cohort\n(&gt;=1 y)&quot;))) %&gt;%
+  filter(!is.na(type) &amp; set != &quot;FORECEE Pilot&quot;) %&gt;%
+  droplevels() %&gt;%
   mutate(set = factor(set, levels = c(&quot;FORECEE Validation&quot;,
                                       &quot;Barcelona Validation&quot;,
                                       &quot;PMB Cohort&quot;, 
                                       &quot;Lynch Cohort&quot;,
-                                      &quot;Karolinska Cohort\n(&lt;1 y)&quot;,
-                                      &quot;Karolinska Cohort\n(&gt;=1 y)&quot;))) %&gt;%
-  mutate(thresh1 = case_when(sum &gt;= cut$threshold[1] ~ &quot;Endometrial cancer&quot;,
-                             sum &lt; cut$threshold[1] ~ &quot;Control&quot;)) %&gt;%
-  mutate(thresh2 = case_when(sum &gt;= cut$threshold[2] ~ &quot;Endometrial cancer&quot;,
-                             sum &lt; cut$threshold[2] ~ &quot;Control&quot;)) %&gt;%
+                                      &quot;Karolinska Cohort&quot;))) %&gt;%
+  mutate(thresh1 = case_when(sum &gt;= cut$threshold[1] &amp; set != &quot;Karolinska Cohort&quot; ~ &quot;Endometrial cancer&quot;,
+                             sum &lt; cut$threshold[1] &amp; set != &quot;Karolinska Cohort&quot; ~ &quot;Control&quot;,
+                             sum &gt;= cut$threshold[2] &amp; set == &quot;Karolinska Cohort&quot; ~ &quot;Endometrial cancer&quot;,
+                             sum &lt; cut$threshold[2] &amp; set == &quot;Karolinska Cohort&quot; ~ &quot;Control&quot;)) %&gt;%
   mutate(type = factor(type, levels = c(&quot;Endometrial cancer&quot;, &quot;Control&quot;))) %&gt;%
   mutate(thresh1 = factor(thresh1, levels = c(&quot;Endometrial cancer&quot;, &quot;Control&quot;))) %&gt;%
-  mutate(thresh2 = factor(thresh2, levels = c(&quot;Endometrial cancer&quot;, &quot;Control&quot;)))
+  mutate(set=as.character(set)) %&gt;%
+  mutate(set = ifelse(set != &quot;Karolinska Cohort&quot;, set,
+                          ifelse(set == &quot;Karolinska Cohort&quot; &amp; time_to_diagnosis &lt; 365,
+                                 &quot;Karolinska Cohort\n(&lt;1 y)&quot;,
+                                 &quot;Karolinska Cohort\n(&gt;=1 y)&quot;)))
 
 dat &lt;- data.frame(matrix(nrow = 180, ncol = 8))
 colnames(dat) &lt;- c(&quot;set&quot;, &quot;prev&quot;, &quot;PPV&quot;, &quot;ppv_lo&quot;, &quot;ppv_hi&quot;, &quot;NPV&quot;, &quot;npv_lo&quot;, &quot;npv_hi&quot;)
@@ -339,7 +342,6 @@ dat$set &lt;- rep(unique(mldat_tmp$set), each = 30)
 dat$prev &lt;- rep(seq(from = 0.0009, to = 0.15, 0.005), 6)
 
 for(i in  1:nrow(dat)){
-  
   tmp &lt;- mldat_tmp %&gt;%
     filter(set == as.character(dat$set[i]))
   pop_prev &lt;- dat$prev[i]
@@ -352,14 +354,13 @@ for(i in  1:nrow(dat)){
   rval2 &lt;- BDtest(xmat=as.matrix(tab), pr=pop_prev, conf.level = 0.95)
   
   dat$PPV[i] &lt;- rval2$PPVNPVDAT$Estimate[2]
-  dat$ppv_lo[i] &lt;- rval2$PPVNPVDAT$`Lower 95% limit`[2]
+  dat$ppv_lo[i] &lt;- rval2$PPVNPVDAT$`Lower 97.5% limit`[2]
   dat$ppv_hi[i] &lt;- rval2$PPVNPVDAT$`Upper 97.5% limit`[2]
   dat$NPV[i] &lt;- rval2$PPVNPVDAT$Estimate[1]
-  dat$npv_lo[i] &lt;- rval2$PPVNPVDAT$`Lower 95% limit`[1]
+  dat$npv_lo[i] &lt;- rval2$PPVNPVDAT$`Lower 97.5% limit`[1]
   dat$npv_hi[i] &lt;- rval2$PPVNPVDAT$`Upper 97.5% limit`[1]
   
 }
-
 
 dat2 &lt;- dat %&gt;%
   pivot_longer(cols = c(&quot;PPV&quot;, &quot;NPV&quot;),
@@ -373,7 +374,7 @@ dat2 &lt;- dat %&gt;%
                names_to = &quot;lo_val&quot;) %&gt;%
   filter((type == &quot;PPV&quot; &amp; hi_val == &quot;ppv_hi&quot; &amp; lo_val == &quot;ppv_lo&quot;) | (type== &quot;NPV&quot; &amp; hi_val == &quot;npv_hi&quot; &amp; lo_val == &quot;npv_lo&quot;)) %&gt;%
   select(set, prev, type, value, hi, lo) %&gt;%
-  mutate(true = case_when(set %in% c(&quot;FORECEE Validation&quot;, &quot;Barcelona Validation Set&quot;) ~ 0.09,
+  mutate(true = case_when(set %in% c(&quot;FORECEE Validation&quot;, &quot;Barcelona Validation&quot;) ~ 0.09,
                           set == &quot;Lynch Cohort&quot; ~ 3/25,
                           set == &quot;PMB Cohort&quot; ~ 8/74,
                           grepl(&quot;Karolinska Cohort&quot;, set) ~ 0.0009)) %&gt;%
@@ -389,7 +390,6 @@ dat2 &lt;- dat %&gt;%
                                               &quot;Lynch\nCohort&quot;,
                                               &quot;Karolinska Cohort\n(&lt;1 y)&quot;,
                                               &quot;Karolinska Cohort\n(&gt;=1 y)&quot;)))
-
 
 plot &lt;- dat2 %&gt;%
   ggplot(aes(x = prev,
