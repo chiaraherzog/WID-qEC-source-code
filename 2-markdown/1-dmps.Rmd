@@ -34,7 +34,7 @@ load("../0-data/array_data.Rdata")
 # Plots
 
 * All top 50 DMPs in data frame.
-* Plotting only exemplary 3
+* Plotting only exemplary top 10
 
 ```{r fig.align = "center", fig.width = 10, fig.height = 4.5}
 cg <- unique(pheno1$cpg)

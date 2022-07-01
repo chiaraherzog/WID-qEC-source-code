@@ -163,6 +163,7 @@ tcga %>%
 * Showing the individual log PMR values for the three top regions above, as well as the sum of their values.
 * The thresholds are calculated using Youden's index on the receiver operating characteristic.
 * The two thresholds (0.03 and 0.63) are then used throughout the manuscript (high sensitivity and high specificity threshold, respectively).
+* 0.00001 is added for log transformation for visualisation (otherwise drops out)
 
 ```{r fig.align = "center", fig.width = 9, fig.height = 8}
 
