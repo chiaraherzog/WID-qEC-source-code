@@ -391,7 +391,7 @@ mldat_mut_us <- mldat %>%
 
 p1 <- plot_3_rocs(mldat_mut_us$type,
                   mldat_mut_us$sum, mldat_mut_us$us_thickness, mldat_mut_us$dnamut_nmut,
-                  "black", cols[7], cols[6],
+                  "black", cols[3], cols[4],
                   "WID™-qEC", "US", "DNAmut")
 
 tmp <- mldat %>%
